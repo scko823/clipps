@@ -1,21 +1,30 @@
-import { Router, Route, browserHistory } from 'react-router';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './components/App';
+import Clipboard from './components/Clipboard';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { pink500 } from 'material-ui/styles/colors';
 
 import store from './stores/Store';
 import './styles/main.scss';
 
+const muiTheme = getMuiTheme({
+	palette: {
+		primary1Color: '#16A086'
+	},
+	appBar: {
+		height: 50
+	}
+});
+
 ReactDOM.render(
 	<Provider store={store}>
-		<MuiThemeProvider>
+		<MuiThemeProvider muiTheme={muiTheme}>
 			<Router history={browserHistory}>
-				<Route path="/" component={App}>
-					{/* <IndexRoute component={Home} />
-					<Route path="about" component={About} /> */}
-				</Route>
+				<Route path="/" component={App} />
 			</Router>
 		</MuiThemeProvider>
 	</Provider>,
