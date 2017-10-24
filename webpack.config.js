@@ -12,12 +12,14 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
 
-	entry: [
-		'webpack-dev-server/client?http://localhost:8080',
-		'webpack/hot/only-dev-server',
-		'babel-polyfill',
-		'./index.jsx'
-	],
+	entry: ['webpack-hot-middleware/client', 'react-hot-loader/patch', './index.jsx'],
+
+	// entry: [
+	// 	'webpack-dev-server/client?http://localhost:8080',
+	// 	'webpack/hot/only-dev-server',
+	// 	'babel-polyfill',
+	// 	'./index.jsx'
+	// ],
 
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -73,11 +75,14 @@ module.exports = {
 		]
 	},
 	plugins: [
-		HtmlWebpackPluginConfig,
 		new webpack.HotModuleReplacementPlugin(),
 		new ExtractTextPlugin({
 			filename: 'css/[name].styles.css',
 			allChunks: false
+		}),
+		new webpack.NoEmitOnErrorsPlugin(),
+		new HtmlWebpackPlugin({
+			template: 'index.ejs'
 		})
 	],
 
