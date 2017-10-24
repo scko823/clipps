@@ -4,16 +4,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import App from './components/App';
+import Landing from './components/Landing';
 import Clipboard from './components/Clipboard';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { pink500 } from 'material-ui/styles/colors';
+import { green500 } from 'material-ui/styles/colors';
 
 import store from './stores/Store';
 import './styles/main.scss';
 
 const muiTheme = getMuiTheme({
 	palette: {
-		primary1Color: '#16A086'
+		primary1Color: green500
 	},
 	appBar: {
 		height: 50
@@ -24,7 +25,8 @@ ReactDOM.render(
 	<Provider store={store}>
 		<MuiThemeProvider muiTheme={muiTheme}>
 			<Router history={browserHistory}>
-				<Route path="/" component={App} />
+				<Route path="/" component={Landing} />
+				<Route path="/clipboard" component={App} />
 			</Router>
 		</MuiThemeProvider>
 	</Provider>,

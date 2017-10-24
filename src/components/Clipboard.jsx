@@ -14,13 +14,7 @@ class Clipboard extends React.Component {
 	}
 
 	handleTouchTap = event => {
-		// This prevents ghost click.
-		event.preventDefault();
-
-		this.setState({
-			open: true,
-			anchorEl: event.currentTarget
-		});
+		this.props.openDialog();
 	};
 
 	handleRequestClose = () => {
@@ -35,26 +29,6 @@ class Clipboard extends React.Component {
 				<FloatingActionButton onClick={this.handleTouchTap}>
 					<ContentAdd />
 				</FloatingActionButton>
-
-				<Popover
-					open={this.state.open}
-					anchorEl={this.state.anchorEl}
-					anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-					targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-					onRequestClose={this.handleRequestClose}
-					animation={PopoverAnimationVertical}
-				>
-					<Menu>
-						<MenuItem
-							primaryText="Add Text Clip"
-							onClick={() => this.props.openDialog('clip')}
-						/>
-						<MenuItem
-							primaryText="Add Code"
-							onClick={() => this.props.openDialog('code')}
-						/>
-					</Menu>
-				</Popover>
 			</div>
 		);
 	}
