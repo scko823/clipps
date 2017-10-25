@@ -4,10 +4,14 @@ import { Dialog, FlatButton, TextField, SelectField, MenuItem } from 'material-u
 class PaperDialog extends React.Component {
 	state = {
 		form: {
-			title: null,
-			content: null,
-			code: 1
-		}
+			name: null,
+			content: null
+		},
+		error: {
+			name: true,
+			content: true
+		},
+		showErrors: false
 	};
 
 	onChange = (event, field) => {
@@ -16,19 +20,42 @@ class PaperDialog extends React.Component {
 			form: {
 				...this.state.form,
 				[field]: val
-			}
+			},
+			error: {
+				...this.state.error,
+				[field]: val === '' ? true : false
+			},
+			showErrors: val === '' ? true : false
 		});
 	};
 
-	handleChange = (event, index, value) => this.setState({ code: value });
+	onSubmit = () => {
+		var arr = Object.values(this.state.error).reduce((a, b) => {
+			return a && b;
+		});
+
+		if (arr) {
+			this.setState(() => ({
+				showErrors: true
+			}));
+		} else {
+			// const formData = new FormData();
+			// formData.append('data', new Blob([JSON.stringify(this.state)], { type: 'application/json' }));
+			// formData.append('file', file);
+
+			this.props.handleCreateBoard(this.state.form);
+		}
+	};
 	renderForm = () => {
-		const { type } = this.props;
+		const { handleCreateBoard } = this.props;
+		const { showErrors, error } = this.state;
 		return (
 			<div className="dialogForm">
 				<TextField
 					style={{ width: '100%' }}
 					hintText="Add Title"
-					onChange={e => this.onChange(e, 'title')}
+					onChange={e => this.onChange(e, 'name')}
+					errorText={showErrors && error.name ? 'Add a name to the clip' : ''}
 				/>
 				<br />
 				<br />
@@ -39,23 +66,24 @@ class PaperDialog extends React.Component {
 					rows={5}
 					style={{ width: '100%' }}
 					onChange={e => this.onChange(e, 'content')}
+					errorText={showErrors && error.content ? 'Please add content' : ''}
 				/>
 				<br />
 			</div>
 		);
 	};
 	render() {
+		const { open, handleClose, handleCreateBoard } = this.props;
+
 		const actions = [
 			<FlatButton label="Cancel" primary={true} onClick={this.props.handleClose} />,
 			<FlatButton
 				label="Submit"
 				primary={true}
 				keyboardFocused={true}
-				onClick={this.props.handleClose}
+				onClick={this.onSubmit}
 			/>
 		];
-
-		const { type, open, handleClose } = this.props;
 
 		return (
 			<Dialog

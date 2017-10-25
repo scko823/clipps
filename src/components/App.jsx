@@ -28,7 +28,8 @@ class App extends React.Component {
 		clipboardLoading: true,
 		clipboards: [],
 		boardDetails: {},
-		boardLoading: true
+		boardLoading: true,
+		new: true
 	};
 
 	openDialog = type => {
@@ -66,7 +67,8 @@ class App extends React.Component {
 			this.setState({
 				boardDetails: res.data,
 				open: false,
-				boardLoading: false
+				boardLoading: false,
+				new: false
 			});
 		});
 	};
@@ -90,7 +92,24 @@ class App extends React.Component {
 		);
 	};
 
-	handleCreateBoard = () => {};
+	handleCreateBoard = body => {
+		const { boardLoading, boardDetails } = this.state;
+		axios
+			.post(`http://localhost:8080/${boardDetails.id}/clip`, body, {
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+			.then(() => {
+				axios.get(`http://localhost:8080/clipboard/${board.id}`).then(response => {
+					this.setState(() => ({
+						boardDetails: response.data
+					}));
+				});
+			});
+
+		this.closeDialog();
+	};
 
 	render() {
 		return (
