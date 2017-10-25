@@ -5,17 +5,21 @@ import { Paper, Subheader, IconButton } from 'material-ui';
 import Snippet from './Snippet';
 
 class PaperClips extends React.Component {
-	renderPapers = () => {
-		return messages
-			.map((message, i) => {
-				return Object.assign({}, message, { id: `a${i}` });
-			})
-			.map(message => {
-				return <Snippet message={message} />;
-			});
+	renderPapers = arr => {
+		return arr.map(clip => {
+			return <Snippet clip={clip} />;
+		});
 	};
 	render() {
-		return <div>{this.renderPapers()}</div>;
+		const { boardLoading, boardDetails } = this.props;
+		return (
+			<div style={{ height: '100vh' }}>
+				{boardLoading && <h3 style={{ textAlign: 'center' }}>Sample Clipboard</h3>}
+				{!boardLoading
+					? this.renderPapers(boardDetails.clips)
+					: this.renderPapers(messages)}
+			</div>
+		);
 	}
 }
 

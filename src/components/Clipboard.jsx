@@ -8,8 +8,7 @@ class Clipboard extends React.Component {
 		super(props);
 
 		this.state = {
-			open: false,
-			type: null
+			open: false
 		};
 	}
 

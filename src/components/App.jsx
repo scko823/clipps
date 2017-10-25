@@ -1,9 +1,11 @@
 import React from 'react';
-import { AppBar, Drawer, MenuItem, Divider, Avatar, ListItem } from 'material-ui';
+import { browserHistory } from 'react-router';
+import { AppBar, Drawer, MenuItem, Divider, Avatar, ListItem, CircularProgress } from 'material-ui';
 import Clipboard from './Clipboard';
 import PaperDialog from './PaperDialog';
 import PaperClips from './PaperClips';
 import { startCase } from 'lodash';
+import axios from 'axios';
 import { grey600, teal300, green500 } from 'material-ui/styles/colors';
 
 const style = {
@@ -22,7 +24,11 @@ class App extends React.Component {
 	state = {
 		openDialog: false,
 		name: '',
-		open: false
+		open: false,
+		clipboardLoading: true,
+		clipboards: [],
+		boardDetails: {},
+		boardLoading: true
 	};
 
 	openDialog = type => {
@@ -42,24 +48,49 @@ class App extends React.Component {
 			name: clipName
 		});
 	}
+
+	componentDidMount() {
+		axios.get(`http://localhost:8080/clipboard`).then(res => {
+			this.setState({
+				clipboardLoading: false,
+				clipboards: res.data
+			});
+		});
+	}
 	toggleDrawer = () => this.setState({ open: true });
 	handleClose = () => this.setState({ open: false });
 
+	fetchClipBoard = board => {
+		browserHistory.push(`/clipboard/${board.id}`);
+		axios.get(`http://localhost:8080/clipboard/${board.id}`).then(res => {
+			this.setState({
+				boardDetails: res.data,
+				open: false,
+				boardLoading: false
+			});
+		});
+	};
+
 	getAvatar = () => {
+		const { boardLoading, boardDetails } = this.state;
 		return (
 			<ListItem
 				disabled={true}
 				leftAvatar={
 					<Avatar color={teal300} backgroundColor="white" size={45} style={style.avatar}>
-						{startCase(this.props.location.query.name.substr(0, 1))}
+						{!boardLoading
+							? boardDetails.name.substr(0, 1)
+							: startCase(this.props.location.query.name.substr(0, 1))}
 					</Avatar>
 				}
 				style={style.login}
 			>
-				{startCase(this.props.location.query.name)}
+				{!boardLoading ? boardDetails.name : startCase(this.props.location.query.name)}
 			</ListItem>
 		);
 	};
+
+	handleCreateBoard = () => {};
 
 	render() {
 		return (
@@ -69,12 +100,15 @@ class App extends React.Component {
 					iconElementRight={this.getAvatar()}
 				/>
 				<Clipboard openDialog={this.openDialog} />
-				<PaperClips />
+				<PaperClips
+					boardLoading={this.state.boardLoading}
+					boardDetails={this.state.boardDetails}
+				/>
 				{this.state.openDialog && (
 					<PaperDialog
 						open={this.state.openDialog}
 						handleClose={this.closeDialog}
-						type={this.state.type}
+						handleCreateBoard={this.handleCreateBoard}
 					/>
 				)}
 
@@ -87,12 +121,22 @@ class App extends React.Component {
 				>
 					<h3>Clipboards</h3>
 					<Divider />
-					<MenuItem onClick={this.handleClose} style={style.menuStyle}>
-						ClipBoard1
-					</MenuItem>
-					<MenuItem onClick={this.handleClose} style={style.menuStyle}>
-						ClipBoard2
-					</MenuItem>
+					{this.state.clipboardLoading ? (
+						<CircularProgress size={60} thickness={7} />
+					) : (
+						this.state.clipboards.map(board => {
+							return (
+								<MenuItem
+									onClick={() => {
+										this.fetchClipBoard(board);
+									}}
+									style={style.menuStyle}
+								>
+									{board.name}
+								</MenuItem>
+							);
+						})
+					)}
 				</Drawer>
 			</div>
 		);

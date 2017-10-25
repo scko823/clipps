@@ -8,8 +8,8 @@ COPY dist ./
 
 COPY env.sh ./
 
-# Build for production.
-RUN npm run build --production
+# # Build for production.
+# RUN npm run build --production
 
 # Install `serve` to run the application.
 RUN npm install -g serve

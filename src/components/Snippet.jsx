@@ -13,7 +13,7 @@ const style = {
 class Snippet extends React.Component {
 	onClick = e => {
 		e.preventDefault();
-		const { content, id } = this.props.message;
+		const { content, id } = this.props.clip;
 
 		var text = document.createElement('textarea');
 		text.innerText = content;
@@ -25,19 +25,19 @@ class Snippet extends React.Component {
 	};
 
 	render() {
-		const { message } = this.props;
+		const { clip } = this.props;
 		return (
 			<Paper style={style} zDepth={3}>
 				<div style={{ display: 'flex' }}>
-					<Subheader style={{ textAlign: 'left' }}>{message.title}</Subheader>
+					<Subheader style={{ textAlign: 'left' }}>{clip.name}</Subheader>
 					<IconButton onClick={this.onClick} tooltip="Copy">
 						<i className="material-icons md-18">content_copy</i>
 					</IconButton>
 				</div>
 				<br />
 				<br />
-				<HighLight ref={c => (this._textNode = c)} className="code" language={message.type}>
-					{message.content}
+				<HighLight ref={c => (this._textNode = c)} className="code" language={clip.type}>
+					{clip.content}
 				</HighLight>
 			</Paper>
 		);

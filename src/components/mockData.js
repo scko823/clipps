@@ -1,28 +1,28 @@
 export const messages = [
 	{
-		title: 'Pact Issue',
+		name: 'Pact Issue',
 		content: `{ 
 	"here": "sample" 
 }`,
-		type: 'json'
+		id: 0
 	},
 	{
-		title: 'Pact Issue2',
+		name: 'Pact Issue2',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'text'
+		id: 22
 	},
 	{
-		title: 'Pact Issue3',
+		name: 'Pact Issue3',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'text'
+		id: 3
 	},
 	{
-		title: 'Pact Issue4',
+		name: 'Pact Issue4',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'java'
+		id: 9
 	},
 	{
-		title: 'Pact Issue5',
+		name: 'Pact Issue5',
 		content: `package l2f.gameserver.model;
 
 public abstract class L2Char extends L2Object {
@@ -36,33 +36,33 @@ public abstract class L2Char extends L2Object {
     }
   }
 }`,
-		type: 'java'
+		id: 7
 	},
 	{
-		title: 'Pact Issue6',
+		name: 'Pact Issue6',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'text'
+		id: 23
 	},
 	{
-		title: 'Pact Issue7',
+		name: 'Pact Issue7',
 		content:
 			"#!/bin/bash\ncurl 'https://secure.quantserve.com/quant.js' -H 'Referer: https://stackoverflow.com/questions/14195530/how-to-display-raw-json-data-on-a-html-page' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36' --compressed",
-		type: 'bash'
+		id: 5
 	},
 	{
-		title: 'Pact Issue8',
+		name: 'Pact Issue8',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'javascript'
+		id: 4
 	},
 	{
-		title: 'Pact Issue9',
+		name: 'Pact Issue9',
 		content:
 			' <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/railscasts.css" />',
-		type: 'html'
+		id: 11
 	},
 	{
-		title: 'Pact Issue10',
+		name: 'Pact Issue10',
 		content: ' We are having pact issues since two days. Can team Cowbell take a look at it',
-		type: 'json'
+		id: 12
 	}
 ];

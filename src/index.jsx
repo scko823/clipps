@@ -26,7 +26,7 @@ ReactDOM.render(
 		<MuiThemeProvider muiTheme={muiTheme}>
 			<Router history={browserHistory}>
 				<Route path="/" component={Landing} />
-				<Route path="/clipboard" component={App} />
+				<Route path="/clipboard/:id" component={App} />
 			</Router>
 		</MuiThemeProvider>
 	</Provider>,

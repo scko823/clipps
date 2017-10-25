@@ -17,8 +17,8 @@ class Landing extends React.Component {
 	};
 	handleEnterClipboard = () => {
 		browserHistory.push({
-			pathname: '/clipboard',
-			query: { name: this.state.name, new: true }
+			pathname: '/clipboard/99',
+			query: { name: this.state.name }
 		});
 	};
 

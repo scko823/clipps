@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
 	app.use(webpackHotMiddleware(compiler));
 }
 
-const server = app.listen(8084, function() {
+const server = app.listen(9090, function() {
 	const host = server.address().address;
 	const port = server.address().port;
 	console.log('Example app listening at http://%s:%s', host, port);
