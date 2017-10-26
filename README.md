@@ -1,4 +1,4 @@
-# Material-UI-experiment to build a clipboard to instant share code or content
+# Clipboard to share code and content instantly - UI built using Material-UI
 
 If sharing code the clipboard will recognise the language to format accordingly - using react-highlight 
 
