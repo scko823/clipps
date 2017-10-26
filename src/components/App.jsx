@@ -92,21 +92,33 @@ class App extends React.Component {
 		);
 	};
 
-	handleCreateBoard = body => {
+	handlePost = body => {
 		const { boardLoading, boardDetails } = this.state;
-		axios
-			.post(`http://localhost:8080/${boardDetails.id}/clip`, body, {
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			})
-			.then(() => {
-				axios.get(`http://localhost:8080/clipboard/${board.id}`).then(response => {
-					this.setState(() => ({
-						boardDetails: response.data
-					}));
+		return axios.post(`http://localhost:8080/clipboard/${boardDetails.id}/clip`, body, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+	};
+
+	handleGet = () => {
+		const { boardLoading, boardDetails } = this.state;
+		return axios.get(`http://localhost:8080/clipboard/${boardDetails.id}`).then(response => {
+			this.setState(() => ({
+				boardDetails: response.data
+			}));
+		});
+	};
+
+	handleCreateBoard = body => {
+		axios.all([this.handlePost(body), this.handleGet()]).then(
+			axios.spread(resp => {
+				this.setState({
+					boardDetails: resp.data,
+					boardLoading: false
 				});
-			});
+			})
+		);
 
 		this.closeDialog();
 	};
