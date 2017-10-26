@@ -1,4 +1,6 @@
-# Material-UI-experiment to build a clipboard to instan share
+# Material-UI-experiment to build a clipboard to instant share code or content
+
+If sharing code the clipboard will recognise the language to format accordingly - using react-highlight 
 
 1. npm install
 2. npm run build
