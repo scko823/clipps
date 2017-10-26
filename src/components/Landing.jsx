@@ -1,6 +1,7 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import Template_clipboard from '../images/Template_clipboard.png';
 import { GridList, GridTile } from 'material-ui/GridList';
 import { browserHistory } from 'react-router';
 import { green500 } from 'material-ui/styles/colors';
@@ -48,7 +49,7 @@ class Landing extends React.Component {
 					/>
 				</GridTile>
 				<GridTile>
-					<img src="src/images/Template_clipboard.png" height="60" width="60" />
+					<img src={Template_clipboard} height="60" width="60" />
 				</GridTile>
 			</GridList>
 		);
