@@ -1,14 +1,14 @@
 import React from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
-import Template_clipboard from '../images/Template_clipboard.png';
+import clip from '../images/clip.png';
 import { GridList, GridTile } from 'material-ui/GridList';
 import { browserHistory } from 'react-router';
-import { green500 } from 'material-ui/styles/colors';
+import { teal400 } from 'material-ui/styles/colors';
 
 const styles = {
 	floatingLabelFocusStyle: {
-		color: green500
+		color: teal400
 	}
 };
 
@@ -19,7 +19,7 @@ class Landing extends React.Component {
 	handleEnterClipboard = () => {
 		browserHistory.push({
 			pathname: '/clipboard/99',
-			query: { name: this.state.name }
+			query: { name: this.state.name, new: true }
 		});
 	};
 
@@ -34,6 +34,9 @@ class Landing extends React.Component {
 		return (
 			<GridList className="landing">
 				<GridTile>
+					<img src={clip} height="90" width="90" />
+				</GridTile>
+				<GridTile>
 					<TextField
 						floatingLabelText="Clipboard Name"
 						floatingLabelStyle={styles.floatingLabelStyle}
@@ -47,9 +50,6 @@ class Landing extends React.Component {
 						primary={true}
 						onClick={this.handleEnterClipboard}
 					/>
-				</GridTile>
-				<GridTile>
-					<img src={Template_clipboard} height="60" width="60" />
 				</GridTile>
 			</GridList>
 		);

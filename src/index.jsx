@@ -7,14 +7,14 @@ import App from './components/App';
 import Landing from './components/Landing';
 import Clipboard from './components/Clipboard';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import { green500 } from 'material-ui/styles/colors';
+import { teal400 } from 'material-ui/styles/colors';
 
 import store from './stores/Store';
 import './styles/main.scss';
 
 const muiTheme = getMuiTheme({
 	palette: {
-		primary1Color: green500
+		primary1Color: teal400
 	},
 	appBar: {
 		height: 50

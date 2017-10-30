@@ -12,14 +12,14 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
 
-	entry: ['webpack-hot-middleware/client', 'react-hot-loader/patch', './index.jsx'],
+	// entry: ['webpack-hot-middleware/client', 'react-hot-loader/patch', './index.jsx'],
 
-	// entry: [
-	// 	'webpack-dev-server/client?http://localhost:8080',
-	// 	'webpack/hot/only-dev-server',
-	// 	'babel-polyfill',
-	// 	'./index.jsx'
-	// ],
+	entry: [
+		'webpack-dev-server/client?http://localhost:9090',
+		'webpack/hot/only-dev-server',
+		'babel-polyfill',
+		'./index.jsx'
+	],
 
 	output: {
 		path: path.resolve(__dirname, 'dist'),

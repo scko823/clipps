@@ -29,7 +29,7 @@ class App extends React.Component {
 		clipboards: [],
 		boardDetails: {},
 		boardLoading: true,
-		new: true
+		newClip: false
 	};
 
 	openDialog = type => {
@@ -45,30 +45,37 @@ class App extends React.Component {
 
 	componentWillMount() {
 		var clipName = this.props.location.query.name;
+		var newClip = this.props.location.query.new;
 		this.setState({
-			name: clipName
+			name: clipName,
+			newClip: newClip
 		});
 	}
 
 	componentDidMount() {
-		axios.get(`http://localhost:8080/clipboard`).then(res => {
+		this.fetchClipBoards();
+	}
+	toggleDrawer = () => this.setState({ open: true });
+	handleClose = () => this.setState({ open: false });
+
+	fetchClipBoards = () => {
+		return axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
+			debugger;
 			this.setState({
 				clipboardLoading: false,
 				clipboards: res.data
 			});
 		});
-	}
-	toggleDrawer = () => this.setState({ open: true });
-	handleClose = () => this.setState({ open: false });
+	};
 
 	fetchClipBoard = board => {
 		browserHistory.push(`/clipboard/${board.id}`);
-		axios.get(`http://localhost:8080/clipboard/${board.id}`).then(res => {
+		axios.get(`http://localhost:8080/api/v1/clipboard/${board.id}`).then(res => {
 			this.setState({
 				boardDetails: res.data,
 				open: false,
 				boardLoading: false,
-				new: false
+				newClip: false
 			});
 		});
 	};
@@ -94,7 +101,7 @@ class App extends React.Component {
 
 	handlePost = body => {
 		const { boardLoading, boardDetails } = this.state;
-		return axios.post(`http://localhost:8080/clipboard/${boardDetails.id}/clip`, body, {
+		return axios.post(`http://localhost:8080/api/v1/clipboard/${boardDetails.id}/clip`, body, {
 			headers: {
 				'Content-Type': 'application/json'
 			}
@@ -103,22 +110,65 @@ class App extends React.Component {
 
 	handleGet = () => {
 		const { boardLoading, boardDetails } = this.state;
-		return axios.get(`http://localhost:8080/clipboard/${boardDetails.id}`).then(response => {
-			this.setState(() => ({
-				boardDetails: response.data
-			}));
+		return axios
+			.get(`http://localhost:8080/api/v1/clipboard/${boardDetails.id}`)
+			.then(response => {
+				this.setState(() => ({
+					boardDetails: response.data
+				}));
+			});
+	};
+
+	handlePostClipBoard = body => {
+		const { name } = this.state;
+		debugger;
+
+		const formBody = {
+			name: name,
+			clips: [body]
+		};
+
+		debugger;
+
+		return axios.post(`http://localhost:8080/api/v1/clipboard`, formBody, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
 		});
 	};
 
 	handleCreateBoard = body => {
-		axios.all([this.handlePost(body), this.handleGet()]).then(
-			axios.spread(resp => {
-				this.setState({
-					boardDetails: resp.data,
-					boardLoading: false
-				});
-			})
-		);
+		const { newClip } = this.state;
+
+		if (newClip) {
+			axios.all([this.handlePostClipBoard(body)]).then(
+				axios.spread(resp => {
+					debugger;
+					this.setState(
+						() => ({
+							boardDetails: resp.data,
+							boardLoading: false,
+							newClip: false
+						}),
+						() => {
+							// will have to do this since the clipboard tries to fetch the clipboard even before the request is handled for post
+							// FYI: if you find a better way please go ahead and fix
+							browserHistory.push(`/clipboards/${resp.data.id}`);
+							this.fetchClipBoards();
+						}
+					);
+				})
+			);
+		} else {
+			axios.all([this.handlePost(body), this.handleGet()]).then(
+				axios.spread(resp => {
+					this.setState({
+						boardDetails: resp.data,
+						boardLoading: false
+					});
+				})
+			);
+		}
 
 		this.closeDialog();
 	};

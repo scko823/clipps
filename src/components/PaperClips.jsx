@@ -13,7 +13,7 @@ class PaperClips extends React.Component {
 	render() {
 		const { boardLoading, boardDetails } = this.props;
 		return (
-			<div style={{ height: '100vh' }}>
+			<div style={{ height: '100%' }}>
 				{boardLoading && <h3 style={{ textAlign: 'center' }}>Sample Clipboard</h3>}
 				{!boardLoading
 					? this.renderPapers(boardDetails.clips)
