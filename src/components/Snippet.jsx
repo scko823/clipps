@@ -7,7 +7,10 @@ const style = {
 	margin: 20,
 	textAlign: 'center',
 	display: 'inline-block',
-	verticalAlign: 'top'
+	verticalAlign: 'top',
+	icon: {
+		color: '#27bc9c'
+	}
 };
 
 class Snippet extends React.Component {
@@ -30,7 +33,7 @@ class Snippet extends React.Component {
 			<Paper style={style} zDepth={3}>
 				<div style={{ display: 'flex' }}>
 					<Subheader style={{ textAlign: 'left' }}>{clip.name}</Subheader>
-					<IconButton onClick={this.onClick} tooltip="Copy">
+					<IconButton onClick={this.onClick} tooltip="Copy" style={style.icon}>
 						<i className="material-icons md-18">content_copy</i>
 					</IconButton>
 				</div>

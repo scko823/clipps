@@ -8,7 +8,7 @@ import { teal400 } from 'material-ui/styles/colors';
 
 const styles = {
 	floatingLabelFocusStyle: {
-		color: teal400
+		color: '#27bc9c'
 	}
 };
 

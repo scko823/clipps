@@ -10,7 +10,7 @@ import { grey600, teal300, green500 } from 'material-ui/styles/colors';
 
 const style = {
 	menuStyle: {
-		color: green500
+		color: '#27bc9c'
 	},
 	avatar: {
 		top: '4px'
@@ -60,7 +60,6 @@ class App extends React.Component {
 
 	fetchClipBoards = () => {
 		return axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
-			debugger;
 			this.setState({
 				clipboardLoading: false,
 				clipboards: res.data
@@ -121,14 +120,11 @@ class App extends React.Component {
 
 	handlePostClipBoard = body => {
 		const { name } = this.state;
-		debugger;
 
 		const formBody = {
 			name: name,
 			clips: [body]
 		};
-
-		debugger;
 
 		return axios.post(`http://localhost:8080/api/v1/clipboard`, formBody, {
 			headers: {

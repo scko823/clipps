@@ -14,7 +14,7 @@ import './styles/main.scss';
 
 const muiTheme = getMuiTheme({
 	palette: {
-		primary1Color: teal400
+		primary1Color: '#27bc9c'
 	},
 	appBar: {
 		height: 50
