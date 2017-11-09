@@ -9,6 +9,16 @@ import Clipboard from './components/Clipboard';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import { teal400 } from 'material-ui/styles/colors';
 
+import { ApolloProvider } from 'react-apollo';
+import { ApolloClient } from 'apollo-client';
+import { HttpLink } from 'apollo-link-http';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+
+const client = new ApolloClient({
+	link: new HttpLink({ uri: 'https://api.example.com/graphql' }),
+	cache: new InMemoryCache()
+});
+
 import store from './stores/Store';
 import './styles/main.scss';
 
@@ -22,14 +32,16 @@ const muiTheme = getMuiTheme({
 });
 
 ReactDOM.render(
-	<Provider store={store}>
-		<MuiThemeProvider muiTheme={muiTheme}>
-			<Router history={browserHistory}>
-				<Route path="/" component={Landing} />
-				<Route path="/clipboard/:id" component={App} />
-			</Router>
-		</MuiThemeProvider>
-	</Provider>,
+	<ApolloProvider client={client}>
+		<Provider store={store}>
+			<MuiThemeProvider muiTheme={muiTheme}>
+				<Router history={browserHistory}>
+					<Route path="/" component={Landing} />
+					<Route path="/clipboard/:id" component={App} />
+				</Router>
+			</MuiThemeProvider>
+		</Provider>
+	</ApolloProvider>,
 	document.getElementById('root')
 );
 
