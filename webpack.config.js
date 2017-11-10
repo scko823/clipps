@@ -1,25 +1,20 @@
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 	template: './index.html',
 	filename: 'index.html',
 	inject: 'body'
-});
+})
 
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
 
 	// entry: ['webpack-hot-middleware/client', 'react-hot-loader/patch', './index.jsx'],
 
-	entry: [
-		'webpack-dev-server/client?http://localhost:9090',
-		'webpack/hot/only-dev-server',
-		'babel-polyfill',
-		'./index.jsx'
-	],
+	entry: ['babel-polyfill', './index.jsx'],
 
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -75,7 +70,6 @@ module.exports = {
 		]
 	},
 	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
 		new ExtractTextPlugin({
 			filename: 'css/[name].styles.css',
 			allChunks: false
@@ -83,8 +77,16 @@ module.exports = {
 		new webpack.NoEmitOnErrorsPlugin(),
 		new HtmlWebpackPlugin({
 			template: 'index.ejs'
-		})
+		}),
+		new webpack.NamedModulesPlugin(),
+		new webpack.HotModuleReplacementPlugin()
 	],
 
+	devServer: {
+		contentBase: path.join(__dirname, 'dist'),
+		compress: true,
+		port: 9000
+	},
+
 	devtool: 'eval'
-};
+}
