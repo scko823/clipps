@@ -1,20 +1,17 @@
 import React from 'react'
-import { browserHistory } from 'react-router'
 import {
 	AppBar,
 	Drawer,
 	MenuItem,
 	Divider,
-	Avatar,
-	ListItem,
+	// Avatar,
+	// ListItem,
 	CircularProgress,
 } from 'material-ui'
-import Clipboard from './Clipboard'
-import PaperDialog from './PaperDialog'
-import PaperClips from './PaperClips'
-import { startCase } from 'lodash'
-import axios from 'axios'
-import { grey600, teal300, green500 } from 'material-ui/styles/colors'
+// import Clipboard from './Clipboard'
+// import PaperDialog from './PaperDialog'
+// import PaperClips from './PaperClips'
+// import { grey600, teal300, green500 } from 'material-ui/styles/colors'
 
 const style = {
 	menuStyle: {
@@ -30,62 +27,62 @@ const style = {
 
 class App extends React.Component {
 	state = {
-		openDialog: false,
-		name: '',
 		open: false,
-		clipboardLoading: true,
-		clipboards: [],
-		boardDetails: {},
-		boardLoading: true,
-		newClip: false,
+		// openDialog: false,
+		// name: '',
+		// clipboardLoading: true,
+		// clipboards: [],
+		// boardDetails: {},
+		// boardLoading: true,
+		// newClip: false,
 	}
 
-	openDialog = type => {
-		this.setState({
-			openDialog: true,
-		})
-	}
-	closeDialog = () => {
-		this.setState({
-			openDialog: false,
-		})
-	}
+	// openDialog = type => {
+	// 	this.setState({
+	// 		openDialog: true,
+	// 	})
+	// }
+	// closeDialog = () => {
+	// 	this.setState({
+	// 		openDialog: false,
+	// 	})
+	// }
 
-	componentWillMount() {
-		const newClipboardName = this.props.location.state.name
-		this.setState({
-			name: newClipboardName,
-			newClip: true,
-		})
-	}
+	// componentWillMount() {
+	// 	const newClipboardName = this.props.location.state.name
+	// 	this.setState({
+	// 		name: newClipboardName,
+	// 		newClip: true,
+	// 	})
+	// }
 
-	componentDidMount() {
-		this.fetchClipBoards()
-	}
-	toggleDrawer = () => this.setState({ open: true })
-	handleClose = () => this.setState({ open: false })
+	// componentDidMount() {
+	// 	this.fetchClipBoards()
+	// }
+	// toggleDrawer = () => this.setState({ open: true })
+	// handleClose = () => this.setState({ open: false })
 
-	fetchClipBoards = () =>
-		axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
-			this.setState({
-				clipboardLoading: false,
-				clipboards: res.data,
-			})
-		})
+	// fetchClipBoards = () =>
+	// 	axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
+	// 		this.setState({
+	// 			clipboardLoading: false,
+	// 			clipboards: res.data,
+	// 		})
+	// 	})
 
-	fetchClipBoard = board => {
-		browserHistory.push(`/clipboard/${board.id}`)
-		axios
-			.get(`http://localhost:8080/api/v1/clipboard/${board.id}`)
-			.then(res => {
-				this.setState({
-					boardDetails: res.data,
-					open: false,
-					boardLoading: false,
-					newClip: false,
-				})
-			})
-	}
+	// fetchClipBoard = board => {
+	// 	browserHistory.push(`/clipboard/${board.id}`)
+	// 	axios
+	// 		.get(`http://localhost:8080/api/v1/clipboard/${board.id}`)
+	// 		.then(res => {
+	// 			this.setState({
+	// 				boardDetails: res.data,
+	// 				open: false,
+	// 				boardLoading: false,
+	// 				newClip: false,
+	// 			})
+	// 		})
+	// }
 
 	// 	getAvatar = () => {
 	// 		const { boardLoading, boardDetails } = this.state
@@ -152,60 +149,58 @@ class App extends React.Component {
 	// 	})
 	// }
 
-	handleCreateBoard = body => {
-		const { newClip } = this.state
+	// handleCreateBoard = body => {
+	// 	const { newClip } = this.state
 
-		if (newClip) {
-			axios.all([this.handlePostClipBoard(body)]).then(
-				axios.spread(resp => {
-					this.setState(
-						() => ({
-							boardDetails: resp.data,
-							boardLoading: false,
-							newClip: false,
-						}),
-						() => {
-							// will have to do this since the clipboard tries to fetch the clipboard even before the request is handled for post
-							// FYI: if you find a better way please go ahead and fix
-							browserHistory.push(`/clipboards/${resp.data.id}`)
-							this.fetchClipBoards()
-						},
-					)
-				}),
-			)
-		} else {
-			axios.all([this.handlePost(body), this.handleGet()]).then(
-				axios.spread(resp => {
-					this.setState({
-						boardDetails: resp.data,
-						boardLoading: false,
-					})
-				}),
-			)
-		}
+	// 	if (newClip) {
+	// 		axios.all([this.handlePostClipBoard(body)]).then(
+	// 			axios.spread(resp => {
+	// 				this.setState(
+	// 					() => ({
+	// 						boardDetails: resp.data,
+	// 						boardLoading: false,
+	// 						newClip: false,
+	// 					}),
+	// 					() => {
+	// 						// will have to do this since the clipboard tries to fetch the clipboard even before the request is handled for post
+	// 						// FYI: if you find a better way please go ahead and fix
+	// 						browserHistory.push(`/clipboards/${resp.data.id}`)
+	// 						this.fetchClipBoards()
+	// 					},
+	// 				)
+	// 			}),
+	// 		)
+	// 	} else {
+	// 		axios.all([this.handlePost(body), this.handleGet()]).then(
+	// 			axios.spread(resp => {
+	// 				this.setState({
+	// 					boardDetails: resp.data,
+	// 					boardLoading: false,
+	// 				})
+	// 			}),
+	// 		)
+	// 	}
 
-		this.closeDialog()
-	}
+	// 	this.closeDialog()
+	// }
 
 	render() {
 		return (
   <div id="clipboard">
-    <AppBar
-      onLeftIconButtonTouchTap={this.toggleDrawer}
-      iconElementRight={this.getAvatar()}
-    />
-    <Clipboard openDialog={this.openDialog} />
+    <AppBar onLeftIconButtonTouchTap={this.toggleDrawer} />
+    {/* iconElementRight={this.getAvatar()} */}
+    {/* <Clipboard openDialog={this.openDialog} />
     <PaperClips
       boardLoading={this.state.boardLoading}
       boardDetails={this.state.boardDetails}
-    />
-    {this.state.openDialog && (
+    /> */}
+    {/* this.state.openDialog && (
     <PaperDialog
       open={this.state.openDialog}
       handleClose={this.closeDialog}
       handleCreateBoard={this.handleCreateBoard}
     />
-				)}
+				) */}
 
     <Drawer
       docked={false}
@@ -216,7 +211,7 @@ class App extends React.Component {
     >
       <h3>Clipboards</h3>
       <Divider />
-      {this.state.clipboardLoading ? (
+      {/* {this.state.clipboardLoading ? (
         <CircularProgress size={60} thickness={7} />
 					) : (
 						this.state.clipboards.map(board => (
@@ -229,7 +224,7 @@ class App extends React.Component {
     {board.name}
   </MenuItem>
 						))
-					)}
+					)} */}
     </Drawer>
   </div>
 		)
