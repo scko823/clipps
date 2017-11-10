@@ -5,6 +5,7 @@ import clip from '../images/clip.png'
 import { GridList, GridTile } from 'material-ui/GridList'
 import { browserHistory } from 'react-router'
 import { teal400 } from 'material-ui/styles/colors'
+import { withRouter } from 'react-router-dom'
 
 const styles = {
 	floatingLabelFocusStyle: {
@@ -17,10 +18,7 @@ class Landing extends React.Component {
 		name: ''
 	}
 	handleEnterClipboard = () => {
-		browserHistory.push({
-			pathname: '/clipboard/99',
-			query: { name: this.state.name, new: true }
-		})
+		this.props.history.push(`/clipboard/new`, { name: this.state.name })
 	}
 
 	handleNameChange = e => {
@@ -46,9 +44,10 @@ class Landing extends React.Component {
 					<br />
 					<br />
 					<RaisedButton
-						label="Enter Clipboard"
+						label="Create Clipboard"
 						primary={true}
 						onClick={this.handleEnterClipboard}
+						disabled={!this.state.name}
 					/>
 				</GridTile>
 			</GridList>
@@ -56,4 +55,4 @@ class Landing extends React.Component {
 	}
 }
 
-export default Landing
+export default withRouter(Landing)

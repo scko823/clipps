@@ -1,24 +1,32 @@
-import React from 'react';
-import { browserHistory } from 'react-router';
-import { AppBar, Drawer, MenuItem, Divider, Avatar, ListItem, CircularProgress } from 'material-ui';
-import Clipboard from './Clipboard';
-import PaperDialog from './PaperDialog';
-import PaperClips from './PaperClips';
-import { startCase } from 'lodash';
-import axios from 'axios';
-import { grey600, teal300, green500 } from 'material-ui/styles/colors';
+import React from 'react'
+import { browserHistory } from 'react-router'
+import {
+	AppBar,
+	Drawer,
+	MenuItem,
+	Divider,
+	Avatar,
+	ListItem,
+	CircularProgress,
+} from 'material-ui'
+import Clipboard from './Clipboard'
+import PaperDialog from './PaperDialog'
+import PaperClips from './PaperClips'
+import { startCase } from 'lodash'
+import axios from 'axios'
+import { grey600, teal300, green500 } from 'material-ui/styles/colors'
 
 const style = {
 	menuStyle: {
-		color: '#27bc9c'
+		color: '#27bc9c',
 	},
 	avatar: {
-		top: '4px'
+		top: '4px',
 	},
 	login: {
-		color: 'white'
-	}
-};
+		color: 'white',
+	},
+}
 
 class App extends React.Component {
 	state = {
@@ -29,195 +37,203 @@ class App extends React.Component {
 		clipboards: [],
 		boardDetails: {},
 		boardLoading: true,
-		newClip: false
-	};
+		newClip: false,
+	}
 
 	openDialog = type => {
 		this.setState({
-			openDialog: true
-		});
-	};
+			openDialog: true,
+		})
+	}
 	closeDialog = () => {
 		this.setState({
-			openDialog: false
-		});
-	};
+			openDialog: false,
+		})
+	}
 
 	componentWillMount() {
-		var clipName = this.props.location.query.name;
-		var newClip = this.props.location.query.new;
+		const newClipboardName = this.props.location.state.name
 		this.setState({
-			name: clipName,
-			newClip: newClip
-		});
+			name: newClipboardName,
+			newClip: true,
+		})
 	}
 
 	componentDidMount() {
-		this.fetchClipBoards();
+		this.fetchClipBoards()
 	}
-	toggleDrawer = () => this.setState({ open: true });
-	handleClose = () => this.setState({ open: false });
+	toggleDrawer = () => this.setState({ open: true })
+	handleClose = () => this.setState({ open: false })
 
-	fetchClipBoards = () => {
-		return axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
+	fetchClipBoards = () =>
+		axios.get(`http://localhost:8080/api/v1/clipboard`).then(res => {
 			this.setState({
 				clipboardLoading: false,
-				clipboards: res.data
-			});
-		});
-	};
+				clipboards: res.data,
+			})
+		})
 
 	fetchClipBoard = board => {
-		browserHistory.push(`/clipboard/${board.id}`);
-		axios.get(`http://localhost:8080/api/v1/clipboard/${board.id}`).then(res => {
-			this.setState({
-				boardDetails: res.data,
-				open: false,
-				boardLoading: false,
-				newClip: false
-			});
-		});
-	};
+		browserHistory.push(`/clipboard/${board.id}`)
+		axios
+			.get(`http://localhost:8080/api/v1/clipboard/${board.id}`)
+			.then(res => {
+				this.setState({
+					boardDetails: res.data,
+					open: false,
+					boardLoading: false,
+					newClip: false,
+				})
+			})
+	}
 
-	getAvatar = () => {
-		const { boardLoading, boardDetails } = this.state;
-		return (
-			<ListItem
-				disabled={true}
-				leftAvatar={
-					<Avatar color={teal300} backgroundColor="white" size={45} style={style.avatar}>
-						{!boardLoading
-							? boardDetails.name.substr(0, 1)
-							: startCase(this.props.location.query.name.substr(0, 1))}
-					</Avatar>
-				}
-				style={style.login}
-			>
-				{!boardLoading ? boardDetails.name : startCase(this.props.location.query.name)}
-			</ListItem>
-		);
-	};
+	// 	getAvatar = () => {
+	// 		const { boardLoading, boardDetails } = this.state
+	// 		return (
+	//   <ListItem
+	//     disabled
+	//     leftAvatar={
+	//       <Avatar
+	//         color={teal300}
+	//         backgroundColor="white"
+	//         size={45}
+	//         style={style.avatar}
+	//       >
+	//         {!boardLoading
+	// 							? boardDetails.name.substr(0, 1)
+	// 							: startCase(this.props.location.query.name.substr(0, 1))}
+	//       </Avatar>
+	// 				}
+	//     style={style.login}
+	//   >
+	//     {!boardLoading
+	// 					? boardDetails.name
+	// 					: startCase(this.props.location.query.name)}
+	//   </ListItem>
+	// 		)
+	// 	}
 
-	handlePost = body => {
-		const { boardLoading, boardDetails } = this.state;
-		return axios.post(`http://localhost:8080/api/v1/clipboard/${boardDetails.id}/clip`, body, {
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-	};
+	// handlePost = body => {
+	// 	const { boardLoading, boardDetails } = this.state
+	// 	return axios.post(
+	// 		`http://localhost:8080/api/v1/clipboard/${boardDetails.id}/clip`,
+	// 		body,
+	// 		{
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 			},
+	// 		},
+	// 	)
+	// }
 
-	handleGet = () => {
-		const { boardLoading, boardDetails } = this.state;
-		return axios
-			.get(`http://localhost:8080/api/v1/clipboard/${boardDetails.id}`)
-			.then(response => {
-				this.setState(() => ({
-					boardDetails: response.data
-				}));
-			});
-	};
+	// handleGet = () => {
+	// 	const { boardLoading, boardDetails } = this.state
+	// 	return axios
+	// 		.get(`http://localhost:8080/api/v1/clipboard/${boardDetails.id}`)
+	// 		.then(response => {
+	// 			this.setState(() => ({
+	// 				boardDetails: response.data,
+	// 			}))
+	// 		})
+	// }
 
-	handlePostClipBoard = body => {
-		const { name } = this.state;
+	// handlePostClipBoard = body => {
+	// 	const { name } = this.state
 
-		const formBody = {
-			name: name,
-			clips: [body]
-		};
+	// 	const formBody = {
+	// 		name,
+	// 		clips: [body],
+	// 	}
 
-		return axios.post(`http://localhost:8080/api/v1/clipboard`, formBody, {
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		});
-	};
+	// 	return axios.post(`http://localhost:8080/api/v1/clipboard`, formBody, {
+	// 		headers: {
+	// 			'Content-Type': 'application/json',
+	// 		},
+	// 	})
+	// }
 
 	handleCreateBoard = body => {
-		const { newClip } = this.state;
+		const { newClip } = this.state
 
 		if (newClip) {
 			axios.all([this.handlePostClipBoard(body)]).then(
 				axios.spread(resp => {
-					debugger;
 					this.setState(
 						() => ({
 							boardDetails: resp.data,
 							boardLoading: false,
-							newClip: false
+							newClip: false,
 						}),
 						() => {
 							// will have to do this since the clipboard tries to fetch the clipboard even before the request is handled for post
 							// FYI: if you find a better way please go ahead and fix
-							browserHistory.push(`/clipboards/${resp.data.id}`);
-							this.fetchClipBoards();
-						}
-					);
-				})
-			);
+							browserHistory.push(`/clipboards/${resp.data.id}`)
+							this.fetchClipBoards()
+						},
+					)
+				}),
+			)
 		} else {
 			axios.all([this.handlePost(body), this.handleGet()]).then(
 				axios.spread(resp => {
 					this.setState({
 						boardDetails: resp.data,
-						boardLoading: false
-					});
-				})
-			);
+						boardLoading: false,
+					})
+				}),
+			)
 		}
 
-		this.closeDialog();
-	};
+		this.closeDialog()
+	}
 
 	render() {
 		return (
-			<div id="clipboard">
-				<AppBar
-					onLeftIconButtonTouchTap={this.toggleDrawer}
-					iconElementRight={this.getAvatar()}
-				/>
-				<Clipboard openDialog={this.openDialog} />
-				<PaperClips
-					boardLoading={this.state.boardLoading}
-					boardDetails={this.state.boardDetails}
-				/>
-				{this.state.openDialog && (
-					<PaperDialog
-						open={this.state.openDialog}
-						handleClose={this.closeDialog}
-						handleCreateBoard={this.handleCreateBoard}
-					/>
+  <div id="clipboard">
+    <AppBar
+      onLeftIconButtonTouchTap={this.toggleDrawer}
+      iconElementRight={this.getAvatar()}
+    />
+    <Clipboard openDialog={this.openDialog} />
+    <PaperClips
+      boardLoading={this.state.boardLoading}
+      boardDetails={this.state.boardDetails}
+    />
+    {this.state.openDialog && (
+    <PaperDialog
+      open={this.state.openDialog}
+      handleClose={this.closeDialog}
+      handleCreateBoard={this.handleCreateBoard}
+    />
 				)}
 
-				<Drawer
-					docked={false}
-					width={200}
-					open={this.state.open}
-					onRequestChange={open => this.setState({ open })}
-					className="drawer"
-				>
-					<h3>Clipboards</h3>
-					<Divider />
-					{this.state.clipboardLoading ? (
-						<CircularProgress size={60} thickness={7} />
+    <Drawer
+      docked={false}
+      width={200}
+      open={this.state.open}
+      onRequestChange={open => this.setState({ open })}
+      className="drawer"
+    >
+      <h3>Clipboards</h3>
+      <Divider />
+      {this.state.clipboardLoading ? (
+        <CircularProgress size={60} thickness={7} />
 					) : (
-						this.state.clipboards.map(board => {
-							return (
-								<MenuItem
-									onClick={() => {
-										this.fetchClipBoard(board);
-									}}
-									style={style.menuStyle}
-								>
-									{board.name}
-								</MenuItem>
-							);
-						})
+						this.state.clipboards.map(board => (
+  <MenuItem
+    onClick={() => {
+									this.fetchClipBoard(board)
+								}}
+    style={style.menuStyle}
+  >
+    {board.name}
+  </MenuItem>
+						))
 					)}
-				</Drawer>
-			</div>
-		);
+    </Drawer>
+  </div>
+		)
 	}
 }
 
-export default App;
+export default App
