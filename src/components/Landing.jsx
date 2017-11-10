@@ -6,9 +6,20 @@ import Grid from 'material-ui/Grid';
 import { GridList, GridListTile } from 'material-ui/GridList';
 import { withRouter } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
+import {
+	FormLabel,
+	FormControl,
+	FormGroup,
+	FormControlLabel,
+	FormHelperText,
+} from 'material-ui/Form';
 import clip from '../images/clip.png';
 
 const styles = {
+	root: {
+		flexGrow: 1,
+		marign: 'auto 0',
+	},
 	floatingLabelFocusStyle: {
 		color: '#27bc9c',
 	},
@@ -36,49 +47,27 @@ class Landing extends React.Component {
 		return (
   <Grid container>
     <Grid item xs={12}>
-      <GridList cellHeight="auto" cols={2} className="landing">
-        <GridListTile cols={1} rows={1}>
+      <Grid container spacing="40" justify="center">
+        <div>
           <img alt="logo" src={clip} height="90" width="90" />
-        </GridListTile>
-      </GridList>
+        </div>
+        <FormGroup>
+          <TextField label="Clipboard Name" onChange={this.handleNameChange} />
+          <br />
+          <Button
+            label="Create Clipboard"
+            color="primary"
+            raised
+            onClick={this.handleEnterClipboard}
+            disabled={!this.state.name}
+          >
+								Create
+          </Button>
+        </FormGroup>
+      </Grid>
     </Grid>
-    <GridListTile cols={1} rows={1}>
-      <Button
-        style={{ position: 'absolute', bottom: 0, right: 0 }}
-        raisedprimary
-        color="primary"
-        disabled={!this.state.name}
-        className="button"
-      >
-						Submit
-      </Button>
-    </GridListTile>
   </Grid>
 		);
-		// 		return (
-		//   <GridList className="landing">
-		//     <GridTile>
-		//       <img alt="logo" src={clip} height="90" width="90" />
-		//     </GridTile>
-		//     <GridTile>
-		//       <TextField
-		//         floatingLabelText="Clipboard Name"
-		//         floatingLabelStyle={styles.floatingLabelStyle}
-		//         floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-		//         onChange={this.handleNameChange}
-		//       />
-		//       <br />
-		//       <br />
-		//       <Button
-		//         label="Create Clipboard"
-		//         primary
-		//         raised
-		//         onClick={this.handleEnterClipboard}
-		//         disabled={!this.state.name}
-		//       />
-		//     </GridTile>
-		//   </GridList>
-		// );
 	}
 }
 
