@@ -1,13 +1,13 @@
-const webpack = require('webpack')
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
 	template: './index.html',
 	filename: 'index.html',
-	inject: 'body'
-})
+	inject: 'body',
+});
 
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
@@ -18,10 +18,10 @@ module.exports = {
 
 	output: {
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'index.js'
+		filename: 'index.js',
 	},
 	resolve: {
-		extensions: ['.js', '.json', '.jsx']
+		extensions: ['.js', '.json', '.jsx'],
 	},
 
 	module: {
@@ -30,10 +30,10 @@ module.exports = {
 			{
 				test: /\.jsx?$/,
 				use: {
-					loader: 'babel-loader'
+					loader: 'babel-loader',
 				},
 				exclude: '/node_modules/',
-				include: [path.join(__dirname, 'src')]
+				include: [path.join(__dirname, 'src')],
 			},
 			// Chained SASS Loader
 			{
@@ -43,19 +43,19 @@ module.exports = {
 						{
 							loader: 'css-loader',
 							options: {
-								importLoaders: 1
-							}
+								importLoaders: 1,
+							},
 						},
-						'sass-loader'
-					]
-				})
+						'sass-loader',
+					],
+				}),
 			},
 			// Chained CSS Loader
 			{
 				test: /\.css$/,
 				use: ExtractTextPlugin.extract({
-					use: ['css-loader']
-				})
+					use: ['css-loader'],
+				}),
 			},
 			// Images
 			{
@@ -63,23 +63,23 @@ module.exports = {
 				use: {
 					loader: 'file-loader',
 					options: {
-						limit: 8192
-					}
-				}
-			}
-		]
+						limit: 8192,
+					},
+				},
+			},
+		],
 	},
 	plugins: [
 		new ExtractTextPlugin({
 			filename: 'css/[name].styles.css',
-			allChunks: false
+			allChunks: false,
 		}),
 		new webpack.NoEmitOnErrorsPlugin(),
 		new HtmlWebpackPlugin({
-			template: 'index.ejs'
+			template: 'index.ejs',
 		}),
 		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin()
+		new webpack.HotModuleReplacementPlugin(),
 	],
 
 	devServer: {
@@ -87,8 +87,8 @@ module.exports = {
 		compress: true,
 		hot: true,
 		port: 9000,
-		historyApiFallback: true
+		historyApiFallback: true,
 	},
 
-	devtool: 'eval'
-}
+	devtool: 'cheap-module-source-ma',
+};

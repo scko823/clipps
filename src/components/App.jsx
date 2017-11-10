@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
 	AppBar,
 	Drawer,
@@ -7,7 +7,7 @@ import {
 	// Avatar,
 	// ListItem,
 	CircularProgress,
-} from 'material-ui'
+} from 'material-ui';
 // import Clipboard from './Clipboard'
 // import PaperDialog from './PaperDialog'
 // import PaperClips from './PaperClips'
@@ -23,7 +23,7 @@ const style = {
 	login: {
 		color: 'white',
 	},
-}
+};
 
 class App extends React.Component {
 	state = {
@@ -35,7 +35,7 @@ class App extends React.Component {
 		// boardDetails: {},
 		// boardLoading: true,
 		// newClip: false,
-	}
+	};
 
 	// openDialog = type => {
 	// 	this.setState({
@@ -227,8 +227,8 @@ class App extends React.Component {
 					)} */}
     </Drawer>
   </div>
-		)
+		);
 	}
 }
 
-export default App
+export default App;
