@@ -49,7 +49,7 @@ class ClipboardAppBar extends React.Component {
         >
           <MenuIcon />
         </IconButton>
-        <Typography type="title" color="inherit">
+        <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
 							ClipBoards
         </Typography>
         <Button color="contrast">Login</Button>

@@ -5,6 +5,7 @@ import ListSubheader from 'material-ui/List/ListSubheader'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import { withStyles } from 'material-ui/styles'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
+import CachedIcon from 'material-ui-icons/Cached'
 
 const styles = theme => ({
 	root: {
@@ -14,7 +15,12 @@ const styles = theme => ({
 		background: theme.palette.background.paper,
 	},
 	subheader: {
-		fontWeight: 'bold',
+		padding: '0 0',
+	},
+	refetchIcon: {
+		'&:hover': {
+			cursor: 'pointer',
+		},
 	},
 	nested: {
 		paddingLeft: theme.spacing.unit * 4,
@@ -23,7 +29,19 @@ const styles = theme => ({
 
 const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 	const subheader = (
-  <ListSubheader className="whatever">Clipboards</ListSubheader>
+  <ListSubheader className={classes.subheader}>
+    <List>
+      <ListItem>
+        <ListItemText primary="Clipboards" />
+        <ListItemIcon
+          className={classes.refetchIcon}
+          onClick={() => refetch()}
+        >
+          <CachedIcon />
+        </ListItemIcon>
+      </ListItem>
+    </List>
+  </ListSubheader>
 	)
 	let listItems
 	if (loading) {
@@ -46,6 +64,8 @@ const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
 	classes: PropTypes.object,
+	loading: PropTypes.bool.isRequired,
+	refetch: PropTypes.func.isRequired,
 }
 
 DrawerList.defaultProps = {
