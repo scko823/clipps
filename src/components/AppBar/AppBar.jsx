@@ -19,15 +19,17 @@ import DrawerList from './DrawerList'
 
 class ClipboardAppBar extends React.Component {
 	propTypes = {
+		subscribeToClipboardsEvents: PropTypes.func,
 		children: PropTypes.node,
-		clipboards: {
-			loading: PropTypes.bool.isRequired,
-			allClipboard: PropTypes.arrayOf(PropTypes.object).isRequired,
-			refetch: PropTypes.func.isRequired,
-		},
+		loadingClipboards: PropTypes.bool.isRequired,
+		refetchClipboard: PropTypes.func.isRequired,
+		clipboards: PropTypes.arrayOf(PropTypes.object).isRequired,
 	}
 	state = {
 		showDrawer: false,
+	}
+	componentDidMount() {
+		this.props.subscribeToClipboardsEvents()
 	}
 	toggleDrawer = () => {
 		this.setState(({ showDrawer }) => ({
@@ -36,11 +38,7 @@ class ClipboardAppBar extends React.Component {
 	}
 
 	render() {
-		const {
-			loading: loadingClipboards,
-			allClipboards: clipboards,
-			refetch: refetchClipboard,
-		} = this.props.clipboards
+		const { loadingClipboards, clipboards, refetchClipboard } = this.props
 
 		return (
   <div id="clipboard">
@@ -81,16 +79,38 @@ const withAllClipboardsQuery = graphql(
   ${allClipboardsQuery}
 `,
 	{
-		name: 'clipboards',
+		props: ({
+			ownProps,
+			data: { loading, allClipboards, refetch, subscribeToMore },
+		}) => ({
+			loadingClipboards: loading,
+			clipboards: allClipboards,
+			refetchClipboard: refetch,
+			subscribeToClipboardsEvents: () => {
+				subscribeToMore({
+					document: gql`${clipboardsSubscription}`,
+					variables: {
+						mutationTypes: ['CREATED', 'UPDATED', 'DELETED'],
+					},
+					updateQuery: (prev, { subscriptionData }) => {
+						if (!subscriptionData.data) {
+							return prev
+						}
+						const newData = subscriptionData.data.Clipboard
+						debugger // eslint-disable-line
+					},
+				})
+			},
+		}),
 	},
 )
 
-const withClipboardsSubscription = graphql(
-	gql`
-	${clipboardsSubscription}
-`,
-)
+// const withClipboardsSubscription = graphql(
+// 	gql`
+// 	${clipboardsSubscription}
+// `,
+// )
 
-const enhancer = compose(withAllClipboardsQuery, withClipboardsSubscription)
+// const enhancer = compose(withAllClipboardsQuery)
 
-export default enhancer(ClipboardAppBar)
+export default withAllClipboardsQuery(ClipboardAppBar)

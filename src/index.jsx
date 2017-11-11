@@ -60,9 +60,10 @@ ReactDOM.render(
     <Provider store={store}>
       <Router>
         <MuiThemeProvider theme={theme}>
-          <AppBar />
-          <Route exact path="/" component={Landing} />
-          {/* <Route path="/clipboard/new" component={App} /> */}
+          <AppBar>
+            <Route exact path="/" component={Landing} />
+            {/* <Route path="/clipboard/new" component={App} /> */}
+          </AppBar>
         </MuiThemeProvider>
       </Router>
     </Provider>

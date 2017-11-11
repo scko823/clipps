@@ -1,6 +1,7 @@
-export default `subscription {
+export default `
+subscription subClipboard($mutationTypes: [_ModelMutationType!]! ) {
   Clipboard(filter: {
-    mutation_in: [CREATED, UPDATED, DELETED]
+    mutation_in: $mutationTypes
   }) {
     mutation
     updatedFields
