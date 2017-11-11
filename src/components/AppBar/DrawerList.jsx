@@ -17,20 +17,23 @@ const styles = theme => ({
 	},
 })
 
-const DrawerList = ({ clips, classes }) => (
+const DrawerList = ({ loading, clipboards, refetch, classes }) => (
   <List
     className={classes.root}
     subheader={<ListSubheader>Clipboards</ListSubheader>}
-  />
+  >
+    <Divider />
+    {loading ? <h6>loading</h6> : JSON.stringify(clipboards)}
+  </List>
 )
 
 DrawerList.propTypes = {
-	clips: PropTypes.array,
+	clipboards: PropTypes.arrayOf(PropTypes.object),
 	classes: PropTypes.object,
 }
 
 DrawerList.defaultProps = {
-	clips: [],
+	clipboards: [],
 	classes: {
 		root: {
 			width: '100%',

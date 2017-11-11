@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
@@ -14,6 +15,13 @@ import allClipboardsQuery from '../../../graphql/queries/allClipboards'
 import DrawerList from './DrawerList'
 
 class ClipboardAppBar extends React.Component {
+	propTypes = {
+		clipboards: {
+			loading: PropTypes.bool.isRequired,
+			allClipboard: PropTypes.arrayOf(PropTypes.object).isRequired,
+			refetch: PropTypes.func.isRequired,
+		},
+	}
 	state = {
 		showDrawer: false,
 	}
@@ -24,6 +32,12 @@ class ClipboardAppBar extends React.Component {
 	}
 
 	render() {
+		const {
+			loading: loadingClipboards,
+			allClipboards: clipboards,
+			refetch: refetchClipboard,
+		} = this.props.clipboards
+
 		return (
   <div id="clipboard">
     <MUIAppBar position="static">
@@ -46,13 +60,24 @@ class ClipboardAppBar extends React.Component {
       onRequestClose={this.toggleDrawer}
       className="drawer"
     >
-      <DrawerList />
+      <DrawerList
+        loading={loadingClipboards}
+        clipboards={clipboards}
+        refetch={refetchClipboard}
+      />
     </Drawer>
   </div>
 		)
 	}
 }
 
-const withAllClipboardsQuery = graphql(gql`${allClipboardsQuery}`)
+const withAllClipboardsQuery = graphql(
+	gql`
+  ${allClipboardsQuery}
+`,
+	{
+		name: 'clipboards',
+	},
+)
 
 export default withAllClipboardsQuery(ClipboardAppBar)
