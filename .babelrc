@@ -1,5 +1,17 @@
 {
-	"presets": ["es2015", "stage-0", "react", "flow"],
+	"presets": [
+		[
+			"env",
+			{
+				"modules": false,
+				"targets": {
+					"browsers": ["last 3 versions", "safari >= 7"]
+				}
+			}
+		],
+		"react",
+		"flow"
+	],
 	"plugins": [
 		"transform-decorators-legacy",
 		"transform-react-remove-prop-types"
