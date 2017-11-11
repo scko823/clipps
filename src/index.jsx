@@ -14,7 +14,7 @@ import { HttpLink } from 'apollo-link-http'
 import { getMainDefinition } from 'apollo-utilities'
 
 import AppBar from './components/AppBar/AppBar'
-import App from './components/App'
+// import App from './components/App'
 import Landing from './components/Landing'
 
 import store from './stores/Store'

@@ -10,7 +10,7 @@
 		"prebuild": "echo \"getting ready to build\" && rm -rf dist/",
 		"test": "echo \"Error: no test specified\" && exit 0",
 		"precommit": "npm run lint && npm run flow",
-		"lint": "eslint src/",
+		"lint": "eslint --ext .js --ext .jsx src/",
 		"flow": "flow"
 	},
 	"repository": {

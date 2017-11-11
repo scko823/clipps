@@ -19,6 +19,7 @@ import DrawerList from './DrawerList'
 
 class ClipboardAppBar extends React.Component {
 	propTypes = {
+		children: PropTypes.node,
 		clipboards: {
 			loading: PropTypes.bool.isRequired,
 			allClipboard: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -69,6 +70,7 @@ class ClipboardAppBar extends React.Component {
         refetch={refetchClipboard}
       />
     </Drawer>
+    {this.props.children}
   </div>
 		)
 	}
