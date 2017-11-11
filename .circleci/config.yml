@@ -24,7 +24,7 @@ jobs:
       - run: null
         name: Test
         command: npm test
-  workflow:
+  workflows:
     version: 2
     build_and_test:
       jobs:
