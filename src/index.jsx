@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { Route, Switch } from 'react-router';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -9,6 +10,7 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
+import AppBar from './components/AppBar';
 import App from './components/App';
 import Landing from './components/Landing';
 
@@ -33,14 +35,13 @@ const theme = createMuiTheme({
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Provider store={store}>
-      <MuiThemeProvider theme={theme}>
-        <Router>
-          <div>
-            <Route exact path="/" component={Landing} />
-            <Route exact path="/clipboard/new" component={App} />
-          </div>
-        </Router>
-      </MuiThemeProvider>
+      <Router>
+        <MuiThemeProvider theme={theme}>
+          <AppBar />
+          <Route exact path="/" component={Landing} />
+          {/* <Route path="/clipboard/new" component={App} /> */}
+        </MuiThemeProvider>
+      </Router>
     </Provider>
   </ApolloProvider>,
 	document.getElementById('root'), // eslint-disable-line

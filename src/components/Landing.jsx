@@ -47,7 +47,7 @@ class Landing extends React.Component {
 		return (
   <Grid container>
     <Grid item xs={12}>
-      <Grid container spacing="40" justify="center">
+      <Grid container spacing={40} justify="center">
         <div>
           <img alt="logo" src={clip} height="90" width="90" />
         </div>
