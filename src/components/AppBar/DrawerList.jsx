@@ -7,6 +7,12 @@ import { withStyles } from 'material-ui/styles'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
 import CachedIcon from 'material-ui-icons/Cached'
 
+import { compose } from 'recompose'
+
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import updateClipsMutation from '../../../graphql/mutations/updateClip'
+
 const styles = theme => ({
 	root: {
 		width: '100%',
@@ -27,7 +33,7 @@ const styles = theme => ({
 	},
 })
 
-const DrawerList = ({ loading, clipboards, refetch, classes }) => {
+const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
@@ -48,7 +54,18 @@ const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 		listItems = <DataUsageIcon />
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <ListItem key={clipboard.id} button>
+  <ListItem
+    key={clipboard.id}
+    onClick={() =>
+					mutate({
+						variables: {
+							id: clipboard.id,
+							name: `${Math.random().toFixed(4)}`,
+						},
+					})
+				}
+    button
+  >
     <ListItemText primary={clipboard.name} />
   </ListItem>
 		))
@@ -63,6 +80,7 @@ const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
+	mutate: PropTypes.func.isRequired,
 	classes: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
 	refetch: PropTypes.func.isRequired,
@@ -80,4 +98,8 @@ DrawerList.defaultProps = {
 	},
 }
 
-export default withStyles(styles)(DrawerList)
+const withUpdateClipsMutation = graphql(gql`${updateClipsMutation}`)
+
+const enchancer = compose(withStyles(styles), withUpdateClipsMutation)
+
+export default enchancer(DrawerList)

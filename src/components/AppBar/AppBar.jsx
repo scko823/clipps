@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
 import Drawer from 'material-ui/Drawer'
 
-import { compose } from 'recompose'
+// import { compose } from 'recompose'
 
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -83,6 +83,7 @@ const withAllClipboardsQuery = graphql(
 			ownProps,
 			data: { loading, allClipboards, refetch, subscribeToMore },
 		}) => ({
+			...ownProps,
 			loadingClipboards: loading,
 			clipboards: allClipboards,
 			refetchClipboard: refetch,
@@ -92,24 +93,11 @@ const withAllClipboardsQuery = graphql(
 					variables: {
 						mutationTypes: ['CREATED', 'UPDATED', 'DELETED'],
 					},
-					updateQuery: (prev, { subscriptionData }) => {
-						if (!subscriptionData.data) {
-							return prev
-						}
-						const newData = subscriptionData.data.Clipboard
-						debugger // eslint-disable-line
-					},
 				})
 			},
 		}),
 	},
 )
-
-// const withClipboardsSubscription = graphql(
-// 	gql`
-// 	${clipboardsSubscription}
-// `,
-// )
 
 // const enhancer = compose(withAllClipboardsQuery)
 
