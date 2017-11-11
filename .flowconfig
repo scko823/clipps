@@ -1,4 +1,6 @@
 [ignore]
+.*/node_modules/jss
+.*/node_modules/react-apollo
 
 [include]
 
