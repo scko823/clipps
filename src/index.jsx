@@ -17,8 +17,10 @@ import Landing from './components/Landing'
 import store from './stores/Store'
 // import Clipboard from './components/Clipboard'
 
+console.log('index debug', process.env.QUERY_API)
+
 const client = new ApolloClient({
-	link: new HttpLink({ uri: 'https://api.example.com/graphql' }),
+	link: new HttpLink({ uri: process.env.QUERY_API }),
 	cache: new InMemoryCache(),
 })
 

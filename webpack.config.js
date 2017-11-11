@@ -1,14 +1,10 @@
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const keys = require('./secrets/keys')
 
-const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-	template: './index.html',
-	filename: 'index.html',
-	inject: 'body',
-});
-
+const { graphcool: { websockets, api } } = keys
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
 
@@ -70,6 +66,13 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			'process.env': {
+				NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+				QUERY_API: JSON.stringify(api),
+				SUBSCRIPTION_API: JSON.stringify(websockets),
+			},
+		}),
 		new ExtractTextPlugin({
 			filename: 'css/[name].styles.css',
 			allChunks: false,
@@ -91,4 +94,4 @@ module.exports = {
 	},
 
 	devtool: 'cheap-module-source-ma',
-};
+}
