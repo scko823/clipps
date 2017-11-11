@@ -1,5 +1,5 @@
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Route, Switch } from 'react-router';
+import { Route } from 'react-router';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,7 +10,7 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
-import AppBar from './components/AppBar';
+import AppBar from './components/AppBar/AppBar';
 import App from './components/App';
 import Landing from './components/Landing';
 
