@@ -8,9 +8,12 @@ import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
 import Drawer from 'material-ui/Drawer'
 
+import { compose } from 'recompose'
+
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import allClipboardsQuery from '../../../graphql/queries/allClipboards'
+import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
 
 import DrawerList from './DrawerList'
 
@@ -80,4 +83,12 @@ const withAllClipboardsQuery = graphql(
 	},
 )
 
-export default withAllClipboardsQuery(ClipboardAppBar)
+const withClipboardsSubscription = graphql(
+	gql`
+	${clipboardsSubscription}
+`,
+)
+
+const enhancer = compose(withAllClipboardsQuery, withClipboardsSubscription)
+
+export default enhancer(ClipboardAppBar)
