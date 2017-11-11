@@ -1,4 +1,3 @@
-// @flow weak
 import { BrowserRouter as Router } from 'react-router-dom'
 import { Route } from 'react-router'
 import { Provider } from 'react-redux'
