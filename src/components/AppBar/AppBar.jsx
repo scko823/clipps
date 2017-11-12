@@ -22,7 +22,7 @@ import clipboardsSubscription from '../../../graphql/subscriptions/clipboards';
 // components
 import DrawerList from './DrawerList';
 import AddClipboard from '../AddClipboard';
-import ClipboardView from '../ClipboardView';
+import ClipboardView from '../Clipboards/ClipboardView';
 
 /**
  *

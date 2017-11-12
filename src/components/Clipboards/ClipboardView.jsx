@@ -7,15 +7,21 @@ import PropTypes from 'prop-types';
 // GraphQL
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import clipsQuery from '../../graphql/queries/clips';
+import clipsQuery from '../../../graphql/queries/clips';
 
-import Snippet from './Snippet';
+import Snippet from '../Clips/Snippet';
+import FAB from './FAB';
 
 const ClipboardView = ({ clips, loading }) => {
 	if (loading) {
 		return <h4>loading!!!</h4>;
 	}
-	return clips.map(clip => <Snippet key={clip.id} clip={clip} />);
+	return (
+  <div>
+    <FAB />
+    {clips.map(clip => <Snippet key={clip.id} clip={clip} />)}
+  </div>
+	);
 };
 
 ClipboardView.propTypes = {
