@@ -32,7 +32,13 @@ const AppBarStyles = () => ({
 
 /**
  *
- * @param {*} param0
+ * @param {boolean} loadingClipboards loading clipboard state, ie fetching with apollo
+ * @param {Object[]} clipboards clipboard data
+ * @param {string} clipboards[].name clipboard name
+ * @param {function} refetchClipboard refetchClipboard callback
+ * @param {Object} classes classes to be used by JSS/materialUI
+ * @param {boolean} showDrawer show drawer state
+ * @param {function} toggleDrawer toggle show drawer state
  */
 const ClipboardAppBar = ({
 	loadingClipboards,

@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+// material-ui components
 import Divider from 'material-ui/Divider'
 import ListSubheader from 'material-ui/List/ListSubheader'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
@@ -7,8 +8,10 @@ import { withStyles } from 'material-ui/styles'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
 import CachedIcon from 'material-ui-icons/Cached'
 
+// recompose
 import { compose } from 'recompose'
 
+// GraphQL
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import updateClipsMutation from '../../../graphql/mutations/updateClip'
@@ -32,6 +35,17 @@ const styles = theme => ({
 		paddingLeft: theme.spacing.unit * 4,
 	},
 })
+
+/**
+ *
+ * @param {boolean} loading loading clipboard state, ie fetching with apollo, passed by parent ClipboardAppBar
+ * @param {Object[]} clipboards clipboard data
+ * @param {string} clipboards[].name clipboard name
+ * @param {function} refetchClipboard refetchClipboard callback
+ * @param {function} refetch refetch callback
+ * @param {function} mutate mutate a particular Clipboard callback
+ * @param {Object} classes classes to be used by JSS/materialUI
+ */
 
 const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
 	const subheader = (
