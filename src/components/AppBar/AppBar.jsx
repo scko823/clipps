@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-
 // material-ui components
 import MUIAppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
@@ -9,8 +8,7 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import Drawer from 'material-ui/Drawer';
-import Icon from 'material-ui/Icon';
-import { withStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
 
 // recompose
 import { compose, withStateHandlers, lifecycle } from 'recompose';
@@ -26,14 +24,6 @@ import DrawerList from './DrawerList';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../ClipboardView';
 
-const AppBarStyles = () => ({
-	addIcon: {
-		'&:hover': {
-			cursor: 'pointer',
-		},
-	},
-});
-
 /**
  *
  * @param {boolean} loadingClipboards loading clipboard state, ie fetching with apollo
@@ -48,7 +38,6 @@ const ClipboardAppBar = ({
 	loadingClipboards,
 	clipboards,
 	refetchClipboard,
-	classes,
 	showDrawer,
 	toggleDrawer,
 }) => (
@@ -63,9 +52,9 @@ const ClipboardAppBar = ({
 						ClipBoards
           </Typography>
           <Link to="/add">
-            <Icon className={classes.addIcon} color="contrast">
-							add_circle
-            </Icon>
+            <Button raised color="accent">
+							ASAP
+            </Button>
           </Link>
         </Toolbar>
       </MUIAppBar>
@@ -85,7 +74,6 @@ const ClipboardAppBar = ({
 );
 
 ClipboardAppBar.propTypes = {
-	classes: PropTypes.object,
 	loadingClipboards: PropTypes.bool.isRequired,
 	refetchClipboard: PropTypes.func.isRequired,
 	clipboards: PropTypes.arrayOf(
@@ -99,7 +87,6 @@ ClipboardAppBar.propTypes = {
 };
 
 ClipboardAppBar.defaultProps = {
-	classes: {},
 	showDrawer: false,
 };
 
@@ -152,10 +139,6 @@ const recomposeEnhancer = compose(
 	}),
 );
 
-const enhancer = compose(
-	compose(withStyles, AppBarStyles)(),
-	withAllClipboardsQuery,
-	recomposeEnhancer,
-);
+const enhancer = compose(withAllClipboardsQuery, recomposeEnhancer);
 
 export default enhancer(ClipboardAppBar);
