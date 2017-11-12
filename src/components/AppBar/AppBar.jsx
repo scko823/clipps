@@ -3,12 +3,12 @@ import PropTypes from 'prop-types'
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
 import Drawer from 'material-ui/Drawer'
-
-// import { compose } from 'recompose'
+import Icon from 'material-ui/Icon'
+import { withStyles } from 'material-ui/styles'
+import { compose, withStateHandlers, lifecycle } from 'recompose'
 
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -17,49 +17,44 @@ import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
 
 import DrawerList from './DrawerList'
 
-class ClipboardAppBar extends React.Component {
-	propTypes = {
-		subscribeToClipboardsEvents: PropTypes.func,
-		children: PropTypes.node,
-		loadingClipboards: PropTypes.bool.isRequired,
-		refetchClipboard: PropTypes.func.isRequired,
-		clipboards: PropTypes.arrayOf(PropTypes.object).isRequired,
-	}
-	state = {
-		showDrawer: false,
-	}
-	componentDidMount() {
-		this.props.subscribeToClipboardsEvents()
-	}
-	toggleDrawer = () => {
-		this.setState(({ showDrawer }) => ({
-			showDrawer: !showDrawer,
-		}))
-	}
+const styles = () => ({
+	addIcon: {
+		'&:hover': {
+			cursor: 'pointer',
+		},
+	},
+})
 
-	render() {
-		const { loadingClipboards, clipboards, refetchClipboard } = this.props
+const ClipboardAppBar = props => {
+	const {
+		loadingClipboards,
+		clipboards,
+		refetchClipboard,
+		classes,
+		children,
+		showDrawer,
+		toggleDrawer,
+	} = props
 
-		return (
+	return (
   <div id="clipboard">
     <MUIAppBar position="static">
       <Toolbar>
-        <IconButton
-          onClick={this.toggleDrawer}
-          color="contrast"
-          aria-label="Menu"
-        >
+        <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
           <MenuIcon />
         </IconButton>
         <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-							ClipBoards
+						ClipBoards
         </Typography>
-        <Button color="contrast">Login</Button>
+
+        <Icon className={classes.addIcon} color="contrast">
+						add_circle
+        </Icon>
       </Toolbar>
     </MUIAppBar>
     <Drawer
-      open={this.state.showDrawer}
-      onRequestClose={this.toggleDrawer}
+      open={showDrawer}
+      onRequestClose={toggleDrawer}
       className="drawer"
     >
       <DrawerList
@@ -68,10 +63,24 @@ class ClipboardAppBar extends React.Component {
         refetch={refetchClipboard}
       />
     </Drawer>
-    {this.props.children}
+    {children}
   </div>
-		)
-	}
+	)
+}
+
+ClipboardAppBar.propTypes = {
+	children: PropTypes.node.isRequired,
+	classes: PropTypes.object,
+	loadingClipboards: PropTypes.bool.isRequired,
+	refetchClipboard: PropTypes.func.isRequired,
+	clipboards: PropTypes.arrayOf(PropTypes.object).isRequired,
+	showDrawer: PropTypes.bool,
+	toggleDrawer: PropTypes.func.isRequired,
+}
+
+ClipboardAppBar.defaultProps = {
+	classes: {},
+	showDrawer: false,
 }
 
 const withAllClipboardsQuery = graphql(
@@ -99,6 +108,26 @@ const withAllClipboardsQuery = graphql(
 	},
 )
 
-// const enhancer = compose(withAllClipboardsQuery)
+const recomposeEnhancer = compose(
+	withStateHandlers(
+		({ initShowDrawer = false }) => ({
+			showDrawer: initShowDrawer,
+		}),
+		{
+			toggleDrawer: ({ showDrawer }) => () => ({ showDrawer: !showDrawer }),
+		},
+	),
+	lifecycle({
+		componentDidMount() {
+			this.props.subscribeToClipboardsEvents()
+		},
+	}),
+)
 
-export default withAllClipboardsQuery(ClipboardAppBar)
+const enhancer = compose(
+	compose(withStyles, styles)(),
+	withAllClipboardsQuery,
+	recomposeEnhancer,
+)
+
+export default enhancer(ClipboardAppBar)
