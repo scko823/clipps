@@ -22,6 +22,7 @@
 				"specialLink": ["to", "hrefLeft", "hrefRight"],
 				"aspects": ["noHref", "invalidHref", "preferButton"]
 			}
-		]
+		],
+		"arrow-body-style": "warn"
 	}
 }

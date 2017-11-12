@@ -78,7 +78,7 @@ const ClipboardAppBar = ({
       </Drawer>
       <Route exact path="/" render={() => <h1>landing page</h1>} />
       <Route exact path="/add" component={AddClipboard} />
-      <Route exact path="/boards/:name" component={ClipboardView} />
+      <Route exact path="/boards/:clipboardName" component={ClipboardView} />
     </div>
   </Router>
 );
