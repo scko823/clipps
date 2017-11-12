@@ -92,7 +92,7 @@ ClipboardAppBar.propTypes = {
 	clipboards: PropTypes.arrayOf(
 		PropTypes.shape({
 			id: PropTypes.string.isRequired,
-			name: PropTypes.strings.isRequired,
+			name: PropTypes.string.isRequired,
 		}),
 	).isRequired,
 	showDrawer: PropTypes.bool,
