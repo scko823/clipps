@@ -1,22 +1,19 @@
-/* eslint-disable */
 import React from 'react'
 import PropTypes from 'prop-types'
+import { compose, withStateHandlers } from 'recompose'
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import Grid from 'material-ui/Grid'
-import { GridList, GridListTile } from 'material-ui/GridList'
-import { withRouter } from 'react-router-dom'
-import { withStyles } from 'material-ui/styles'
-import {
-	FormLabel,
-	FormControl,
-	FormGroup,
-	FormControlLabel,
-	FormHelperText,
-} from 'material-ui/Form'
+import withStyles from 'material-ui/styles/withStyles'
+import FormGroup from 'material-ui/Form/FormGroup'
+
+// GraphQL
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import createClip from '../../graphql/mutations/createClip'
 import clip from '../images/clip.png'
 
-const styles = {
+const styles = () => ({
 	root: {
 		flexGrow: 1,
 		marign: 'auto 0',
@@ -24,55 +21,63 @@ const styles = {
 	floatingLabelFocusStyle: {
 		color: '#27bc9c',
 	},
+})
+
+const AddClipboard = props => {
+	const { name, onInputChange, submit } = props
+	return (
+  <Grid container>
+    <Grid item xs={12}>
+      <Grid container spacing={40} justify="center">
+        <div>
+          <img alt="logo" src={clip} height="90" width="90" />
+        </div>
+        <FormGroup>
+          <TextField label="Clipboard Name" onChange={onInputChange} />
+          <br />
+          <Button
+            label="Create Clipboard"
+            color="primary"
+            raised
+            onClick={submit}
+            disabled={!name}
+          >
+							Create
+          </Button>
+        </FormGroup>
+      </Grid>
+    </Grid>
+  </Grid>
+	)
 }
 
-class AddClipboard extends React.Component {
-	propTypes = {
-		history: PropTypes.object.isRequired,
-	}
-	state = {
-		name: '',
-	}
-	handleEnterClipboard = () => {
-		this.props.history.push(`/clipboard/new`, { name: this.state.name })
-	}
-
-	handleNameChange = e => {
-		const val = e.target.value
-		this.setState(() => ({
-			name: val,
-		}))
-	}
-
-	render() {
-		return (
-			<Grid container>
-				<Grid item xs={12}>
-					<Grid container spacing={40} justify="center">
-						<div>
-							<img alt="logo" src={clip} height="90" width="90" />
-						</div>
-						<FormGroup>
-							<TextField
-								label="Clipboard Name"
-								onChange={this.handleNameChange}
-							/>
-							<br />
-							<Button
-								label="Create Clipboard"
-								color="primary"
-								raised
-								onClick={this.handleEnterClipboard}
-								disabled={!this.state.name}
-							>
-								Create
-							</Button>
-						</FormGroup>
-					</Grid>
-				</Grid>
-			</Grid>
-		)
-	}
+AddClipboard.propTypes = {
+	name: PropTypes.string,
+	onInputChange: PropTypes.func.isRequired,
+	submit: PropTypes.func.isRequired,
 }
 
-export default withStyles(styles)(AddClipboard)
+AddClipboard.defaultProps = {
+	name: '',
+}
+
+const withCreateClip = graphql(gql`${createClip}`, {
+	props: ({ ownProps: { name = '' }, mutate }) => ({
+		submit: () => {
+			mutate({ variables: { name } })
+		},
+	}),
+})
+
+const recomposeEnhancer = compose(
+	withStateHandlers(({ name = '' }) => ({ name }), {
+		onInputChange: () => ev => ({ name: ev.target.value }),
+	}),
+)
+const enhancer = compose(
+	compose(withStyles, styles)(),
+	recomposeEnhancer,
+	withCreateClip,
+)
+
+export default enhancer(AddClipboard)
