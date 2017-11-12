@@ -74,6 +74,7 @@ const ClipboardAppBar = ({
           loading={loadingClipboards}
           clipboards={clipboards}
           refetch={refetchClipboard}
+          toggleDrawer={toggleDrawer}
         />
       </Drawer>
       <Route exact path="/" render={() => <h1>landing page</h1>} />

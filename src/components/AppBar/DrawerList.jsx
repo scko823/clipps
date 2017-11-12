@@ -48,7 +48,7 @@ const styles = theme => ({
  * @param {Object} classes classes to be used by JSS/materialUI
  */
 
-const DrawerList = ({ loading, clipboards, refetch, classes }) => {
+const DrawerList = ({ loading, clipboards, refetch, classes, toggleDrawer }) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
@@ -66,7 +66,7 @@ const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 		listItems = <DataUsageIcon />;
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <Link key={clipboard.id} to={`/boards/${clipboard.name}`}>
+  <Link onClick={toggleDrawer} key={clipboard.id} to={`/boards/${clipboard.name}`}>
     <ListItem key={clipboard.id} button>
       <ListItemText primary={clipboard.name} />
     </ListItem>
@@ -86,6 +86,7 @@ DrawerList.propTypes = {
 	classes: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
 	refetch: PropTypes.func.isRequired,
+	toggleDrawer: PropTypes.func.isRequired,
 };
 
 DrawerList.defaultProps = {
