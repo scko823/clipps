@@ -1,29 +1,30 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 // material-ui components
-import MUIAppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
-import MenuIcon from 'material-ui-icons/Menu'
-import Drawer from 'material-ui/Drawer'
-import Icon from 'material-ui/Icon'
-import { withStyles } from 'material-ui/styles'
+import MUIAppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+import Drawer from 'material-ui/Drawer';
+import Icon from 'material-ui/Icon';
+import { withStyles } from 'material-ui/styles';
 
 // recompose
-import { compose, withStateHandlers, lifecycle } from 'recompose'
+import { compose, withStateHandlers, lifecycle } from 'recompose';
 
 // GraphQL
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import allClipboardsQuery from '../../../graphql/queries/allClipboards'
-import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import allClipboardsQuery from '../../../graphql/queries/allClipboards';
+import clipboardsSubscription from '../../../graphql/subscriptions/clipboards';
 
 // components
-import DrawerList from './DrawerList'
-import AddClipboard from '../AddClipboard'
+import DrawerList from './DrawerList';
+import AddClipboard from '../AddClipboard';
+import ClipboardView from '../ClipboardView';
 
 const AppBarStyles = () => ({
 	addIcon: {
@@ -31,7 +32,7 @@ const AppBarStyles = () => ({
 			cursor: 'pointer',
 		},
 	},
-})
+});
 
 /**
  *
@@ -68,11 +69,7 @@ const ClipboardAppBar = ({
           </Link>
         </Toolbar>
       </MUIAppBar>
-      <Drawer
-        open={showDrawer}
-        onRequestClose={toggleDrawer}
-        className="drawer"
-      >
+      <Drawer open={showDrawer} onRequestClose={toggleDrawer} className="drawer">
         <DrawerList
           loading={loadingClipboards}
           clipboards={clipboards}
@@ -81,9 +78,10 @@ const ClipboardAppBar = ({
       </Drawer>
       <Route exact path="/" render={() => <h1>landing page</h1>} />
       <Route exact path="/add" component={AddClipboard} />
+      <Route exact path="/boards/:name" component={ClipboardView} />
     </div>
   </Router>
-)
+);
 
 ClipboardAppBar.propTypes = {
 	classes: PropTypes.object,
@@ -97,12 +95,12 @@ ClipboardAppBar.propTypes = {
 	).isRequired,
 	showDrawer: PropTypes.bool,
 	toggleDrawer: PropTypes.func.isRequired,
-}
+};
 
 ClipboardAppBar.defaultProps = {
 	classes: {},
 	showDrawer: false,
-}
+};
 
 // GraphQL Clipboard query
 const withAllClipboardsQuery = graphql(
@@ -110,10 +108,7 @@ const withAllClipboardsQuery = graphql(
   ${allClipboardsQuery}
 `,
 	{
-		props: ({
-			ownProps,
-			data: { loading, allClipboards, refetch, subscribeToMore },
-		}) => ({
+		props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
 			...ownProps,
 			loadingClipboards: loading,
 			clipboards: allClipboards,
@@ -121,9 +116,10 @@ const withAllClipboardsQuery = graphql(
 			subscribeToMore,
 		}),
 	},
-)
+);
 
 const recomposeEnhancer = compose(
+	// make component "stateful" to toggle the drawer
 	withStateHandlers(
 		({ initShowDrawer = false }) => ({
 			showDrawer: initShowDrawer,
@@ -132,6 +128,7 @@ const recomposeEnhancer = compose(
 			toggleDrawer: ({ showDrawer }) => () => ({ showDrawer: !showDrawer }),
 		},
 	),
+	// add subscription for CREATED, UPDATED , DELETED for clipboards
 	lifecycle({
 		componentWillMount() {
 			this.props.subscribeToMore({
@@ -145,19 +142,19 @@ const recomposeEnhancer = compose(
 					},
 				) => {
 					if (mutation === 'CREATED') {
-						return { allClipboards: [...allClipboards, node] }
+						return { allClipboards: [...allClipboards, node] };
 					}
-					return { allClipboards }
+					return { allClipboards };
 				},
-			})
+			});
 		},
 	}),
-)
+);
 
 const enhancer = compose(
 	compose(withStyles, AppBarStyles)(),
 	withAllClipboardsQuery,
 	recomposeEnhancer,
-)
+);
 
-export default enhancer(ClipboardAppBar)
+export default enhancer(ClipboardAppBar);

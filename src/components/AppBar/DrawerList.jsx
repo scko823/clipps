@@ -1,20 +1,22 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 // material-ui components
-import Divider from 'material-ui/Divider'
-import ListSubheader from 'material-ui/List/ListSubheader'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import { withStyles } from 'material-ui/styles'
-import DataUsageIcon from 'material-ui-icons/DataUsage'
-import CachedIcon from 'material-ui-icons/Cached'
+import Divider from 'material-ui/Divider';
+import ListSubheader from 'material-ui/List/ListSubheader';
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import { withStyles } from 'material-ui/styles';
+import DataUsageIcon from 'material-ui-icons/DataUsage';
+import CachedIcon from 'material-ui-icons/Cached';
+
+import { Link } from 'react-router-dom';
 
 // recompose
-import { compose } from 'recompose'
+import { compose } from 'recompose';
 
 // GraphQL
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import updateClipsMutation from '../../../graphql/mutations/updateClip'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import updateClipsMutation from '../../../graphql/mutations/updateClip';
 
 const styles = theme => ({
 	root: {
@@ -34,71 +36,57 @@ const styles = theme => ({
 	nested: {
 		paddingLeft: theme.spacing.unit * 4,
 	},
-})
+});
 
 /**
  *
  * @param {boolean} loading loading clipboard state, ie fetching with apollo, passed by parent ClipboardAppBar
  * @param {Object[]} clipboards clipboard data
  * @param {string} clipboards[].name clipboard name
- * @param {function} refetchClipboard refetchClipboard callback
+ * @param {string} clipboards[].id clipboard id
  * @param {function} refetch refetch callback
- * @param {function} mutate mutate a particular Clipboard callback
  * @param {Object} classes classes to be used by JSS/materialUI
  */
 
-const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
+const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
       <ListItem>
         <ListItemText primary="Clipboards" />
-        <ListItemIcon
-          className={classes.refetchIcon}
-          onClick={() => refetch()}
-        >
+        <ListItemIcon className={classes.refetchIcon} onClick={() => refetch()}>
           <CachedIcon />
         </ListItemIcon>
       </ListItem>
     </List>
   </ListSubheader>
-	)
-	let listItems
+	);
+	let listItems;
 	if (loading) {
-		listItems = <DataUsageIcon />
+		listItems = <DataUsageIcon />;
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <ListItem
-    key={clipboard.id}
-    onClick={() =>
-					mutate({
-						variables: {
-							id: clipboard.id,
-							name: `${Math.random().toFixed(4)}`,
-						},
-					})
-				}
-    button
-  >
-    <ListItemText primary={clipboard.name} />
-  </ListItem>
-		))
+  <Link to={`/boards/${clipboard.name}`}>
+    <ListItem key={clipboard.id} button>
+      <ListItemText primary={clipboard.name} />
+    </ListItem>
+  </Link>
+		));
 	}
 	return (
   <List className={classes.root} subheader={subheader}>
     <Divider />
     {listItems}
   </List>
-	)
-}
+	);
+};
 
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
-	mutate: PropTypes.func.isRequired,
 	classes: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
 	refetch: PropTypes.func.isRequired,
-}
+};
 
 DrawerList.defaultProps = {
 	clipboards: [],
@@ -110,10 +98,10 @@ DrawerList.defaultProps = {
 			background: 'white',
 		},
 	},
-}
+};
 
-const withUpdateClipsMutation = graphql(gql`${updateClipsMutation}`)
+const withUpdateClipsMutation = graphql(gql`${updateClipsMutation}`);
 
-const enchancer = compose(withStyles(styles), withUpdateClipsMutation)
+const enchancer = compose(withStyles(styles), withUpdateClipsMutation);
 
-export default enchancer(DrawerList)
+export default enchancer(DrawerList);
