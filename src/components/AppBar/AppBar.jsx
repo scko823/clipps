@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+
 // material-ui components
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
@@ -21,6 +23,7 @@ import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
 
 // components
 import DrawerList from './DrawerList'
+import AddClipboard from '../AddClipboard'
 
 const AppBarStyles = () => ({
 	addIcon: {
@@ -45,38 +48,44 @@ const ClipboardAppBar = ({
 	clipboards,
 	refetchClipboard,
 	classes,
-	children,
 	showDrawer,
 	toggleDrawer,
 }) => (
-  <div id="clipboard">
-    <MUIAppBar position="static">
-      <Toolbar>
-        <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
-          <MenuIcon />
-        </IconButton>
-        <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-					ClipBoards
-        </Typography>
-
-        <Icon className={classes.addIcon} color="contrast">
-					add_circle
-        </Icon>
-      </Toolbar>
-    </MUIAppBar>
-    <Drawer open={showDrawer} onRequestClose={toggleDrawer} className="drawer">
-      <DrawerList
-        loading={loadingClipboards}
-        clipboards={clipboards}
-        refetch={refetchClipboard}
-      />
-    </Drawer>
-    {children}
-  </div>
+  <Router>
+    <div id="clipboard">
+      <MUIAppBar position="static">
+        <Toolbar>
+          <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
+            <MenuIcon />
+          </IconButton>
+          <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
+						ClipBoards
+          </Typography>
+          <Link to="/add">
+            <Icon className={classes.addIcon} color="contrast">
+							add_circle
+            </Icon>
+          </Link>
+        </Toolbar>
+      </MUIAppBar>
+      <Drawer
+        open={showDrawer}
+        onRequestClose={toggleDrawer}
+        className="drawer"
+      >
+        <DrawerList
+          loading={loadingClipboards}
+          clipboards={clipboards}
+          refetch={refetchClipboard}
+        />
+      </Drawer>
+      <Route exact path="/" render={() => <h1>landing page</h1>} />
+      <Route exact path="/add" component={AddClipboard} />
+    </div>
+  </Router>
 )
 
 ClipboardAppBar.propTypes = {
-	children: PropTypes.node.isRequired,
 	classes: PropTypes.object,
 	loadingClipboards: PropTypes.bool.isRequired,
 	refetchClipboard: PropTypes.func.isRequired,

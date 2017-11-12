@@ -1,5 +1,3 @@
-import { BrowserRouter as Router } from 'react-router-dom'
-import { Route } from 'react-router'
 import { Provider } from 'react-redux'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -15,7 +13,6 @@ import { getMainDefinition } from 'apollo-utilities'
 
 import AppBar from './components/AppBar/AppBar'
 // import App from './components/App'
-import Landing from './components/Landing'
 
 import store from './stores/Store'
 // import Clipboard from './components/Clipboard'
@@ -58,14 +55,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Provider store={store}>
-      <Router>
-        <MuiThemeProvider theme={theme}>
-          <AppBar>
-            <Route exact path="/" component={Landing} />
-            {/* <Route path="/clipboard/new" component={App} /> */}
-          </AppBar>
-        </MuiThemeProvider>
-      </Router>
+      <MuiThemeProvider theme={theme}>
+        <AppBar />
+      </MuiThemeProvider>
     </Provider>
   </ApolloProvider>,
 	document.getElementById('root'), // eslint-disable-line

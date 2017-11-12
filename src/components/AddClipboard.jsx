@@ -26,7 +26,7 @@ const styles = {
 	},
 }
 
-class Landing extends React.Component {
+class AddClipboard extends React.Component {
 	propTypes = {
 		history: PropTypes.object.isRequired,
 	}
@@ -75,4 +75,4 @@ class Landing extends React.Component {
 	}
 }
 
-export default withStyles(styles)(Landing)
+export default withStyles(styles)(AddClipboard)
