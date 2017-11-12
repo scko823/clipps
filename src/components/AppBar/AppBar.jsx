@@ -118,14 +118,7 @@ const withAllClipboardsQuery = graphql(
 			loadingClipboards: loading,
 			clipboards: allClipboards,
 			refetchClipboard: refetch,
-			subscribeToClipboardsEvents: () => {
-				subscribeToMore({
-					document: gql`${clipboardsSubscription}`,
-					variables: {
-						mutationTypes: ['CREATED', 'UPDATED', 'DELETED'],
-					},
-				})
-			},
+			subscribeToMore,
 		}),
 	},
 )
@@ -140,8 +133,23 @@ const recomposeEnhancer = compose(
 		},
 	),
 	lifecycle({
-		componentDidMount() {
-			this.props.subscribeToClipboardsEvents()
+		componentWillMount() {
+			this.props.subscribeToMore({
+				document: gql`${clipboardsSubscription}`,
+				updateQuery: (
+					{ allClipboards },
+					{
+						subscriptionData: {
+							Clipboard: { mutation, node /* updatedFields, previousValues */ },
+						},
+					},
+				) => {
+					if (mutation === 'CREATED') {
+						return { allClipboards: [...allClipboards, node] }
+					}
+					return { allClipboards }
+				},
+			})
 		},
 	}),
 )
