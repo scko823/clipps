@@ -66,7 +66,7 @@ const DrawerList = ({ loading, clipboards, refetch, classes }) => {
 		listItems = <DataUsageIcon />;
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <Link to={`/boards/${clipboard.name}`}>
+  <Link key={clipboard.id} to={`/boards/${clipboard.name}`}>
     <ListItem key={clipboard.id} button>
       <ListItemText primary={clipboard.name} />
     </ListItem>

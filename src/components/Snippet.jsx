@@ -1,7 +1,10 @@
-/* eslint-disable */
-import React from 'react'
-import HighLight from 'react-highlight'
-import { Paper, Subheader, IconButton } from 'material-ui'
+import React from 'react';
+import PropTypes from 'prop-types';
+import HighLight from 'react-highlight';
+import Paper from 'material-ui/Paper';
+import ContentCopy from 'material-ui-icons/ContentCopy';
+
+import Typography from 'material-ui/Typography';
 
 const style = {
 	width: 400,
@@ -12,44 +15,50 @@ const style = {
 	icon: {
 		color: '#27bc9c',
 	},
-}
+};
 
 class Snippet extends React.Component {
 	onClick = e => {
-		e.preventDefault()
-		const { content, id } = this.props.clip
+		e.preventDefault();
+		const { content } = this.props.clip;
 
-		var text = document.createElement('textarea')
-		text.innerText = content
-		document.body.appendChild(text)
-		text.select()
+		const text = document.createElement('textarea');
+		text.innerText = content;
+		document.body.appendChild(text);
+		text.select();
 
-		document.execCommand('Copy')
-		text.remove()
-	}
+		document.execCommand('Copy');
+		text.remove();
+	};
 
 	render() {
-		const { clip } = this.props
+		const { clip } = this.props;
 		return (
-			<Paper style={style} zDepth={3}>
-				<div style={{ display: 'flex' }}>
-					<Subheader style={{ textAlign: 'left' }}>{clip.name}</Subheader>
-					<IconButton onClick={this.onClick} tooltip="Copy" style={style.icon}>
-						<i className="material-icons md-18">content_copy</i>
-					</IconButton>
-				</div>
-				<br />
-				<br />
-				<HighLight
-					ref={c => (this._textNode = c)}
-					className="code"
-					language={clip.type}
-				>
-					{clip.content}
-				</HighLight>
-			</Paper>
-		)
+  <Paper style={style} zdepth={3}>
+    <div style={{ display: 'flex' }}>
+      <Typography type="headline" component="h3">
+        {'some name'}
+      </Typography>
+      <ContentCopy onClick={this.onClick} tooltip="Copy" />
+    </div>
+    <br />
+    <br />
+    <HighLight
+      ref={c => {
+						this._textNode = c;
+					}}
+      className="code"
+    >
+      {clip.content}
+    </HighLight>
+  </Paper>
+		);
 	}
 }
 
-export default Snippet
+Snippet.propTypes = {
+	clip: PropTypes.shape({
+		content: PropTypes.string.isRequired,
+	}).isRequired,
+};
+export default Snippet;

@@ -9,7 +9,14 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import clipsQuery from '../../graphql/queries/clips';
 
-const ClipboardView = ({ clips }) => <pre>{JSON.stringify(clips, null, 4)}</pre>;
+import Snippet from './Snippet';
+
+const ClipboardView = ({ clips, loading }) => {
+	if (loading) {
+		return <h4>loading!!!</h4>;
+	}
+	return clips.map(clip => <Snippet key={clip.id} clip={clip} />);
+};
 
 ClipboardView.propTypes = {
 	// match: PropTypes.shape({
@@ -19,6 +26,11 @@ ClipboardView.propTypes = {
 	// 	params: PropTypes.object,
 	// }).isRequired,
 	clips: PropTypes.object.isRequired,
+	loading: PropTypes.bool,
+};
+
+ClipboardView.defaultProps = {
+	loading: true,
 };
 
 const withclipsQuery = graphql(
