@@ -1,21 +1,13 @@
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpack = require('webpack')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const keys = require('./secrets/keys')
 
-const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-	template: './index.html',
-	filename: 'index.html',
-	inject: 'body',
-});
-
+const { graphcool: { websockets, api } } = keys
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
-
-	// entry: ['webpack-hot-middleware/client', 'react-hot-loader/patch', './index.jsx'],
-
 	entry: ['babel-polyfill', './index.jsx'],
-
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: 'index.js',
@@ -23,7 +15,6 @@ module.exports = {
 	resolve: {
 		extensions: ['.js', '.json', '.jsx'],
 	},
-
 	module: {
 		rules: [
 			// JS Loader
@@ -70,6 +61,13 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new webpack.DefinePlugin({
+			'process.env': {
+				NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+				QUERY_API: JSON.stringify(api),
+				SUBSCRIPTION_API: JSON.stringify(websockets),
+			},
+		}),
 		new ExtractTextPlugin({
 			filename: 'css/[name].styles.css',
 			allChunks: false,
@@ -90,5 +88,5 @@ module.exports = {
 		historyApiFallback: true,
 	},
 
-	devtool: 'cheap-module-source-ma',
-};
+	devtool: 'cheap-module-source-map',
+}

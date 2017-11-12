@@ -1,54 +1,61 @@
-import React from 'react';
-import { Dialog, FlatButton, TextField, SelectField, MenuItem } from 'material-ui';
+/* eslint-disable */
+import React from 'react'
+import {
+	Dialog,
+	FlatButton,
+	TextField,
+	SelectField,
+	MenuItem,
+} from 'material-ui'
 
 class PaperDialog extends React.Component {
 	state = {
 		form: {
 			name: null,
-			content: null
+			content: null,
 		},
 		error: {
 			name: true,
-			content: true
+			content: true,
 		},
-		showErrors: false
-	};
+		showErrors: false,
+	}
 
 	onChange = (event, field) => {
-		const val = event.currentTarget.value;
+		const val = event.currentTarget.value
 		this.setState({
 			form: {
 				...this.state.form,
-				[field]: val
+				[field]: val,
 			},
 			error: {
 				...this.state.error,
-				[field]: val === '' ? true : false
+				[field]: val === '' ? true : false,
 			},
-			showErrors: val === '' ? true : false
-		});
-	};
+			showErrors: val === '' ? true : false,
+		})
+	}
 
 	onSubmit = () => {
 		var arr = Object.values(this.state.error).reduce((a, b) => {
-			return a && b;
-		});
+			return a && b
+		})
 
 		if (arr) {
 			this.setState(() => ({
-				showErrors: true
-			}));
+				showErrors: true,
+			}))
 		} else {
 			// const formData = new FormData();
 			// formData.append('data', new Blob([JSON.stringify(this.state)], { type: 'application/json' }));
 			// formData.append('file', file);
 
-			this.props.handleCreateBoard(this.state.form);
+			this.props.handleCreateBoard(this.state.form)
 		}
-	};
+	}
 	renderForm = () => {
-		const { handleCreateBoard } = this.props;
-		const { showErrors, error } = this.state;
+		const { handleCreateBoard } = this.props
+		const { showErrors, error } = this.state
 		return (
 			<div className="dialogForm">
 				<TextField
@@ -70,20 +77,24 @@ class PaperDialog extends React.Component {
 				/>
 				<br />
 			</div>
-		);
-	};
+		)
+	}
 	render() {
-		const { open, handleClose, handleCreateBoard } = this.props;
+		const { open, handleClose, handleCreateBoard } = this.props
 
 		const actions = [
-			<FlatButton label="Cancel" primary={true} onClick={this.props.handleClose} />,
+			<FlatButton
+				label="Cancel"
+				primary={true}
+				onClick={this.props.handleClose}
+			/>,
 			<FlatButton
 				label="Submit"
 				primary={true}
 				keyboardFocused={true}
 				onClick={this.onSubmit}
-			/>
-		];
+			/>,
+		]
 
 		return (
 			<Dialog
@@ -95,8 +106,8 @@ class PaperDialog extends React.Component {
 			>
 				{this.renderForm()}
 			</Dialog>
-		);
+		)
 	}
 }
 
-export default PaperDialog;
+export default PaperDialog

@@ -2,28 +2,28 @@ import React from 'react';
 import {
 	AppBar,
 	Drawer,
-	MenuItem,
+	// MenuItem,
 	Divider,
 	// Avatar,
 	// ListItem,
-	CircularProgress,
+	// CircularProgress,
 } from 'material-ui';
 // import Clipboard from './Clipboard'
 // import PaperDialog from './PaperDialog'
 // import PaperClips from './PaperClips'
 // import { grey600, teal300, green500 } from 'material-ui/styles/colors'
 
-const style = {
-	menuStyle: {
-		color: '#27bc9c',
-	},
-	avatar: {
-		top: '4px',
-	},
-	login: {
-		color: 'white',
-	},
-};
+// const style = {
+// 	menuStyle: {
+// 		color: '#27bc9c',
+// 	},
+// 	avatar: {
+// 		top: '4px',
+// 	},
+// 	login: {
+// 		color: 'white',
+// 	},
+// };
 
 class App extends React.Component {
 	state = {
