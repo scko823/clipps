@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 // material-ui
-import Paper from 'material-ui/Paper';
-import ContentCopy from 'material-ui-icons/ContentCopy';
-import Typography from 'material-ui/Typography';
-import { withStyles } from 'material-ui/styles';
+import Paper from 'material-ui/Paper'
+import ContentCopy from 'material-ui-icons/ContentCopy'
+import Typography from 'material-ui/Typography'
+import { withStyles } from 'material-ui/styles'
 
 // react hightlight
-import HighLight from 'react-highlight';
+import HighLight from 'react-highlight'
 
 const style = () => ({
 	root: {
@@ -30,42 +30,46 @@ const style = () => ({
 			cursor: 'pointer',
 		},
 	},
-});
+})
 
 class Snippet extends React.Component {
 	onClick = e => {
-		e.preventDefault();
-		const { content } = this.props.clip;
+		e.preventDefault()
+		const { content } = this.props.clip
 
-		const text = document.createElement('textarea');
-		text.innerText = content;
-		document.body.appendChild(text);
-		text.select();
+		const text = document.createElement('textarea')
+		text.innerText = content
+		document.body.appendChild(text)
+		text.select()
 
-		document.execCommand('Copy');
-		text.remove();
-	};
+		document.execCommand('Copy')
+		text.remove()
+	}
 
 	render() {
-		const { clip, classes } = this.props;
+		const { clip: { name, content }, classes } = this.props
 		return (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
-        {'some name'}
+        {name}
       </Typography>
-      <ContentCopy onClick={this.onClick} tooltip="Copy" className={classes.icon} />
+      <ContentCopy
+        onClick={this.onClick}
+        tooltip="Copy"
+        className={classes.icon}
+      />
     </div>
     <HighLight
       ref={c => {
-						this._textNode = c;
+						this._textNode = c
 					}}
       className="code"
     >
-      {clip.content}
+      {content}
     </HighLight>
   </Paper>
-		);
+		)
 	}
 }
 
@@ -74,5 +78,5 @@ Snippet.propTypes = {
 		content: PropTypes.string.isRequired,
 	}).isRequired,
 	classes: PropTypes.object.isRequired,
-};
-export default withStyles(style)(Snippet);
+}
+export default withStyles(style)(Snippet)
