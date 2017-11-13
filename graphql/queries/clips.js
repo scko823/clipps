@@ -7,7 +7,8 @@ query getClips($clipboardName: String!) {
     }
   }){
     id
+    name
     content
   }
 }
-`;
+`

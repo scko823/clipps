@@ -14,6 +14,7 @@ import FAB from './FAB'
 import AddClipDialog from './AddClipDialog'
 
 const ClipboardView = ({
+	match: { params: { clipboardName } },
 	clips,
 	loading,
 	toggleAddClipDialog,
@@ -26,6 +27,7 @@ const ClipboardView = ({
   <div>
     <FAB onClick={toggleAddClipDialog} />
     <AddClipDialog
+      clipboardName={clipboardName}
       toggleShowDialog={toggleAddClipDialog}
       showDialog={showAddClipDialog}
     />
@@ -35,12 +37,12 @@ const ClipboardView = ({
 }
 
 ClipboardView.propTypes = {
-	// match: PropTypes.shape({
-	// 	path: PropTypes.string,
-	// 	url: PropTypes.string,
-	// 	isExact: PropTypes.bool,
-	// 	params: PropTypes.object,
-	// }).isRequired,
+	match: PropTypes.shape({
+		path: PropTypes.string,
+		url: PropTypes.string,
+		isExact: PropTypes.bool,
+		params: PropTypes.object,
+	}).isRequired,
 	toggleAddClipDialog: PropTypes.func.isRequired,
 	clips: PropTypes.object.isRequired,
 	loading: PropTypes.bool,
