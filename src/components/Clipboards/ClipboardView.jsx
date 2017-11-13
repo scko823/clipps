@@ -19,6 +19,7 @@ const ClipboardView = ({
 	loading,
 	toggleAddClipDialog,
 	showAddClipDialog,
+	clipboardId,
 }) => {
 	if (loading) {
 		return <h4>loading!!!</h4>
@@ -27,6 +28,7 @@ const ClipboardView = ({
   <div>
     <FAB onClick={toggleAddClipDialog} />
     <AddClipDialog
+      clipboardId={clipboardId}
       clipboardName={clipboardName}
       toggleShowDialog={toggleAddClipDialog}
       showDialog={showAddClipDialog}
@@ -47,11 +49,13 @@ ClipboardView.propTypes = {
 	clips: PropTypes.object.isRequired,
 	loading: PropTypes.bool,
 	showAddClipDialog: PropTypes.bool,
+	clipboardId: PropTypes.string,
 }
 
 ClipboardView.defaultProps = {
 	loading: true,
 	showAddClipDialog: false,
+	clipboardId: '',
 }
 
 const withclipsQuery = graphql(
@@ -67,6 +71,7 @@ const withclipsQuery = graphql(
 			...ownProps,
 			loading: clips.loading,
 			clips: clips.allClips || [],
+			clipboardId: (clips.Clipboard && clips.Clipboard.id) || '',
 			error: clips.error,
 			refetch: clips.refetch,
 		}),

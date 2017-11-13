@@ -1,3 +1,4 @@
+// eslint-disable
 import React from 'react'
 import PropTypes from 'prop-types'
 // material-ui
@@ -13,23 +14,24 @@ import TextField from 'material-ui/TextField'
 // recompse
 import { compose, withStateHandlers } from 'recompose'
 
-class AddClipDialog extends React.Component {
-	render() {
-		const {
-			toggleShowDialog,
-			showDialog,
-			clipboardName,
-			onContentFieldChange,
-			onNameFieldChange,
-			formState: { name, content },
-		} = this.props
-		return (
+// GraphQL
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import createClipMutation from '../../../graphql/mutations/createClip'
+
+const AddClipDialog = ({
+	submit,
+	toggleShowDialog,
+	showDialog,
+	clipboardName,
+	onContentFieldChange,
+	onNameFieldChange,
+	formState: { name, content },
+}) => (
   <Dialog onRequestClose={toggleShowDialog} open={showDialog} fullWidth>
     <DialogTitle>New Clip</DialogTitle>
     <DialogContent>
-      <DialogContentText>
-						Add a new clip to {clipboardName}
-      </DialogContentText>
+      <DialogContentText>Add a new clip to {clipboardName}</DialogContentText>
       <TextField
         autoFocus
         margin="dense"
@@ -49,23 +51,18 @@ class AddClipDialog extends React.Component {
       />
       <DialogActions>
         <Button onClick={toggleShowDialog} color="secondary">
-							Cancel
+					Cancel
         </Button>
-        <Button
-          disabled={!name || !content}
-          onClick={this.handleRequestClose}
-          color="primary"
-        >
-							Create
+        <Button disabled={!name || !content} onClick={submit} color="primary">
+					Create
         </Button>
       </DialogActions>
     </DialogContent>
   </Dialog>
-		)
-	}
-}
+)
 
 AddClipDialog.propTypes = {
+	submit: PropTypes.func.isRequired,
 	toggleShowDialog: PropTypes.func.isRequired,
 	onNameFieldChange: PropTypes.func.isRequired,
 	onContentFieldChange: PropTypes.func.isRequired,
@@ -99,4 +96,21 @@ const recomposeEnhancer = compose(
 	),
 )
 
-export default recomposeEnhancer(AddClipDialog)
+const withCreateClip = graphql(gql`${createClipMutation}`, {
+	props: ({ ownProps, mutate }) => {
+		const { clipboardId, formState: { content, name } } = ownProps
+		return {
+			submit: () =>
+				mutate({
+					variables: {
+						content,
+						name,
+						clipboardId,
+					},
+				}),
+		}
+	},
+})
+
+const enhancer = compose(recomposeEnhancer, withCreateClip)
+export default enhancer(AddClipDialog)

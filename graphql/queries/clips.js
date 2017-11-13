@@ -10,5 +10,8 @@ query getClips($clipboardName: String!) {
     name
     content
   }
+  Clipboard(name: $clipboardName){
+    id
+  }
 }
 `
