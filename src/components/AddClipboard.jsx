@@ -10,7 +10,7 @@ import FormGroup from 'material-ui/Form/FormGroup'
 // GraphQL
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-import createClip from '../../graphql/mutations/createClip'
+import createClipboard from '../../graphql/mutations/createClipboard'
 import clip from '../images/clip.png'
 
 const styles = () => ({
@@ -61,7 +61,7 @@ AddClipboard.defaultProps = {
 	name: '',
 }
 
-const withCreateClip = graphql(gql`${createClip}`, {
+const withcreateClipboard = graphql(gql`${createClipboard}`, {
 	props: ({ ownProps: { name = '' }, mutate }) => ({
 		submit: () => {
 			mutate({ variables: { name } })
@@ -77,7 +77,7 @@ const recomposeEnhancer = compose(
 const enhancer = compose(
 	compose(withStyles, styles)(),
 	recomposeEnhancer,
-	withCreateClip,
+	withcreateClipboard,
 )
 
 export default enhancer(AddClipboard)

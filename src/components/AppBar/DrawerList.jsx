@@ -1,24 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { withRouter } from 'react-router';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { withRouter } from 'react-router'
 
 // material-ui components
-import Divider from 'material-ui/Divider';
-import ListSubheader from 'material-ui/List/ListSubheader';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
-import { withStyles } from 'material-ui/styles';
-import DataUsageIcon from 'material-ui-icons/DataUsage';
-import CachedIcon from 'material-ui-icons/Cached';
-import AddIcon from 'material-ui-icons/Add';
+import Divider from 'material-ui/Divider'
+import ListSubheader from 'material-ui/List/ListSubheader'
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import { withStyles } from 'material-ui/styles'
+import DataUsageIcon from 'material-ui-icons/DataUsage'
+import CachedIcon from 'material-ui-icons/Cached'
+import AddIcon from 'material-ui-icons/Add'
 
 // recompose
-import { compose, withProps } from 'recompose';
+import { compose, withProps } from 'recompose'
 
 // GraphQL
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import updateClipsMutation from '../../../graphql/mutations/updateClip';
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import updateClipboardMutation from '../../../graphql/mutations/updateClipboard'
 
 const styles = theme => ({
 	root: {
@@ -38,7 +38,7 @@ const styles = theme => ({
 	nested: {
 		paddingLeft: theme.spacing.unit * 4,
 	},
-});
+})
 
 /**
  *
@@ -50,7 +50,14 @@ const styles = theme => ({
  * @param {Object} classes classes to be used by JSS/materialUI
  */
 
-const DrawerList = ({ loading, clipboards, refetch, classes, toggleDrawer, pushRoute }) => {
+const DrawerList = ({
+	loading,
+	clipboards,
+	refetch,
+	classes,
+	toggleDrawer,
+	pushRoute,
+}) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
@@ -60,8 +67,8 @@ const DrawerList = ({ loading, clipboards, refetch, classes, toggleDrawer, pushR
         <ListItemIcon
           className={classes.icon}
           onClick={() => {
-							toggleDrawer();
-							pushRoute('/add');
+							toggleDrawer()
+							pushRoute('/add')
 						}}
         >
           <AddIcon />
@@ -73,26 +80,30 @@ const DrawerList = ({ loading, clipboards, refetch, classes, toggleDrawer, pushR
       </ListItem>
     </List>
   </ListSubheader>
-	);
-	let listItems;
+	)
+	let listItems
 	if (loading) {
-		listItems = <DataUsageIcon />;
+		listItems = <DataUsageIcon />
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <Link onClick={toggleDrawer} key={clipboard.id} to={`/boards/${clipboard.name}`}>
+  <Link
+    onClick={toggleDrawer}
+    key={clipboard.id}
+    to={`/boards/${clipboard.name}`}
+  >
     <ListItem key={clipboard.id} button>
       <ListItemText primary={clipboard.name} />
     </ListItem>
   </Link>
-		));
+		))
 	}
 	return (
   <List className={classes.root} subheader={subheader}>
     <Divider />
     {listItems}
   </List>
-	);
-};
+	)
+}
 
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
@@ -101,7 +112,7 @@ DrawerList.propTypes = {
 	refetch: PropTypes.func.isRequired,
 	toggleDrawer: PropTypes.func.isRequired,
 	pushRoute: PropTypes.func.isRequired,
-};
+}
 
 DrawerList.defaultProps = {
 	clipboards: [],
@@ -113,17 +124,19 @@ DrawerList.defaultProps = {
 			background: 'white',
 		},
 	},
-};
+}
 
-const withUpdateClipsMutation = graphql(gql`${updateClipsMutation}`);
+const withupdateClipboardMutation = graphql(gql`${updateClipboardMutation}`)
 
-const recomposeEnhancer = compose(withProps(({ history }) => ({ pushRoute: history.push })));
+const recomposeEnhancer = compose(
+	withProps(({ history }) => ({ pushRoute: history.push })),
+)
 
 const enchancer = compose(
 	withStyles(styles),
-	withUpdateClipsMutation,
+	withupdateClipboardMutation,
 	withRouter,
 	recomposeEnhancer,
-);
+)
 
-export default enchancer(DrawerList);
+export default enchancer(DrawerList)
