@@ -23,17 +23,17 @@ class PaperDialog extends React.Component {
 
 	onChange = (event, field) => {
 		const val = event.currentTarget.value
-		this.setState({
+		this.setState(({ form, error }) => ({
 			form: {
-				...this.state.form,
+				...form,
 				[field]: val,
 			},
 			error: {
-				...this.state.error,
+				...error,
 				[field]: val === '' ? true : false,
 			},
 			showErrors: val === '' ? true : false,
-		})
+		}))
 	}
 
 	onSubmit = () => {

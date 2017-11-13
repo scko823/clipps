@@ -1,28 +1,38 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 // recompose
-// import { compose } from 'recompose';
+import { compose, withStateHandlers } from 'recompose'
 
 // GraphQL
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import clipsQuery from '../../../graphql/queries/clips';
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import clipsQuery from '../../../graphql/queries/clips'
 
-import Snippet from '../Clips/Snippet';
-import FAB from './FAB';
+import Snippet from '../Clips/Snippet'
+import FAB from './FAB'
+import AddClipDialog from './AddClipDialog'
 
-const ClipboardView = ({ clips, loading }) => {
+const ClipboardView = ({
+	clips,
+	loading,
+	toggleAddClipDialog,
+	showAddClipDialog,
+}) => {
 	if (loading) {
-		return <h4>loading!!!</h4>;
+		return <h4>loading!!!</h4>
 	}
 	return (
   <div>
-    <FAB />
+    <FAB onClick={toggleAddClipDialog} />
+    <AddClipDialog
+      toggleShowDialog={toggleAddClipDialog}
+      showDialog={showAddClipDialog}
+    />
     {clips.map(clip => <Snippet key={clip.id} clip={clip} />)}
   </div>
-	);
-};
+	)
+}
 
 ClipboardView.propTypes = {
 	// match: PropTypes.shape({
@@ -31,13 +41,16 @@ ClipboardView.propTypes = {
 	// 	isExact: PropTypes.bool,
 	// 	params: PropTypes.object,
 	// }).isRequired,
+	toggleAddClipDialog: PropTypes.func.isRequired,
 	clips: PropTypes.object.isRequired,
 	loading: PropTypes.bool,
-};
+	showAddClipDialog: PropTypes.bool,
+}
 
 ClipboardView.defaultProps = {
 	loading: true,
-};
+	showAddClipDialog: false,
+}
 
 const withclipsQuery = graphql(
 	gql`
@@ -56,6 +69,19 @@ const withclipsQuery = graphql(
 			refetch: clips.refetch,
 		}),
 	},
-);
+)
 
-export default withclipsQuery(ClipboardView);
+const recomposeEnhancer = compose(
+	withStateHandlers(
+		({ showAddClipDialog = false }) => ({ showAddClipDialog }),
+		{
+			toggleAddClipDialog: ({ showAddClipDialog }) => () => ({
+				showAddClipDialog: !showAddClipDialog,
+			}),
+		},
+	),
+)
+
+const enhancer = compose(withclipsQuery, recomposeEnhancer)
+
+export default enhancer(ClipboardView)
