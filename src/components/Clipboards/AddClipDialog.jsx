@@ -1,33 +1,40 @@
 // eslint-disable
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 // material-ui
 import Dialog, {
 	DialogActions,
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-} from 'material-ui/Dialog'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
+} from 'material-ui/Dialog';
+import Button from 'material-ui/Button';
+import TextField from 'material-ui/TextField';
 
 // recompse
-import { compose, withStateHandlers } from 'recompose'
+import { compose, withStateHandlers } from 'recompose';
 
 // GraphQL
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import createClipMutation from '../../../graphql/mutations/createClip'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import createClipMutation from '../../../graphql/mutations/createClip';
 
 const AddClipDialog = ({
 	submit,
+	loading,
+	showLoadingSpinner,
 	toggleShowDialog,
 	showDialog,
 	clipboardName,
 	onContentFieldChange,
 	onNameFieldChange,
 	formState: { name, content },
-}) => (
+}) => {
+	const submitHandle = () => {
+		showLoadingSpinner();
+		submit();
+	};
+	return (
   <Dialog onRequestClose={toggleShowDialog} open={showDialog} fullWidth>
     <DialogTitle>New Clip</DialogTitle>
     <DialogContent>
@@ -51,15 +58,16 @@ const AddClipDialog = ({
       />
       <DialogActions>
         <Button onClick={toggleShowDialog} color="secondary">
-					Cancel
+						Cancel
         </Button>
-        <Button disabled={!name || !content} onClick={submit} color="primary">
-					Create
+        <Button disabled={!name || !content} onClick={submitHandle} color="primary">
+          {loading ? 'Loading' : 'Create'}
         </Button>
       </DialogActions>
     </DialogContent>
   </Dialog>
-)
+	);
+};
 
 AddClipDialog.propTypes = {
 	submit: PropTypes.func.isRequired,
@@ -67,17 +75,20 @@ AddClipDialog.propTypes = {
 	onNameFieldChange: PropTypes.func.isRequired,
 	onContentFieldChange: PropTypes.func.isRequired,
 	showDialog: PropTypes.bool.isRequired,
+	showLoadingSpinner: PropTypes.func.isRequired,
+	loading: PropTypes.bool.isRequired,
 	clipboardName: PropTypes.string.isRequired,
 	formState: PropTypes.shape({
 		name: PropTypes.string,
 		content: PropTypes.string,
 	}).isRequired,
-}
+};
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
-		({ formState = { name: '', content: '' } }) => ({
+		({ loading = false, formState = { name: '', content: '' } }) => ({
 			formState,
+			loading,
 		}),
 		{
 			onNameFieldChange: ({ formState }) => ({ target: { value } }) => ({
@@ -92,13 +103,14 @@ const recomposeEnhancer = compose(
 					content: value,
 				},
 			}),
+			showLoadingSpinner: () => () => ({ loading: true }),
 		},
 	),
-)
+);
 
 const withCreateClip = graphql(gql`${createClipMutation}`, {
 	props: ({ ownProps, mutate }) => {
-		const { clipboardId, formState: { content, name } } = ownProps
+		const { toggleShowDialog, clipboardId, formState: { content, name } } = ownProps;
 		return {
 			submit: () =>
 				mutate({
@@ -107,10 +119,10 @@ const withCreateClip = graphql(gql`${createClipMutation}`, {
 						name,
 						clipboardId,
 					},
-				}),
-		}
+				}).then(toggleShowDialog),
+		};
 	},
-})
+});
 
-const enhancer = compose(recomposeEnhancer, withCreateClip)
-export default enhancer(AddClipDialog)
+const enhancer = compose(recomposeEnhancer, withCreateClip);
+export default enhancer(AddClipDialog);
