@@ -10,6 +10,8 @@ import { withStyles } from 'material-ui/styles'
 // react hightlight
 import HighLight from 'react-highlight'
 
+import { compose, mapProps } from 'recompose'
+
 const style = () => ({
 	root: {
 		width: 400,
@@ -32,51 +34,43 @@ const style = () => ({
 	},
 })
 
-class Snippet extends React.Component {
-	onClick = e => {
-		e.preventDefault()
-		const { content } = this.props.clip
-
-		const text = document.createElement('textarea')
-		text.innerText = content
-		document.body.appendChild(text)
-		text.select()
-
-		document.execCommand('Copy')
-		text.remove()
-	}
-
-	render() {
-		const { clip: { name, content }, classes } = this.props
-		return (
+const Snippet = ({ clip: { name, content }, classes, copyContent }) => (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
         {name}
       </Typography>
       <ContentCopy
-        onClick={this.onClick}
+        onClick={copyContent}
         tooltip="Copy"
         className={classes.icon}
       />
     </div>
-    <HighLight
-      ref={c => {
-						this._textNode = c
-					}}
-      className="code"
-    >
-      {content}
-    </HighLight>
+    <HighLight className="code">{content}</HighLight>
   </Paper>
-		)
-	}
-}
+)
 
 Snippet.propTypes = {
 	clip: PropTypes.shape({
 		content: PropTypes.string.isRequired,
 	}).isRequired,
 	classes: PropTypes.object.isRequired,
+	copyContent: PropTypes.func.isRequired,
 }
-export default withStyles(style)(Snippet)
+
+const recomposeEnhancer = compose(
+	mapProps(props => ({
+		...props,
+		copyContent: e => {
+			e.preventDefault()
+			const { content } = props.clip
+			const text = document.createElement('textarea')
+			text.innerText = content
+			document.body.appendChild(text)
+			text.select()
+			document.execCommand('Copy')
+			text.remove()
+		},
+	})),
+)
+export default compose(withStyles(style), recomposeEnhancer)(Snippet)
