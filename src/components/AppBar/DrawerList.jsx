@@ -1,5 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { withRouter } from 'react-router'
+
 // material-ui components
 import Divider from 'material-ui/Divider'
 import ListSubheader from 'material-ui/List/ListSubheader'
@@ -7,14 +10,15 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import { withStyles } from 'material-ui/styles'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
 import CachedIcon from 'material-ui-icons/Cached'
+import AddIcon from 'material-ui-icons/Add'
 
 // recompose
-import { compose } from 'recompose'
+import { compose, withProps } from 'recompose'
 
 // GraphQL
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
-import updateClipsMutation from '../../../graphql/mutations/updateClip'
+import updateClipboardMutation from '../../../graphql/mutations/updateClipboard'
 
 const styles = theme => ({
 	root: {
@@ -26,7 +30,7 @@ const styles = theme => ({
 	subheader: {
 		padding: '0 0',
 	},
-	refetchIcon: {
+	icon: {
 		'&:hover': {
 			cursor: 'pointer',
 		},
@@ -41,22 +45,36 @@ const styles = theme => ({
  * @param {boolean} loading loading clipboard state, ie fetching with apollo, passed by parent ClipboardAppBar
  * @param {Object[]} clipboards clipboard data
  * @param {string} clipboards[].name clipboard name
- * @param {function} refetchClipboard refetchClipboard callback
+ * @param {string} clipboards[].id clipboard id
  * @param {function} refetch refetch callback
- * @param {function} mutate mutate a particular Clipboard callback
  * @param {Object} classes classes to be used by JSS/materialUI
  */
 
-const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
+const DrawerList = ({
+	loading,
+	clipboards,
+	refetch,
+	classes,
+	toggleDrawer,
+	pushRoute,
+}) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
       <ListItem>
         <ListItemText primary="Clipboards" />
+
         <ListItemIcon
-          className={classes.refetchIcon}
-          onClick={() => refetch()}
+          className={classes.icon}
+          onClick={() => {
+							toggleDrawer()
+							pushRoute('/add')
+						}}
         >
+          <AddIcon />
+        </ListItemIcon>
+
+        <ListItemIcon className={classes.icon} onClick={() => refetch()}>
           <CachedIcon />
         </ListItemIcon>
       </ListItem>
@@ -68,20 +86,15 @@ const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
 		listItems = <DataUsageIcon />
 	} else if (clipboards) {
 		listItems = clipboards.map(clipboard => (
-  <ListItem
+  <Link
+    onClick={toggleDrawer}
     key={clipboard.id}
-    onClick={() =>
-					mutate({
-						variables: {
-							id: clipboard.id,
-							name: `${Math.random().toFixed(4)}`,
-						},
-					})
-				}
-    button
+    to={`/boards/${clipboard.name}`}
   >
-    <ListItemText primary={clipboard.name} />
-  </ListItem>
+    <ListItem key={clipboard.id} button>
+      <ListItemText primary={clipboard.name} />
+    </ListItem>
+  </Link>
 		))
 	}
 	return (
@@ -94,10 +107,11 @@ const DrawerList = ({ loading, clipboards, refetch, mutate, classes }) => {
 
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
-	mutate: PropTypes.func.isRequired,
 	classes: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
 	refetch: PropTypes.func.isRequired,
+	toggleDrawer: PropTypes.func.isRequired,
+	pushRoute: PropTypes.func.isRequired,
 }
 
 DrawerList.defaultProps = {
@@ -112,8 +126,17 @@ DrawerList.defaultProps = {
 	},
 }
 
-const withUpdateClipsMutation = graphql(gql`${updateClipsMutation}`)
+const withupdateClipboardMutation = graphql(gql`${updateClipboardMutation}`)
 
-const enchancer = compose(withStyles(styles), withUpdateClipsMutation)
+const recomposeEnhancer = compose(
+	withProps(({ history }) => ({ pushRoute: history.push })),
+)
+
+const enchancer = compose(
+	withStyles(styles),
+	withupdateClipboardMutation,
+	withRouter,
+	recomposeEnhancer,
+)
 
 export default enchancer(DrawerList)

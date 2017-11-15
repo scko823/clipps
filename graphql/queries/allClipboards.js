@@ -1,3 +1,4 @@
+// query for getting all clipboards
 export default `
 {
   allClipboards {
@@ -5,4 +6,4 @@ export default `
     name
   }
 }
-`
+`;

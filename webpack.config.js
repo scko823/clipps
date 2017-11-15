@@ -1,10 +1,15 @@
-const webpack = require('webpack')
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const keys = require('./secrets/keys')
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const keys = require('./secrets/keys');
 
-const { graphcool: { websockets, api } } = keys
+const {
+	graphcool: {
+		websockets,
+		api
+	}
+} = keys;
 module.exports = {
 	context: path.resolve(__dirname, 'src'),
 	entry: ['babel-polyfill', './index.jsx'],
@@ -30,8 +35,7 @@ module.exports = {
 			{
 				test: /\.scss$/,
 				use: ExtractTextPlugin.extract({
-					use: [
-						{
+					use: [{
 							loader: 'css-loader',
 							options: {
 								importLoaders: 1,
@@ -75,6 +79,7 @@ module.exports = {
 		new webpack.NoEmitOnErrorsPlugin(),
 		new HtmlWebpackPlugin({
 			template: 'index.ejs',
+			inject: true,
 		}),
 		new webpack.NamedModulesPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
@@ -82,11 +87,24 @@ module.exports = {
 
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
+		staticOptions: {
+			redirect: false,
+		},
 		compress: true,
 		hot: true,
 		port: 9000,
-		historyApiFallback: true,
+		historyApiFallback: {
+			rewrites: [{
+					from: /^\/board\//,
+					to: '/index.html'
+				},
+				{
+					from: /^\/.*\/index.js$/,
+					to: '/index.js'
+				}
+			],
+		},
 	},
 
 	devtool: 'cheap-module-source-map',
-}
+};
