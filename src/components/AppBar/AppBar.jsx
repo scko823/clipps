@@ -1,28 +1,29 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+/* eslint-disable flowtype/require-valid-file-annotation */
+import React from 'react'
+import PropTypes from 'prop-types'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 // material-ui components
-import MUIAppBar from 'material-ui/AppBar';
-import Toolbar from 'material-ui/Toolbar';
-import Typography from 'material-ui/Typography';
-import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
-import Drawer from 'material-ui/Drawer';
-import Button from 'material-ui/Button';
+import MUIAppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
+import Typography from 'material-ui/Typography'
+import IconButton from 'material-ui/IconButton'
+import MenuIcon from 'material-ui-icons/Menu'
+import Drawer from 'material-ui/Drawer'
+import Button from 'material-ui/Button'
 
 // recompose
-import { compose, withStateHandlers, lifecycle } from 'recompose';
+import { compose, withStateHandlers, lifecycle } from 'recompose'
 
 // GraphQL
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
-import allClipboardsQuery from '../../../graphql/queries/allClipboards';
-import clipboardsSubscription from '../../../graphql/subscriptions/clipboards';
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+import allClipboardsQuery from '../../../graphql/queries/allClipboards'
+import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
 
 // components
-import DrawerList from './DrawerList';
-import AddClipboard from '../AddClipboard';
-import ClipboardView from '../Clipboards/ClipboardView';
+import DrawerList from './DrawerList'
+import AddClipboard from '../AddClipboard'
+import ClipboardView from '../Clipboards/ClipboardView'
 
 /**
  *
@@ -45,10 +46,18 @@ const ClipboardAppBar = ({
     <div id="clipboard">
       <MUIAppBar position="static">
         <Toolbar>
-          <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
+          <IconButton
+            onClick={toggleDrawer}
+            color="contrast"
+            aria-label="Menu"
+          >
             <MenuIcon />
           </IconButton>
-          <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
+          <Typography
+            type="title"
+            color="inherit"
+            style={{ flexGrow: 1 }}
+          >
 						ClipBoards
           </Typography>
           <Link to="/add">
@@ -58,7 +67,11 @@ const ClipboardAppBar = ({
           </Link>
         </Toolbar>
       </MUIAppBar>
-      <Drawer open={showDrawer} onRequestClose={toggleDrawer} className="drawer">
+      <Drawer
+        open={showDrawer}
+        onRequestClose={toggleDrawer}
+        className="drawer"
+      >
         <DrawerList
           loading={loadingClipboards}
           clipboards={clipboards}
@@ -68,10 +81,14 @@ const ClipboardAppBar = ({
       </Drawer>
       <Route exact path="/" render={() => <h1>landing page</h1>} />
       <Route exact path="/add" component={AddClipboard} />
-      <Route exact path="/boards/:clipboardName" component={ClipboardView} />
+      <Route
+        exact
+        path="/boards/:clipboardName"
+        component={ClipboardView}
+      />
     </div>
   </Router>
-);
+)
 
 ClipboardAppBar.propTypes = {
 	loadingClipboards: PropTypes.bool.isRequired,
@@ -84,11 +101,11 @@ ClipboardAppBar.propTypes = {
 	).isRequired,
 	showDrawer: PropTypes.bool,
 	toggleDrawer: PropTypes.func.isRequired,
-};
+}
 
 ClipboardAppBar.defaultProps = {
 	showDrawer: false,
-};
+}
 
 // GraphQL Clipboard query
 const withAllClipboardsQuery = graphql(
@@ -96,7 +113,10 @@ const withAllClipboardsQuery = graphql(
   ${allClipboardsQuery}
 `,
 	{
-		props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
+		props: ({
+			ownProps,
+			data: { loading, allClipboards, refetch, subscribeToMore },
+		}) => ({
 			...ownProps,
 			loadingClipboards: loading,
 			clipboards: allClipboards,
@@ -104,7 +124,7 @@ const withAllClipboardsQuery = graphql(
 			subscribeToMore,
 		}),
 	},
-);
+)
 
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
@@ -113,7 +133,9 @@ const recomposeEnhancer = compose(
 			showDrawer: initShowDrawer,
 		}),
 		{
-			toggleDrawer: ({ showDrawer }) => () => ({ showDrawer: !showDrawer }),
+			toggleDrawer: ({ showDrawer }) => () => ({
+				showDrawer: !showDrawer,
+			}),
 		},
 	),
 	// add subscription for CREATED, UPDATED , DELETED for clipboards
@@ -125,20 +147,23 @@ const recomposeEnhancer = compose(
 					{ allClipboards },
 					{
 						subscriptionData: {
-							Clipboard: { mutation, node /* updatedFields, previousValues */ },
+							Clipboard: {
+								mutation,
+								node /* updatedFields, previousValues */,
+							},
 						},
 					},
 				) => {
 					if (mutation === 'CREATED') {
-						return { allClipboards: [...allClipboards, node] };
+						return { allClipboards: [...allClipboards, node] }
 					}
-					return { allClipboards };
+					return { allClipboards }
 				},
-			});
+			})
 		},
 	}),
-);
+)
 
-const enhancer = compose(withAllClipboardsQuery, recomposeEnhancer);
+const enhancer = compose(withAllClipboardsQuery, recomposeEnhancer)
 
-export default enhancer(ClipboardAppBar);
+export default enhancer(ClipboardAppBar)
