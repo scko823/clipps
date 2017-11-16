@@ -80,12 +80,9 @@
 		"react-apollo": "^2.0.1",
 		"react-dom": "^16.1.0",
 		"react-highlight": "briancappello/react-highlight#react-v16-compiled",
-		"react-redux": "^5.0.5",
 		"react-router": "^4.2.0",
 		"react-router-dom": "^4.2.2",
 		"recompose": "^0.26.0",
-		"redux": "^3.7.2",
-		"redux-saga": "^0.15.6",
 		"styled-components": "^2.1.2",
 		"url-loader": "^0.6.2",
 		"webpack-hot-middleware": "^2.20.0"
