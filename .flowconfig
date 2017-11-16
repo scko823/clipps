@@ -10,6 +10,7 @@
 .*/node_modules/react-event-listener/src
 .*/node_modules/material-ui/Divider
 .*/node_modules/material-ui/Drawer
+.*/node_modules/material-ui/Form
 .*/node_modules/material-ui/List/
 .*/node_modules/material-ui/List/ListSubheader
 .*/node_modules/material-ui/List/ListItemText
