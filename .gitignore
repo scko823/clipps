@@ -1,4 +1,4 @@
 node_modules/
 dist/
-flow-typed/
+flow-typed/npm
 secrets/
