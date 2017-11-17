@@ -19,6 +19,7 @@ import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import allClipboardsQuery from '../../../graphql/queries/allClipboards'
 import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
+import createNowClipboardMutation from '../../../graphql/mutations/createNowClipboard'
 
 // components
 import DrawerList from './DrawerList'
@@ -141,6 +142,17 @@ const withAllClipboardsQuery = graphql(
 	},
 )
 
+// GraphQL createNowBoard mutation
+const withCreateNowClipboardMutation = graphql(
+	gql`${createNowClipboardMutation}`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			createNowBoard: mutate,
+		}),
+	},
+)
+
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
 	withStateHandlers(
@@ -176,9 +188,32 @@ const recomposeEnhancer = compose(
 				},
 			})
 		},
+		componentDidUpdate({ clipboards: pClipboards }) {
+			const { clipboards: cClipboards } = this.props
+			const prevClipsEmpty =
+				!pClipboards || (pClipboards && pClipboards.length === 0)
+			if (!prevClipsEmpty) {
+				return
+			}
+			const currentClipsEmpty =
+				cClipboards &&
+				Array.isArray(cClipboards) &&
+				cClipboards.length === 0
+			if (prevClipsEmpty && !currentClipsEmpty) {
+				return
+			}
+			const NowBoardExist = cClipboards.some(b => b.name === 'NOW')
+			if (!NowBoardExist) {
+				this.props.createNowBoard()
+			}
+		},
 	}),
 )
 
-const enhancer = compose(withAllClipboardsQuery, recomposeEnhancer)
+const enhancer = compose(
+	withAllClipboardsQuery,
+	withCreateNowClipboardMutation,
+	recomposeEnhancer,
+)
 
 export default enhancer(ClipboardAppBar)
