@@ -1,7 +1,7 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 // material-ui components
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
@@ -9,7 +9,6 @@ import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
 import Drawer from 'material-ui/Drawer'
-import Button from 'material-ui/Button'
 
 // recompose
 import { compose, withStateHandlers, lifecycle } from 'recompose'
@@ -23,6 +22,7 @@ import createNowClipboardMutation from '../../../graphql/mutations/createNowClip
 
 // components
 import DrawerList from './DrawerList'
+import ASAPButton from './ASAPButton'
 import AddClipboard from '../AddClipboard'
 import ClipboardView from '../Clipboards/ClipboardView'
 import ClipView from '../Clips/ClipView'
@@ -62,11 +62,7 @@ const ClipboardAppBar = ({
           >
 						ClipBoards
           </Typography>
-          <Link to="/add">
-            <Button raised color="accent">
-							ASAP
-            </Button>
-          </Link>
+          <ASAPButton />
         </Toolbar>
       </MUIAppBar>
       <Drawer
@@ -123,6 +119,9 @@ const withAllClipboardsQuery = graphql(
   ${allClipboardsQuery}
 `,
 	{
+		options: {
+			notifyOnNetworkStatusChange: true,
+		},
 		props: ({
 			ownProps,
 			data: { loading, allClipboards, refetch, subscribeToMore },
