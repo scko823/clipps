@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import MD5 from 'md5.js'
 import Button from 'material-ui/Button'
+import { grey, blue } from 'material-ui/colors'
 import TextField from 'material-ui/TextField'
 import Typography from 'material-ui/Typography'
 import Popover from 'material-ui/Popover'
@@ -10,7 +11,7 @@ import { withStyles } from 'material-ui/styles'
 import SendIcon from 'material-ui-icons/Send'
 
 import { random as randomStarWars } from 'startwars-name'
-import { compose, withStateHandlers } from 'recompose'
+import { compose, withStateHandlers /* withProps */ } from 'recompose'
 
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -34,6 +35,9 @@ const styles = () => ({
 			alignSelf: 'center',
 		},
 	},
+	icon: {
+		cursor: 'pointer',
+	},
 })
 
 const ASAPButton = ({
@@ -45,6 +49,7 @@ const ASAPButton = ({
 	clipContent,
 	classes,
 	nowBoardId,
+	createASAP,
 }) => [
   <Button
     key="asap-btn"
@@ -77,7 +82,11 @@ const ASAPButton = ({
       <Typography color="primary" type="title">
 				Post a clip to NOW board
       </Typography>
-      <SendIcon />
+      <SendIcon
+        color={clipContent !== '' ? blue['500'] : grey['500']}
+        className={classes.icon}
+        onClick={() => createASAP(clipName, clipContent, nowBoardId)}
+      />
     </div>
 
     <form noValidate autoComplete="off">
@@ -110,22 +119,27 @@ ASAPButton.propTypes = {
 	togglePopover: PropTypes.func.isRequired,
 	handleClipNameChange: PropTypes.func.isRequired,
 	handleClipContentChange: PropTypes.func.isRequired,
+	createASAP: PropTypes.func.isRequired,
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
 	nowBoardId: PropTypes.string.isRequired,
 }
 
-const recomposeEnhancer = withStateHandlers(
-	({ initOpenPopover = false }) => ({
-		open: initOpenPopover,
-		clipName: randomClipName(),
-		clipContent: '',
-	}),
-	{
-		togglePopover: ({ open }) => () => ({ open: !open }),
-		handleClipNameChange: () => ev => ({ clipName: ev.target.value }),
-		handleClipContentChange: () => ev => ({ clipContent: ev.target.value }),
-	},
+const recomposeEnhancer = compose(
+	withStateHandlers(
+		({ initOpenPopover = false }) => ({
+			open: initOpenPopover,
+			clipName: randomClipName(),
+			clipContent: '',
+		}),
+		{
+			togglePopover: ({ open }) => () => ({ open: !open }),
+			handleClipNameChange: () => ev => ({ clipName: ev.target.value }),
+			handleClipContentChange: () => ev => ({
+				clipContent: ev.target.value,
+			}),
+		},
+	),
 )
 
 const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
