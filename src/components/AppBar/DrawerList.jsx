@@ -7,7 +7,9 @@ import { withRouter } from 'react-router'
 import Divider from 'material-ui/Divider'
 import ListSubheader from 'material-ui/List/ListSubheader'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import { CircularProgress } from 'material-ui/Progress'
 import { withStyles } from 'material-ui/styles'
+import Typography from 'material-ui/Typography'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
 import CachedIcon from 'material-ui-icons/Cached'
 import AddIcon from 'material-ui-icons/Add'
@@ -31,6 +33,7 @@ const styles = theme => ({
 		padding: '0 0',
 	},
 	icon: {
+		margin: '0 auto',
 		'&:hover': {
 			cursor: 'pointer',
 		},
@@ -62,8 +65,7 @@ const DrawerList = ({
   <ListSubheader className={classes.subheader}>
     <List>
       <ListItem>
-        <ListItemText primary="Clipboards" />
-
+        <Typography type="headline">Clipboards</Typography>
         <ListItemIcon
           className={classes.icon}
           onClick={() => {
@@ -73,12 +75,11 @@ const DrawerList = ({
         >
           <AddIcon />
         </ListItemIcon>
-
         <ListItemIcon
           className={classes.icon}
           onClick={() => refetch()}
         >
-          <CachedIcon />
+          {loading ? <CircularProgress /> : <CachedIcon />}
         </ListItemIcon>
       </ListItem>
     </List>
