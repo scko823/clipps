@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import { withRouter } from 'react-router'
 import MD5 from 'md5.js'
 import Button from 'material-ui/Button'
 import { grey, blue } from 'material-ui/colors'
@@ -11,7 +12,7 @@ import { withStyles } from 'material-ui/styles'
 import SendIcon from 'material-ui-icons/Send'
 
 import { random as randomStarWars } from 'startwars-name'
-import { compose, withStateHandlers /* withProps */ } from 'recompose'
+import { compose, withStateHandlers, withProps } from 'recompose'
 
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
@@ -49,7 +50,7 @@ const ASAPButton = ({
 	clipContent,
 	classes,
 	nowBoardId,
-	createASAP,
+	submitAndRedirect,
 }) => [
   <Button
     key="asap-btn"
@@ -85,7 +86,7 @@ const ASAPButton = ({
       <SendIcon
         color={clipContent !== '' ? blue['500'] : grey['500']}
         className={classes.icon}
-        onClick={() => createASAP(clipName, clipContent, nowBoardId)}
+        onClick={submitAndRedirect}
       />
     </div>
 
@@ -119,7 +120,7 @@ ASAPButton.propTypes = {
 	togglePopover: PropTypes.func.isRequired,
 	handleClipNameChange: PropTypes.func.isRequired,
 	handleClipContentChange: PropTypes.func.isRequired,
-	createASAP: PropTypes.func.isRequired,
+	submitAndRedirect: PropTypes.func.isRequired,
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
 	nowBoardId: PropTypes.string.isRequired,
@@ -140,6 +141,22 @@ const recomposeEnhancer = compose(
 			}),
 		},
 	),
+	withProps(
+		({
+			clipName,
+			clipContent,
+			nowBoardId,
+			createASAP,
+			history,
+			togglePopover,
+		}) => ({
+			submitAndRedirect: () =>
+				createASAP(clipName, clipContent, nowBoardId).then(() => {
+					togglePopover()
+					history.push(`/NOW/${clipName}`)
+				}),
+		}),
+	),
 )
 
 const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
@@ -157,6 +174,7 @@ const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
 
 const enhancer = compose(
 	compose(withStyles(styles)),
+	withRouter,
 	withCreateClipMutation,
 	recomposeEnhancer,
 )
