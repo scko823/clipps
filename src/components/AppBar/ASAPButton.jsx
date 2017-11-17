@@ -1,13 +1,37 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import MD5 from 'md5.js'
 import Button from 'material-ui/Button'
+import TextField from 'material-ui/TextField'
 import Typography from 'material-ui/Typography'
 import Popover from 'material-ui/Popover'
+import { withStyles } from 'material-ui/styles'
 
+import { random as randomStarWars } from 'startwars-name'
 import { withStateHandlers } from 'recompose'
 
-const ASAPButton = ({ open, togglePopover }) => [
+const randomClipName = () =>
+	`${randomStarWars()
+		.split(/\s+/)
+		.join('-')}__${new MD5()
+		.update(`${Math.random()}-${new Date().toISOString()}`)
+		.digest('hex')
+		.substring(0, 6)}`
+
+const styles = {
+	popover: { padding: '1% 2%' },
+}
+
+const ASAPButton = ({
+	open,
+	togglePopover,
+	handleClipNameChange,
+	handleClipContentChange,
+	clipName,
+	clipContent,
+	classes,
+}) => [
   <Button raised color="accent" id="ASAP-btn" onClick={togglePopover}>
 		ASAP
   </Button>,
@@ -25,8 +49,33 @@ const ASAPButton = ({ open, togglePopover }) => [
 			vertical: 'top',
 			horizontal: 'center',
 		}}
+    classes={{ paper: classes.popover }}
   >
-    <Typography>The content of the Popover.</Typography>
+    <Typography color="primary" type="title">
+			Post a clip to NOW board
+    </Typography>
+    <form noValidate autoComplete="off">
+      <TextField
+        margin="dense"
+        id="name"
+        label="clip name"
+        onChange={handleClipNameChange}
+        fullWidth
+        value={clipName}
+      />
+      <TextField
+        multiline
+        autoFocus
+        fullWidth
+        margin="dense"
+        id="content"
+        label="clip content"
+        value={clipContent}
+        inputProps={{ type: 'textarea' }}
+        onChange={handleClipContentChange}
+        rows="4"
+      />
+    </form>
   </Popover>,
 ]
 
@@ -42,7 +91,7 @@ ASAPButton.propTypes = {
 const recomposeEnhancer = withStateHandlers(
 	({ initOpenPopover = false }) => ({
 		open: initOpenPopover,
-		clipName: '',
+		clipName: randomClipName(),
 		clipContent: '',
 	}),
 	{
@@ -52,4 +101,4 @@ const recomposeEnhancer = withStateHandlers(
 	},
 )
 
-export default recomposeEnhancer(ASAPButton)
+export default withStyles(styles)(recomposeEnhancer(ASAPButton))
