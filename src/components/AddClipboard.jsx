@@ -37,9 +37,9 @@ const AddClipboard = props => {
             />
             <br />
             <Button
+              raised
               label="Create Clipboard"
               color="primary"
-              raised
               onClick={submit}
               disabled={!name || error}
             >

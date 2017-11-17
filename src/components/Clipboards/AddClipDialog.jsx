@@ -40,35 +40,38 @@ const AddClipDialog = ({
       <DialogContentText>
 					Add a new clip to {clipboardName}
       </DialogContentText>
-      <TextField
-        autoFocus
-        margin="dense"
-        id="name"
-        label="clip name"
-        onChange={onNameFieldChange}
-        fullWidth
-      />
-      <TextField
-        margin="dense"
-        id="content"
-        label="clip content"
-        inputProps={{ type: 'textarea' }}
-        onChange={onContentFieldChange}
-        multiline
-        fullWidth
-      />
-      <DialogActions>
-        <Button onClick={toggleShowDialog} color="accent">
-						Cancel
-        </Button>
-        <Button
-          disabled={!name || !content}
-          onClick={submitHandle}
-          color="primary"
-        >
-          {loading ? 'Loading' : 'Create'}
-        </Button>
-      </DialogActions>
+      <form noValidate autoComplete="off">
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="clip name"
+          onChange={onNameFieldChange}
+          fullWidth
+        />
+        <TextField
+          multiline
+          fullWidth
+          margin="dense"
+          id="content"
+          label="clip content"
+          inputProps={{ type: 'textarea' }}
+          onChange={onContentFieldChange}
+          rows="4"
+        />
+        <DialogActions>
+          <Button onClick={toggleShowDialog} color="accent">
+							Cancel
+          </Button>
+          <Button
+            disabled={!name || !content}
+            onClick={submitHandle}
+            color="primary"
+          >
+            {loading ? 'Loading' : 'Create'}
+          </Button>
+        </DialogActions>
+      </form>
     </DialogContent>
   </Dialog>
 	)

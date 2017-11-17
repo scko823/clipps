@@ -33,14 +33,22 @@ const ASAPButton = ({ open, togglePopover }) => [
 ASAPButton.propTypes = {
 	open: PropTypes.bool.isRequired,
 	togglePopover: PropTypes.func.isRequired,
+	handleClipNameChange: PropTypes.func.isRequired,
+	handleClipContentChange: PropTypes.func.isRequired,
+	clipName: PropTypes.string.isRequired,
+	clipContent: PropTypes.string.isRequired,
 }
 
 const recomposeEnhancer = withStateHandlers(
 	({ initOpenPopover = false }) => ({
 		open: initOpenPopover,
+		clipName: '',
+		clipContent: '',
 	}),
 	{
 		togglePopover: ({ open }) => () => ({ open: !open }),
+		handleClipNameChange: () => ev => ({ clipName: ev.target.value }),
+		handleClipContentChange: () => ev => ({ clipContent: ev.target.value }),
 	},
 )
 
