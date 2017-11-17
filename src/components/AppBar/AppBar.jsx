@@ -86,6 +86,11 @@ const ClipboardAppBar = ({
         path="/boards/:clipboardName"
         component={ClipboardView}
       />
+      <Route
+        exact
+        path="/boards/:clipboardName/:clipName"
+        render={() => <h1>tests</h1>}
+      />
     </div>
   </Router>
 )

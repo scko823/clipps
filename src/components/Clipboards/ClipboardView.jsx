@@ -34,7 +34,13 @@ const ClipboardView = ({
       toggleShowDialog={toggleAddClipDialog}
       showDialog={showAddClipDialog}
     />
-    {clips.map(clip => <Snippet key={clip.id} clip={clip} />)}
+    {clips.map(clip => (
+      <Snippet
+        clipboardName={clipboardName}
+        key={clip.id}
+        clip={clip}
+      />
+			))}
   </div>
 	)
 }

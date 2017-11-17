@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 // material-ui
 import Paper from 'material-ui/Paper'
@@ -34,11 +35,16 @@ const style = () => ({
 	},
 })
 
-const Snippet = ({ clip: { name, content }, classes, copyContent }) => (
+const Snippet = ({
+	clip: { name, content },
+	classes,
+	copyContent,
+	clipboardName,
+}) => (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
-        {name}
+        <Link to={`/${clipboardName}/${name}`}>{name}</Link>
       </Typography>
       <ContentCopy
         onClick={copyContent}
@@ -56,6 +62,7 @@ Snippet.propTypes = {
 	}).isRequired,
 	classes: PropTypes.object.isRequired,
 	copyContent: PropTypes.func.isRequired,
+	clipboardName: PropTypes.string.isRequired,
 }
 
 const recomposeEnhancer = compose(
