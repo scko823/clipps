@@ -1,7 +1,7 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom'
 // material-ui components
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
@@ -24,6 +24,7 @@ import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
 import DrawerList from './DrawerList'
 import AddClipboard from '../AddClipboard'
 import ClipboardView from '../Clipboards/ClipboardView'
+import ClipView from '../Clips/ClipView'
 
 /**
  *
@@ -79,18 +80,27 @@ const ClipboardAppBar = ({
           toggleDrawer={toggleDrawer}
         />
       </Drawer>
-      <Route exact path="/" render={() => <h1>landing page</h1>} />
-      <Route exact path="/add" component={AddClipboard} />
-      <Route
-        exact
-        path="/boards/:clipboardName"
-        component={ClipboardView}
-      />
-      <Route
-        exact
-        path="/boards/:clipboardName/:clipName"
-        render={() => <h1>tests</h1>}
-      />
+      <Switch>
+        <Route exact path="/" render={() => <h1>landing page</h1>} />
+        <Route exact path="/add" component={AddClipboard} />
+        <Route
+          exact
+          path="/boards/:clipboardName"
+          component={ClipboardView}
+        />
+        <Route
+          exact
+          path="/:clipboardName/:clipName"
+          render={({
+						match: { params: { clipboardName, clipName } },
+					}) => (
+  <ClipView
+    clip={{ content: 'test', name: clipName }}
+    clipboardName={clipboardName}
+  />
+					)}
+        />
+      </Switch>
     </div>
   </Router>
 )

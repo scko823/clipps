@@ -13,7 +13,7 @@ import HighLight from 'react-highlight'
 
 import { compose, mapProps } from 'recompose'
 
-const style = () => ({
+export const snippetStyles = {
 	root: {
 		width: 400,
 		margin: 20,
@@ -33,7 +33,9 @@ const style = () => ({
 			cursor: 'pointer',
 		},
 	},
-})
+}
+
+const stlyes = () => snippetStyles
 
 const Snippet = ({
 	clip: { name, content },
@@ -80,4 +82,7 @@ const recomposeEnhancer = compose(
 		},
 	})),
 )
-export default compose(withStyles(style), recomposeEnhancer)(Snippet)
+
+export const withCopySnippet = recomposeEnhancer(Snippet)
+
+export default compose(withStyles(stlyes), recomposeEnhancer)(Snippet)
