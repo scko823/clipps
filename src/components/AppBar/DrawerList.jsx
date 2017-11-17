@@ -88,7 +88,13 @@ const DrawerList = ({
 	if (loading) {
 		listItems = <DataUsageIcon />
 	} else if (clipboards) {
-		listItems = clipboards.map(clipboard => (
+		const NowBoard = clipboards.find(
+			clipboard => clipboard.name === 'NOW',
+		) || { id: '1', name: 'NOW' }
+		const restOfTheBoards = clipboards.filter(
+			clipboard => clipboard.name !== 'NOW',
+		)
+		listItems = [NowBoard, ...restOfTheBoards].map(clipboard => (
   <Link
     onClick={toggleDrawer}
     key={clipboard.id}

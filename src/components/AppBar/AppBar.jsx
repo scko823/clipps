@@ -109,6 +109,7 @@ const ClipboardAppBar = ({
 ClipboardAppBar.propTypes = {
 	loadingClipboards: PropTypes.bool.isRequired,
 	refetchClipboard: PropTypes.func.isRequired,
+	// createNowBoard: PropTypes.func.isRequired,
 	clipboards: PropTypes.arrayOf(
 		PropTypes.shape({
 			id: PropTypes.string.isRequired,
@@ -189,7 +190,11 @@ const recomposeEnhancer = compose(
 			})
 		},
 		componentDidUpdate({ clipboards: pClipboards }) {
-			const { clipboards: cClipboards } = this.props
+			const {
+				clipboards: cClipboards,
+				createNowBoard,
+				refetchClipboard,
+			} = this.props
 			const prevClipsEmpty =
 				!pClipboards || (pClipboards && pClipboards.length === 0)
 			if (!prevClipsEmpty) {
@@ -199,12 +204,12 @@ const recomposeEnhancer = compose(
 				cClipboards &&
 				Array.isArray(cClipboards) &&
 				cClipboards.length === 0
-			if (prevClipsEmpty && !currentClipsEmpty) {
+			if (currentClipsEmpty) {
 				return
 			}
 			const NowBoardExist = cClipboards.some(b => b.name === 'NOW')
 			if (!NowBoardExist) {
-				this.props.createNowBoard()
+				createNowBoard().then(refetchClipboard)
 			}
 		},
 	}),
