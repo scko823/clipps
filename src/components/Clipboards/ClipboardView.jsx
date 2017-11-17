@@ -10,7 +10,7 @@ import gql from 'graphql-tag'
 import clipsQuery from '../../../graphql/queries/clips'
 import clipsSubscription from '../../../graphql/subscriptions/clips'
 
-import Snippet from '../Clips/Snippet'
+import SnippetCard from '../Clips/Snippet'
 import FAB from './FAB'
 import AddClipDialog from './AddClipDialog'
 
@@ -35,7 +35,7 @@ const ClipboardView = ({
       showDialog={showAddClipDialog}
     />
     {clips.map(clip => (
-      <Snippet
+      <SnippetCard
         clipboardName={clipboardName}
         key={clip.id}
         clip={clip}
