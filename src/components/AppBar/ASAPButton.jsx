@@ -7,9 +7,15 @@ import TextField from 'material-ui/TextField'
 import Typography from 'material-ui/Typography'
 import Popover from 'material-ui/Popover'
 import { withStyles } from 'material-ui/styles'
+import SendIcon from 'material-ui-icons/Send'
 
 import { random as randomStarWars } from 'startwars-name'
-import { withStateHandlers } from 'recompose'
+import { compose, withStateHandlers } from 'recompose'
+
+import { graphql } from 'react-apollo'
+import gql from 'graphql-tag'
+
+import createClipMutation from '../../../graphql/mutations/createClip'
 
 const randomClipName = () =>
 	`${randomStarWars()
@@ -19,9 +25,16 @@ const randomClipName = () =>
 		.digest('hex')
 		.substring(0, 6)}`
 
-const styles = {
+const styles = () => ({
 	popover: { padding: '1% 2%' },
-}
+	title: {
+		display: 'flex',
+		justifyContent: 'space-between',
+		'&>h2': {
+			alignSelf: 'center',
+		},
+	},
+})
 
 const ASAPButton = ({
 	open,
@@ -60,9 +73,13 @@ const ASAPButton = ({
 		}}
     classes={{ paper: classes.popover }}
   >
-    <Typography color="primary" type="title">
-			Post a clip to NOW board
-    </Typography>
+    <div className={classes.title}>
+      <Typography color="primary" type="title">
+				Post a clip to NOW board
+      </Typography>
+      <SendIcon />
+    </div>
+
     <form noValidate autoComplete="off">
       <TextField
         margin="dense"
@@ -111,4 +128,23 @@ const recomposeEnhancer = withStateHandlers(
 	},
 )
 
-export default withStyles(styles)(recomposeEnhancer(ASAPButton))
+const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
+	props: ({ mutate }) => ({
+		createASAP: (name, content, nowBoardId) =>
+			mutate({
+				variables: {
+					clipboardId: nowBoardId,
+					name,
+					content,
+				},
+			}),
+	}),
+})
+
+const enhancer = compose(
+	compose(withStyles(styles)),
+	withCreateClipMutation,
+	recomposeEnhancer,
+)
+
+export default enhancer(ASAPButton)
