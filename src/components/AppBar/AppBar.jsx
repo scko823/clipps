@@ -92,14 +92,7 @@ const ClipboardAppBar = ({
         <Route
           exact
           path="/:clipboardName/:clipName"
-          render={({
-						match: { params: { clipboardName, clipName } },
-					}) => (
-  <ClipView
-    clip={{ content: 'test', name: clipName }}
-    clipboardName={clipboardName}
-  />
-					)}
+          component={ClipView}
         />
       </Switch>
     </div>

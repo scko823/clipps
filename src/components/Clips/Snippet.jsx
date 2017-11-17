@@ -37,7 +37,7 @@ export const snippetStyles = {
 
 const stlyes = () => snippetStyles
 
-const Snippet = ({
+export const Snippet = ({
 	clip: { name, content },
 	classes,
 	copyContent,
@@ -83,6 +83,6 @@ const recomposeEnhancer = compose(
 	})),
 )
 
-export const withCopySnippet = recomposeEnhancer(Snippet)
+export const withCopyEnhancer = recomposeEnhancer
 
 export default compose(withStyles(stlyes), recomposeEnhancer)(Snippet)
