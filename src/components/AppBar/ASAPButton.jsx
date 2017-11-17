@@ -4,9 +4,10 @@ import PropTypes from 'prop-types'
 import { withRouter } from 'react-router'
 import MD5 from 'md5.js'
 import Button from 'material-ui/Button'
-import { grey, blue } from 'material-ui/colors'
+import { grey, blue, lightGreen } from 'material-ui/colors'
 import TextField from 'material-ui/TextField'
 import Typography from 'material-ui/Typography'
+import { CircularProgress } from 'material-ui/Progress'
 import Popover from 'material-ui/Popover'
 import { withStyles } from 'material-ui/styles'
 import SendIcon from 'material-ui-icons/Send'
@@ -39,6 +40,22 @@ const styles = () => ({
 	icon: {
 		cursor: 'pointer',
 	},
+	progressWrapper: {
+		position: 'relative',
+	},
+	progress: {
+		color: lightGreen['500'],
+		position: 'absolute',
+		left: '25%',
+		marginTop: '-3px',
+		zIndex: 1,
+	},
+	progress2: {
+		color: lightGreen['500'],
+		position: 'absolute',
+		left: '0',
+		zIndex: 1,
+	},
 })
 
 const ASAPButton = ({
@@ -51,17 +68,22 @@ const ASAPButton = ({
 	classes,
 	nowBoardId,
 	submitAndRedirect,
+	submitting,
 }) => [
-  <Button
-    key="asap-btn"
-    raised
-    color="accent"
-    id="ASAP-btn"
-    disabled={nowBoardId === '1'}
-    onClick={togglePopover}
-  >
-		ASAP
-  </Button>,
+  <div key="asap-btn-wrapper" className={classes.progressWrapper}>
+    <Button
+      raised
+      color="accent"
+      id="ASAP-btn"
+      disabled={nowBoardId === '1'}
+      onClick={togglePopover}
+    >
+			ASAP
+    </Button>
+    {nowBoardId === '1' && (
+    <CircularProgress className={classes.progress} />
+		)}
+  </div>,
   <Popover
     open={open}
     key="asap-popover"
@@ -83,11 +105,23 @@ const ASAPButton = ({
       <Typography color="primary" type="title">
 				Post a clip to NOW board
       </Typography>
-      <SendIcon
-        color={clipContent !== '' ? blue['500'] : grey['500']}
-        className={classes.icon}
-        onClick={submitAndRedirect}
-      />
+      <div className={classes.progressWrapper}>
+        {submitting ? (
+          <CircularProgress
+            className={classes.progress2}
+            style={{
+							width: '24px',
+							height: '24px',
+						}}
+          />
+				) : (
+  <SendIcon
+    color={clipContent !== '' ? blue['500'] : grey['500']}
+    className={classes.icon}
+    onClick={submitAndRedirect}
+  />
+				)}
+      </div>
     </div>
 
     <form noValidate autoComplete="off">
@@ -128,10 +162,11 @@ ASAPButton.propTypes = {
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
-		({ initOpenPopover = false }) => ({
+		({ initOpenPopover = false, submitting = false }) => ({
 			open: initOpenPopover,
 			clipName: randomClipName(),
 			clipContent: '',
+			submitting,
 		}),
 		{
 			togglePopover: ({ open }) => () => ({ open: !open }),
@@ -139,6 +174,7 @@ const recomposeEnhancer = compose(
 			handleClipContentChange: () => ev => ({
 				clipContent: ev.target.value,
 			}),
+			setSubmitting: () => bool => ({ submitting: bool }),
 		},
 	),
 	withProps(
@@ -149,12 +185,15 @@ const recomposeEnhancer = compose(
 			createASAP,
 			history,
 			togglePopover,
+			setSubmitting,
 		}) => ({
-			submitAndRedirect: () =>
+			submitAndRedirect: () => {
+				setSubmitting(true)
 				createASAP(clipName, clipContent, nowBoardId).then(() => {
 					togglePopover()
 					history.push(`/NOW/${clipName}`)
-				}),
+				})
+			},
 		}),
 	),
 )
