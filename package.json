@@ -15,14 +15,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/tanu1989/React-redux-boilerplate.git"
+		"url": "https://github.com/scko823/clipps"
 	},
 	"author": "Thanmaya",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/tanu1989/React-redux-boilerplate/issues"
+		"url": "https://github.com/scko823/clipps/issues"
 	},
-	"homepage": "https://github.com/tanu1989/React-redux-boilerplate#readme",
+	"homepage": "https://github.com/scko823/clipps",
 	"optionalDependencies": {
 		"fsevents": "*"
 	},
