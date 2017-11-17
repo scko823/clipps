@@ -31,12 +31,21 @@ const ASAPButton = ({
 	clipName,
 	clipContent,
 	classes,
+	nowBoardId,
 }) => [
-  <Button raised color="accent" id="ASAP-btn" onClick={togglePopover}>
+  <Button
+    key="asap-btn"
+    raised
+    color="accent"
+    id="ASAP-btn"
+    disabled={nowBoardId === '1'}
+    onClick={togglePopover}
+  >
 		ASAP
   </Button>,
   <Popover
     open={open}
+    key="asap-popover"
     anchorEl={document.getElementById('ASAP-btn')}
     anchorReference="anchorEl"
     anchorPosition={{ top: 200, left: 400 }}
@@ -86,6 +95,7 @@ ASAPButton.propTypes = {
 	handleClipContentChange: PropTypes.func.isRequired,
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
 }
 
 const recomposeEnhancer = withStateHandlers(

@@ -60,6 +60,7 @@ const DrawerList = ({
 	classes,
 	toggleDrawer,
 	pushRoute,
+	nowBoardId,
 }) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
@@ -91,7 +92,7 @@ const DrawerList = ({
 	} else if (clipboards) {
 		const NowBoard = clipboards.find(
 			clipboard => clipboard.name === 'NOW',
-		) || { id: '1', name: 'NOW' }
+		) || { id: nowBoardId, name: 'NOW' }
 		const restOfTheBoards = clipboards.filter(
 			clipboard => clipboard.name !== 'NOW',
 		)
@@ -122,6 +123,7 @@ DrawerList.propTypes = {
 	refetch: PropTypes.func.isRequired,
 	toggleDrawer: PropTypes.func.isRequired,
 	pushRoute: PropTypes.func.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
 }
 
 DrawerList.defaultProps = {

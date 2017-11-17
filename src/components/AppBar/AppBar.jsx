@@ -43,6 +43,7 @@ const ClipboardAppBar = ({
 	refetchClipboard,
 	showDrawer,
 	toggleDrawer,
+	nowBoardId,
 }) => (
   <Router>
     <div id="clipboard">
@@ -62,7 +63,7 @@ const ClipboardAppBar = ({
           >
 						ClipBoards
           </Typography>
-          <ASAPButton />
+          <ASAPButton nowBoardId={nowBoardId} />
         </Toolbar>
       </MUIAppBar>
       <Drawer
@@ -71,6 +72,7 @@ const ClipboardAppBar = ({
         className="drawer"
       >
         <DrawerList
+          nowBoardId={nowBoardId}
           loading={loadingClipboards}
           clipboards={clipboards}
           refetch={refetchClipboard}
@@ -98,7 +100,7 @@ const ClipboardAppBar = ({
 ClipboardAppBar.propTypes = {
 	loadingClipboards: PropTypes.bool.isRequired,
 	refetchClipboard: PropTypes.func.isRequired,
-	// createNowBoard: PropTypes.func.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
 	clipboards: PropTypes.arrayOf(
 		PropTypes.shape({
 			id: PropTypes.string.isRequired,
@@ -149,13 +151,15 @@ const withCreateNowClipboardMutation = graphql(
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
 	withStateHandlers(
-		({ initShowDrawer = false }) => ({
+		({ initShowDrawer = false, nowBoardId = '1' }) => ({
 			showDrawer: initShowDrawer,
+			nowBoardId,
 		}),
 		{
 			toggleDrawer: ({ showDrawer }) => () => ({
 				showDrawer: !showDrawer,
 			}),
+			setNowBoardId: () => id => ({ nowBoardId: id }),
 		},
 	),
 	// add subscription for CREATED, UPDATED , DELETED for clipboards
@@ -186,6 +190,7 @@ const recomposeEnhancer = compose(
 				clipboards: cClipboards,
 				createNowBoard,
 				refetchClipboard,
+				setNowBoardId,
 			} = this.props
 			const prevClipsEmpty =
 				!pClipboards || (pClipboards && pClipboards.length === 0)
@@ -201,7 +206,15 @@ const recomposeEnhancer = compose(
 			}
 			const NowBoardExist = cClipboards.some(b => b.name === 'NOW')
 			if (!NowBoardExist) {
-				createNowBoard().then(refetchClipboard)
+				createNowBoard().then(
+					({ data: { createClipboard: { id } } }) => {
+						setNowBoardId(id)
+						refetchClipboard()
+					},
+				)
+			} else {
+				const nowBoard = cClipboards.find(b => b.name === 'NOW')
+				setNowBoardId(nowBoard.id)
 			}
 		},
 	}),
