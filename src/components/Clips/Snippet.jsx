@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 // material-ui
 import Paper from 'material-ui/Paper'
@@ -12,7 +13,7 @@ import HighLight from 'react-highlight'
 
 import { compose, mapProps } from 'recompose'
 
-const style = () => ({
+export const snippetStyles = {
 	root: {
 		width: 400,
 		margin: 20,
@@ -32,13 +33,20 @@ const style = () => ({
 			cursor: 'pointer',
 		},
 	},
-})
+}
 
-const Snippet = ({ clip: { name, content }, classes, copyContent }) => (
+const stlyes = () => snippetStyles
+
+export const Snippet = ({
+	clip: { name, content },
+	classes,
+	copyContent,
+	clipboardName,
+}) => (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
-        {name}
+        <Link to={`/${clipboardName}/${name}`}>{name}</Link>
       </Typography>
       <ContentCopy
         onClick={copyContent}
@@ -56,6 +64,7 @@ Snippet.propTypes = {
 	}).isRequired,
 	classes: PropTypes.object.isRequired,
 	copyContent: PropTypes.func.isRequired,
+	clipboardName: PropTypes.string.isRequired,
 }
 
 const recomposeEnhancer = compose(
@@ -73,4 +82,7 @@ const recomposeEnhancer = compose(
 		},
 	})),
 )
-export default compose(withStyles(style), recomposeEnhancer)(Snippet)
+
+export const withCopyEnhancer = recomposeEnhancer
+
+export default compose(withStyles(stlyes), recomposeEnhancer)(Snippet)

@@ -1,4 +1,3 @@
-// @flow weak
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
@@ -8,7 +7,9 @@ import { withRouter } from 'react-router'
 import Divider from 'material-ui/Divider'
 import ListSubheader from 'material-ui/List/ListSubheader'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import { CircularProgress } from 'material-ui/Progress'
 import { withStyles } from 'material-ui/styles'
+import Typography from 'material-ui/Typography'
 import DataUsageIcon from 'material-ui-icons/DataUsage'
 import CachedIcon from 'material-ui-icons/Cached'
 import AddIcon from 'material-ui-icons/Add'
@@ -32,6 +33,7 @@ const styles = theme => ({
 		padding: '0 0',
 	},
 	icon: {
+		margin: '0 auto',
 		'&:hover': {
 			cursor: 'pointer',
 		},
@@ -58,13 +60,13 @@ const DrawerList = ({
 	classes,
 	toggleDrawer,
 	pushRoute,
+	nowBoardId,
 }) => {
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
       <ListItem>
-        <ListItemText primary="Clipboards" />
-
+        <Typography type="headline">Clipboards</Typography>
         <ListItemIcon
           className={classes.icon}
           onClick={() => {
@@ -74,9 +76,11 @@ const DrawerList = ({
         >
           <AddIcon />
         </ListItemIcon>
-
-        <ListItemIcon className={classes.icon} onClick={() => refetch()}>
-          <CachedIcon />
+        <ListItemIcon
+          className={classes.icon}
+          onClick={() => refetch()}
+        >
+          {loading ? <CircularProgress /> : <CachedIcon />}
         </ListItemIcon>
       </ListItem>
     </List>
@@ -86,7 +90,13 @@ const DrawerList = ({
 	if (loading) {
 		listItems = <DataUsageIcon />
 	} else if (clipboards) {
-		listItems = clipboards.map(clipboard => (
+		const NowBoard = clipboards.find(
+			clipboard => clipboard.name === 'NOW',
+		) || { id: nowBoardId, name: 'NOW' }
+		const restOfTheBoards = clipboards.filter(
+			clipboard => clipboard.name !== 'NOW',
+		)
+		listItems = [NowBoard, ...restOfTheBoards].map(clipboard => (
   <Link
     onClick={toggleDrawer}
     key={clipboard.id}
@@ -113,6 +123,7 @@ DrawerList.propTypes = {
 	refetch: PropTypes.func.isRequired,
 	toggleDrawer: PropTypes.func.isRequired,
 	pushRoute: PropTypes.func.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
 }
 
 DrawerList.defaultProps = {

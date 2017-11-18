@@ -8,6 +8,7 @@
 .*/node_modules/graphql-tag
 .*/node_modules/kefir
 .*/node_modules/react-event-listener/src
+.*/node_modules/material-ui/
 .*/node_modules/material-ui/Divider
 .*/node_modules/material-ui/Drawer
 .*/node_modules/material-ui/Form

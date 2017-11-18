@@ -1,7 +1,7 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 import React from 'react'
 import PropTypes from 'prop-types'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 // material-ui components
 import MUIAppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
@@ -9,7 +9,6 @@ import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui-icons/Menu'
 import Drawer from 'material-ui/Drawer'
-import Button from 'material-ui/Button'
 
 // recompose
 import { compose, withStateHandlers, lifecycle } from 'recompose'
@@ -19,11 +18,14 @@ import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import allClipboardsQuery from '../../../graphql/queries/allClipboards'
 import clipboardsSubscription from '../../../graphql/subscriptions/clipboards'
+import createNowClipboardMutation from '../../../graphql/mutations/createNowClipboard'
 
 // components
 import DrawerList from './DrawerList'
+import ASAPButton from './ASAPButton'
 import AddClipboard from '../AddClipboard'
 import ClipboardView from '../Clipboards/ClipboardView'
+import ClipView from '../Clips/ClipView'
 
 /**
  *
@@ -41,6 +43,7 @@ const ClipboardAppBar = ({
 	refetchClipboard,
 	showDrawer,
 	toggleDrawer,
+	nowBoardId,
 }) => (
   <Router>
     <div id="clipboard">
@@ -60,11 +63,7 @@ const ClipboardAppBar = ({
           >
 						ClipBoards
           </Typography>
-          <Link to="/add">
-            <Button raised color="accent">
-							ASAP
-            </Button>
-          </Link>
+          <ASAPButton nowBoardId={nowBoardId} />
         </Toolbar>
       </MUIAppBar>
       <Drawer
@@ -73,19 +72,27 @@ const ClipboardAppBar = ({
         className="drawer"
       >
         <DrawerList
+          nowBoardId={nowBoardId}
           loading={loadingClipboards}
           clipboards={clipboards}
           refetch={refetchClipboard}
           toggleDrawer={toggleDrawer}
         />
       </Drawer>
-      <Route exact path="/" render={() => <h1>landing page</h1>} />
-      <Route exact path="/add" component={AddClipboard} />
-      <Route
-        exact
-        path="/boards/:clipboardName"
-        component={ClipboardView}
-      />
+      <Switch>
+        <Route exact path="/" render={() => <h1>landing page</h1>} />
+        <Route exact path="/add" component={AddClipboard} />
+        <Route
+          exact
+          path="/boards/:clipboardName"
+          component={ClipboardView}
+        />
+        <Route
+          exact
+          path="/:clipboardName/:clipName"
+          component={ClipView}
+        />
+      </Switch>
     </div>
   </Router>
 )
@@ -93,6 +100,7 @@ const ClipboardAppBar = ({
 ClipboardAppBar.propTypes = {
 	loadingClipboards: PropTypes.bool.isRequired,
 	refetchClipboard: PropTypes.func.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
 	clipboards: PropTypes.arrayOf(
 		PropTypes.shape({
 			id: PropTypes.string.isRequired,
@@ -113,6 +121,9 @@ const withAllClipboardsQuery = graphql(
   ${allClipboardsQuery}
 `,
 	{
+		options: {
+			notifyOnNetworkStatusChange: true,
+		},
 		props: ({
 			ownProps,
 			data: { loading, allClipboards, refetch, subscribeToMore },
@@ -126,16 +137,29 @@ const withAllClipboardsQuery = graphql(
 	},
 )
 
+// GraphQL createNowBoard mutation
+const withCreateNowClipboardMutation = graphql(
+	gql`${createNowClipboardMutation}`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			createNowBoard: mutate,
+		}),
+	},
+)
+
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
 	withStateHandlers(
-		({ initShowDrawer = false }) => ({
+		({ initShowDrawer = false, nowBoardId = '1' }) => ({
 			showDrawer: initShowDrawer,
+			nowBoardId,
 		}),
 		{
 			toggleDrawer: ({ showDrawer }) => () => ({
 				showDrawer: !showDrawer,
 			}),
+			setNowBoardId: () => id => ({ nowBoardId: id }),
 		},
 	),
 	// add subscription for CREATED, UPDATED , DELETED for clipboards
@@ -161,9 +185,45 @@ const recomposeEnhancer = compose(
 				},
 			})
 		},
+		componentDidUpdate({ clipboards: pClipboards }) {
+			const {
+				clipboards: cClipboards,
+				createNowBoard,
+				refetchClipboard,
+				setNowBoardId,
+			} = this.props
+			const prevClipsEmpty =
+				!pClipboards || (pClipboards && pClipboards.length === 0)
+			if (!prevClipsEmpty) {
+				return
+			}
+			const currentClipsEmpty =
+				cClipboards &&
+				Array.isArray(cClipboards) &&
+				cClipboards.length === 0
+			if (currentClipsEmpty) {
+				return
+			}
+			const NowBoardExist = cClipboards.some(b => b.name === 'NOW')
+			if (!NowBoardExist) {
+				createNowBoard().then(
+					({ data: { createClipboard: { id } } }) => {
+						setNowBoardId(id)
+						refetchClipboard()
+					},
+				)
+			} else {
+				const nowBoard = cClipboards.find(b => b.name === 'NOW')
+				setNowBoardId(nowBoard.id)
+			}
+		},
 	}),
 )
 
-const enhancer = compose(withAllClipboardsQuery, recomposeEnhancer)
+const enhancer = compose(
+	withAllClipboardsQuery,
+	withCreateNowClipboardMutation,
+	recomposeEnhancer,
+)
 
 export default enhancer(ClipboardAppBar)
