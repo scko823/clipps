@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 
 import { withRouter } from 'react-router'
-import MD5 from 'md5.js'
 import Button from 'material-ui/Button'
 import { grey, blue, lightGreen } from 'material-ui/colors'
 import TextField from 'material-ui/TextField'
@@ -12,21 +11,13 @@ import Popover from 'material-ui/Popover'
 import { withStyles } from 'material-ui/styles'
 import SendIcon from 'material-ui-icons/Send'
 
-import { random as randomStarWars } from 'startwars-name'
 import { compose, withStateHandlers, withProps } from 'recompose'
 
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 
 import createClipMutation from '../../../graphql/mutations/createClip'
-
-const randomClipName = () =>
-	`${randomStarWars()
-		.split(/\s+/)
-		.join('-')}__${new MD5()
-		.update(`${Math.random()}-${new Date().toISOString()}`)
-		.digest('hex')
-		.substring(0, 6)}`
+import randomClipName from '../../utils/randomName'
 
 const styles = () => ({
 	popover: { padding: '1% 2%' },
