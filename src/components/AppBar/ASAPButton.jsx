@@ -40,6 +40,9 @@ const styles = () => ({
 	icon: {
 		cursor: 'pointer',
 	},
+	disabledIcon: {
+		cursor: 'disabled',
+	},
 	progressWrapper: {
 		position: 'relative',
 	},
@@ -117,7 +120,11 @@ const ASAPButton = ({
 				) : (
   <SendIcon
     color={clipContent !== '' ? blue['500'] : grey['500']}
-    className={classes.icon}
+    className={
+							clipName && clipContent
+								? classes.icon
+								: classes.disabledIcon
+						}
     onClick={submitAndRedirect}
   />
 				)}
@@ -175,6 +182,10 @@ const recomposeEnhancer = compose(
 				clipContent: ev.target.value,
 			}),
 			setSubmitting: () => bool => ({ submitting: bool }),
+			handleClipCreateSuccess: () => () => ({
+				clipName: randomClipName(),
+				clipContent: '',
+			}),
 		},
 	),
 	withProps(
@@ -186,11 +197,17 @@ const recomposeEnhancer = compose(
 			history,
 			togglePopover,
 			setSubmitting,
+			handleClipCreateSuccess,
 		}) => ({
 			submitAndRedirect: () => {
+				if (!(clipName && clipContent)) {
+					return
+				}
 				setSubmitting(true)
 				createASAP(clipName, clipContent, nowBoardId).then(() => {
 					togglePopover()
+					setSubmitting(false)
+					handleClipCreateSuccess()
 					history.push(`/NOW/${clipName}`)
 				})
 			},
