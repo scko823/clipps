@@ -1,21 +1,16 @@
-const webpack = require('webpack');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const keys = require('./secrets/keys');
+import webpack from 'webpack'
+import path from 'path'
+import HtmkWebpackPlugin from 'html-webpack-plugin'
+import keys from './secrets/keys.json'
 
-const {
-	graphcool: {
-		websockets,
-		api
-	}
-} = keys;
-module.exports = {
-	context: path.resolve(__dirname, 'src'),
-	entry: ['babel-polyfill', './index.jsx'],
+import MinifyPlugin from 'babel-minify-webpack-plugin'
+
+const { graphcool: { websockets, api } } = keys
+export default {
+	entry: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
 	output: {
+		filename: '[name].[hash].bundle.js',
 		path: path.resolve(__dirname, 'dist'),
-		filename: 'index.js',
 	},
 	resolve: {
 		extensions: ['.js', '.json', '.jsx'],
@@ -32,26 +27,25 @@ module.exports = {
 				include: [path.join(__dirname, 'src')],
 			},
 			// Chained SASS Loader
-			{
-				test: /\.scss$/,
-				use: ExtractTextPlugin.extract({
-					use: [{
-							loader: 'css-loader',
-							options: {
-								importLoaders: 1,
-							},
-						},
-						'sass-loader',
-					],
-				}),
-			},
-			// Chained CSS Loader
-			{
-				test: /\.css$/,
-				use: ExtractTextPlugin.extract({
-					use: ['css-loader'],
-				}),
-			},
+			// 	use: ExtractTextPlugin.extract({
+			// 		use: [
+			// 			{
+			// 				loader: 'css-loader',
+			// 				options: {
+			// 					importLoaders: 1,
+			// 				},
+			// 			},
+			// 			'sass-loader',
+			// 		],
+			// 	}),
+			// },
+			// // Chained CSS Loader
+			// {
+			// 	test: /\.css$/,
+			// 	use: ExtractTextPlugin.extract({
+			// 		use: ['css-loader'],
+			// 	}),
+			// },
 			// Images
 			{
 				test: /\.(png|jpg|gif|woff|woff2|ttf|eot|svg)/,
@@ -72,19 +66,15 @@ module.exports = {
 				SUBSCRIPTION_API: JSON.stringify(websockets),
 			},
 		}),
-		new ExtractTextPlugin({
-			filename: 'css/[name].styles.css',
-			allChunks: false,
-		}),
 		new webpack.NoEmitOnErrorsPlugin(),
-		new HtmlWebpackPlugin({
-			template: 'index.ejs',
+		new HtmkWebpackPlugin({
+			template: path.join(__dirname, 'src', 'index.ejs'),
 			inject: true,
 		}),
 		new webpack.NamedModulesPlugin(),
 		new webpack.HotModuleReplacementPlugin(),
+		new MinifyPlugin(),
 	],
-
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		staticOptions: {
@@ -94,17 +84,21 @@ module.exports = {
 		hot: true,
 		port: 9000,
 		historyApiFallback: {
-			rewrites: [{
+			rewrites: [
+				{
 					from: /^\/board\//,
-					to: '/index.html'
+					to: '/index.html',
 				},
 				{
 					from: /^\/.*\/index.js$/,
-					to: '/index.js'
-				}
+					to: '/index.js',
+				},
 			],
 		},
 	},
 
-	devtool: 'cheap-module-source-map',
-};
+	devtool:
+		process.env.NODE_ENV === 'production'
+			? 'cheap-module-source-map'
+			: 'source-map',
+}
