@@ -8,20 +8,23 @@ const devConfig = merge(common, {
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		staticOptions: {
-			redirect: false,
+			redirect: true,
 		},
 		compress: true,
 		hot: true,
 		port: 9000,
 		historyApiFallback: {
+			index: 'index.html',
 			rewrites: [
 				{
 					from: /^\/board\//,
 					to: '/index.html',
 				},
 				{
-					from: /^\/.*\/index.js$/,
-					to: '/index.js',
+					from: /\.bundle.js$/,
+					to(context) {
+						return `${context.parsedUrl.pathname}`
+					},
 				},
 			],
 		},
