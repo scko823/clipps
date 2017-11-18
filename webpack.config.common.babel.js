@@ -24,26 +24,6 @@ export default {
 				exclude: '/node_modules/',
 				include: [path.join(__dirname, 'src')],
 			},
-			// Chained SASS Loader
-			// 	use: ExtractTextPlugin.extract({
-			// 		use: [
-			// 			{
-			// 				loader: 'css-loader',
-			// 				options: {
-			// 					importLoaders: 1,
-			// 				},
-			// 			},
-			// 			'sass-loader',
-			// 		],
-			// 	}),
-			// },
-			// // Chained CSS Loader
-			// {
-			// 	test: /\.css$/,
-			// 	use: ExtractTextPlugin.extract({
-			// 		use: ['css-loader'],
-			// 	}),
-			// },
 			// Images
 			{
 				test: /\.(png|jpg|gif|woff|woff2|ttf|eot|svg)/,
@@ -70,32 +50,5 @@ export default {
 			inject: true,
 		}),
 		new webpack.NamedModulesPlugin(),
-		new webpack.HotModuleReplacementPlugin(),
 	],
-	devServer: {
-		contentBase: path.join(__dirname, 'dist'),
-		staticOptions: {
-			redirect: false,
-		},
-		compress: true,
-		hot: true,
-		port: 9000,
-		historyApiFallback: {
-			rewrites: [
-				{
-					from: /^\/board\//,
-					to: '/index.html',
-				},
-				{
-					from: /^\/.*\/index.js$/,
-					to: '/index.js',
-				},
-			],
-		},
-	},
-
-	devtool:
-		process.env.NODE_ENV === 'production'
-			? 'cheap-module-source-map'
-			: 'source-map',
 }
