@@ -65,13 +65,13 @@
 		"webpack-merge": "^4.1.1"
 	},
 	"dependencies": {
-		"apollo-cache-inmemory": "^1.1.0",
+		"apollo-cache-inmemory": "^1.1.1",
 		"apollo-client": "^2.0.2",
 		"apollo-client-preset": "^1.0.2",
 		"apollo-link": "^1.0.0",
 		"apollo-link-http": "^1.1.0",
 		"apollo-link-ws": "^1.0.0",
-		"apollo-utilities": "^1.0.1",
+		"apollo-utilities": "^1.0.2",
 		"graphql": "^0.11.7",
 		"graphql-tag": "^2.5.0",
 		"image-webpack-loader": "^3.4.2",
@@ -87,6 +87,7 @@
 		"react-router-dom": "^4.2.2",
 		"recompose": "^0.26.0",
 		"styled-components": "^2.1.2",
+		"subscriptions-transport-ws": "^0.9.1",
 		"webpack-hot-middleware": "^2.20.0"
 	}
 }
