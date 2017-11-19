@@ -15,11 +15,18 @@ import common from './webpack.config.common.babel'
 const prodConfig = merge(common, {
 	entry: {
 		highlight: ['react-highlight'],
-		react: ['react', 'react-dom'],
+		react: [
+			'react',
+			'react-dom',
+			'recompose',
+			'react-router',
+			'react-router-dom',
+			'history',
+		],
 	},
 	plugins: [
 		new webpack.optimize.CommonsChunkPlugin({
-			name: ['highlight', 'react', 'materialui'],
+			name: ['highlight', 'react'],
 		}),
 		new UglifyJsPlugin({
 			cache: true,
