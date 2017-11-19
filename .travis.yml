@@ -11,9 +11,9 @@ script:
   - npm run lint
   - npm run build
 deploy:
-  provider: pages
+  provider: surge
   skip_cleanup: true
-  local_dir: dist/
-  github_token: $GITHUB_TOKEN
+  project: ./dist/
+  domain: clipps.surge.sh
   on:
     branch: master
