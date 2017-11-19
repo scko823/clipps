@@ -7,6 +7,8 @@ import CompressionPlugin from 'compression-webpack-plugin'
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
 
 // import ClosureCompilerPlugin from 'webpack-closure-compiler'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+
 import common from './webpack.config.common.babel'
 
 const prodConfig = merge(common, {
@@ -24,6 +26,15 @@ const prodConfig = merge(common, {
 			test: /\.js$|\.css$|\.html$/,
 			threshold: 10240,
 			minRatio: 0.8,
+		}),
+		new BundleAnalyzerPlugin({
+			analyzerMode: 'static',
+			reportFilename: 'report.html',
+			openAnalyzer: true,
+			generateStatsFile: true,
+			statsFilename: 'stats.json',
+			statsOptions: null,
+			logLevel: 'info',
 		}),
 	],
 
