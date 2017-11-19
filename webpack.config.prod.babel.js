@@ -3,13 +3,14 @@ import merge from 'webpack-merge'
 
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
 
+// import ClosureCompilerPlugin from 'webpack-closure-compiler'
 import common from './webpack.config.common.babel'
 
 const prodConfig = merge(common, {
 	plugins: [
 		// new MinifyPlugin({
-		// 	removeConsole: true,
-		// 	removeDebugger: true,
+		//     removeConsole: true,
+		//     removeDebugger: true,
 		// }),
 		new UglifyJsPlugin({
 			cache: true,
