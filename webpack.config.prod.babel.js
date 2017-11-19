@@ -1,6 +1,6 @@
 import merge from 'webpack-merge'
 import webpack from 'webpack'
-
+import path from 'path'
 import CompressionPlugin from 'compression-webpack-plugin'
 // import webpack from 'webpack'
 // import MinifyPlugin from 'babel-minify-webpack-plugin'
@@ -40,7 +40,11 @@ const prodConfig = merge(common, {
 		}),
 		new BundleAnalyzerPlugin({
 			analyzerMode: 'static',
-			reportFilename: 'report.html',
+			reportFilename: path.join(
+				'..',
+				'bundle-size',
+				`report-${new Date().toISOString()}.html`,
+			),
 			openAnalyzer: true,
 			generateStatsFile: true,
 			statsFilename: 'stats.json',
