@@ -16,6 +16,7 @@ jobs:
             - node_modules
           key: 'v1-dependencies-{{ checksum "package-lock.json" }}'
       - run: npm run lint
+      - run: npm run flow
       - run: npm test
   build_and_deploy:
     docker:
