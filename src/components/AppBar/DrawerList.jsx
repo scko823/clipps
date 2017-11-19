@@ -62,6 +62,7 @@ const DrawerList = ({
 	pushRoute,
 	nowBoardId,
 }) => {
+	let listItems = <DataUsageIcon />
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
@@ -86,10 +87,7 @@ const DrawerList = ({
     </List>
   </ListSubheader>
 	)
-	let listItems
-	if (loading) {
-		listItems = <DataUsageIcon />
-	} else if (clipboards) {
+	if (!loading && clipboards) {
 		const NowBoard = clipboards.find(
 			clipboard => clipboard.name === 'NOW',
 		) || { id: nowBoardId, name: 'NOW' }

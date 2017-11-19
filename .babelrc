@@ -15,6 +15,12 @@
 		"transform-decorators-legacy",
 		"transform-class-properties",
 		"transform-object-rest-spread",
-		"transform-react-remove-prop-types"
-	]
+		"transform-react-remove-prop-types",
+		"transform-react-inline-elements"
+	],
+	"env": {
+		"production": {
+			"plugins": ["transform-react-constant-elements"]
+		}
+	}
 }

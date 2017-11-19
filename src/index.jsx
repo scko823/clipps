@@ -4,11 +4,11 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 import { ApolloProvider } from 'react-apollo'
 import { split } from 'apollo-link'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { InMemoryCache } from 'apollo-cache-inmemory/lib'
 import { ApolloClient } from 'apollo-client'
 import { WebSocketLink } from 'apollo-link-ws'
 import { HttpLink } from 'apollo-link-http'
-import { getMainDefinition } from 'apollo-utilities'
+import { getMainDefinition } from 'apollo-utilities/lib'
 
 import AppBar from './components/AppBar/AppBar'
 
