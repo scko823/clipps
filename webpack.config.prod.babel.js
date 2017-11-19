@@ -47,7 +47,11 @@ const prodConfig = merge(common, {
 			),
 			openAnalyzer: true,
 			generateStatsFile: true,
-			statsFilename: 'stats.json',
+			statsFilename: path.join(
+				'..',
+				'bundle-size',
+				`stats-${new Date().toISOString()}.json`,
+			),
 			statsOptions: null,
 			logLevel: 'info',
 		}),
