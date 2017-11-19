@@ -1,7 +1,7 @@
-import webpack from 'webpack'
-import path from 'path'
-import merge from 'webpack-merge'
-import common from './webpack.config.common.babel'
+import webpack from 'webpack';
+import path from 'path';
+import merge from 'webpack-merge';
+import common from './webpack.config.common.babel';
 
 const devConfig = merge(common, {
 	plugins: [new webpack.HotModuleReplacementPlugin()],
@@ -12,24 +12,25 @@ const devConfig = merge(common, {
 		},
 		compress: true,
 		hot: true,
+		https: true,
 		port: 9000,
 		historyApiFallback: {
 			index: 'index.html',
 			rewrites: [
 				{
-					from: /^\/board\//,
+					from: /^\/board\/|\/add$/,
 					to: '/index.html',
 				},
 				{
 					from: /\.bundle.js$/,
 					to(context) {
-						return `${context.parsedUrl.pathname}`
+						return `${context.parsedUrl.pathname}`;
 					},
 				},
 			],
 		},
 	},
 	devtool: 'cheap-module-source-map',
-})
+});
 
-export default devConfig
+export default devConfig;
