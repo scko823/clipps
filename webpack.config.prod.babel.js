@@ -1,4 +1,5 @@
 import merge from 'webpack-merge'
+import webpack from 'webpack'
 
 import CompressionPlugin from 'compression-webpack-plugin'
 // import webpack from 'webpack'
@@ -12,11 +13,14 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
 import common from './webpack.config.common.babel'
 
 const prodConfig = merge(common, {
+	entry: {
+		highlight: ['react-highlight'],
+		react: ['react', 'react-dom'],
+	},
 	plugins: [
-		// new MinifyPlugin({
-		//     removeConsole: true,
-		//     removeDebugger: true,
-		// }),
+		new webpack.optimize.CommonsChunkPlugin({
+			name: ['highlight', 'react', 'materialui'],
+		}),
 		new UglifyJsPlugin({
 			cache: true,
 		}),

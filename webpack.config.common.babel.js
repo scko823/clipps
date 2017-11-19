@@ -5,7 +5,9 @@ import keys from './secrets/keys.json'
 
 const { graphcool: { websockets, api } } = keys
 export default {
-	entry: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
+	entry: {
+		app: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
+	},
 	output: {
 		filename: '[name].[hash].bundle.js',
 		path: path.resolve(__dirname, 'dist'),
