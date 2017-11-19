@@ -1,0 +1,7 @@
+{
+	"graphcool": {
+		"api": "https://api.graph.cool/simple/v1/cj9t4731sef190109pcyynlkc",
+		"websockets":
+			"wss://subscriptions.us-west-2.graph.cool/v1/cj9t4731sef190109pcyynlkc"
+	}
+}

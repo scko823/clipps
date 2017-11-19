@@ -1,9 +1,9 @@
 import webpack from 'webpack'
 import path from 'path'
 import HtmkWebpackPlugin from 'html-webpack-plugin'
-import keys from './secrets/keys.json'
+import endpoints from './endpoints.json'
 
-const { graphcool: { websockets, api } } = keys
+const { graphcool: { websockets, api } } = endpoints
 export default {
 	entry: {
 		app: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
