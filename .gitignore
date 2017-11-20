@@ -1,5 +1,4 @@
 node_modules/
 dist/
-flow-typed/npm
 secrets/
 bundle-size/
