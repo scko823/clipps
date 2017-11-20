@@ -95,6 +95,7 @@
 		"recompose": "^0.26.0",
 		"styled-components": "^2.1.2",
 		"subscriptions-transport-ws": "^0.9.1",
+		"unfetch": "^3.0.0",
 		"webpack-hot-middleware": "^2.20.0"
 	}
 }
