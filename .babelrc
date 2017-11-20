@@ -1,5 +1,6 @@
 {
 	"presets": [
+		"react",
 		[
 			"env",
 			{
@@ -7,9 +8,7 @@
 					"browsers": ["last 3 versions", "safari >= 7"]
 				}
 			}
-		],
-		"react",
-		"flow"
+		]
 	],
 	"plugins": [
 		"transform-decorators-legacy",
