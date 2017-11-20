@@ -6,9 +6,10 @@
 
 [libs]
 # local/custom libdefs
-./flow
+#./flow
 # jss flow-typed libdefs
-./node_modules/jss/flow-typed
+#./node_modules/jss/flow-typed
+material-ui
 
 [lints]
 
