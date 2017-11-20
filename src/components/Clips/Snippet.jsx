@@ -1,17 +1,17 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 // material-ui
-import Paper from 'material-ui/Paper'
-import ContentCopy from 'material-ui-icons/ContentCopy'
-import Typography from 'material-ui/Typography'
-import { withStyles } from 'material-ui/styles'
+import Paper from 'material-ui/Paper';
+import ContentCopy from 'material-ui-icons/ContentCopy';
+import Typography from 'material-ui/Typography';
+import { withStyles } from 'material-ui/styles';
 
 // react hightlight
-import HighLight from 'react-highlight'
+import HighLight from 'react-highlight';
 
-import { compose, mapProps } from 'recompose'
+import { compose, mapProps } from 'recompose';
 
 export const snippetStyles = {
 	root: {
@@ -20,6 +20,11 @@ export const snippetStyles = {
 		textAlign: 'center',
 		display: 'inline-block',
 		verticalAlign: 'top',
+		'@media (max-width: 600px) and (min-width: 300px)': {
+			width: '95%',
+			marginLeft: '2.5%',
+			marginRight: '2.5%',
+		},
 	},
 	subheader: {
 		display: 'flex',
@@ -33,30 +38,21 @@ export const snippetStyles = {
 			cursor: 'pointer',
 		},
 	},
-}
+};
 
-const stlyes = () => snippetStyles
+const stlyes = () => snippetStyles;
 
-export const Snippet = ({
-	clip: { name, content },
-	classes,
-	copyContent,
-	clipboardName,
-}) => (
+export const Snippet = ({ clip: { name, content }, classes, copyContent, clipboardName }) => (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
         <Link to={`/${clipboardName}/${name}`}>{name}</Link>
       </Typography>
-      <ContentCopy
-        onClick={copyContent}
-        tooltip="Copy"
-        className={classes.icon}
-      />
+      <ContentCopy onClick={copyContent} tooltip="Copy" className={classes.icon} />
     </div>
     <HighLight className="code">{content}</HighLight>
   </Paper>
-)
+);
 
 Snippet.propTypes = {
 	clip: PropTypes.shape({
@@ -65,24 +61,24 @@ Snippet.propTypes = {
 	classes: PropTypes.object.isRequired,
 	copyContent: PropTypes.func.isRequired,
 	clipboardName: PropTypes.string.isRequired,
-}
+};
 
 const recomposeEnhancer = compose(
 	mapProps(props => ({
 		...props,
 		copyContent: e => {
-			e.preventDefault()
-			const { content } = props.clip
-			const text = document.createElement('textarea')
-			text.innerText = content
-			document.body.appendChild(text)
-			text.select()
-			document.execCommand('Copy')
-			text.remove()
+			e.preventDefault();
+			const { content } = props.clip;
+			const text = document.createElement('textarea');
+			text.innerText = content;
+			document.body.appendChild(text);
+			text.select();
+			document.execCommand('Copy');
+			text.remove();
 		},
 	})),
-)
+);
 
-export const withCopyEnhancer = recomposeEnhancer
+export const withCopyEnhancer = recomposeEnhancer;
 
-export default compose(withStyles(stlyes), recomposeEnhancer)(Snippet)
+export default compose(withStyles(stlyes), recomposeEnhancer)(Snippet);
