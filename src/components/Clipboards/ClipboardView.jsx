@@ -74,7 +74,7 @@ const withclipsQuery = graphql(
 			...ownProps,
 			loading: clips.loading,
 			clips: clips.allClips || [],
-			clipboardId: (clips.Clipboard && clips.Clipboard.id) || '',
+			clipboardId: (clips.Clipboard && clips.Clipboard.id) || null,
 			subscribeToMore: params =>
 				clips.subscribeToMore({
 					document: gql`${clipsSubscription}`,
@@ -109,6 +109,9 @@ const recomposeEnhancer = compose(
 	}),
 	lifecycle({
 		componentDidUpdate(prevProps) {
+			if (this.props.clipboardId === null && !this.props.loading) {
+				this.props.history.push('/boards/NOW');
+			}
 			if (prevProps.clipboardId !== this.props.clipboardId) {
 				if (typeof this.unsubscribe === 'function') {
 					this.unsubscribe();
