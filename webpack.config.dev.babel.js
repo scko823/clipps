@@ -18,7 +18,7 @@ const devConfig = merge(common, {
 			index: 'index.html',
 			rewrites: [
 				{
-					from: /^\/board\/|\/add$/,
+					from: /^\/boards\/|\/add$/,
 					to: '/index.html',
 				},
 				{

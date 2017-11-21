@@ -70,34 +70,42 @@ const withclipsQuery = graphql(
 		options: ({ match: { params: { clipboardName } } }) => ({
 			variables: { clipboardName },
 		}),
-		props: ({ ownProps, clips }) => ({
-			...ownProps,
-			loading: clips.loading,
-			clips: clips.allClips || [],
-			clipboardId: (clips.Clipboard && clips.Clipboard.id) || '',
-			subscribeToMore: params =>
-				clips.subscribeToMore({
-					document: gql`${clipsSubscription}`,
-					variables: { clipboardId: params.clipboardId },
-					updateQuery: (
-						{ allClips, Clipboard },
-						{ subscriptionData: { data: { Clip: { mutation, node } } } },
-					) => {
-						if (mutation === 'CREATED') {
+		props: ({ ownProps, clips }) => {
+			let clipboardId = null;
+			if (clips.Clipboard) {
+				if (clips.Clipboard.id) {
+					clipboardId = clips.Clipboard.id;
+				}
+			}
+			return {
+				...ownProps,
+				loading: clips.loading,
+				clips: clips.allClips || [],
+				clipboardId,
+				error: clips.error,
+				refetch: clips.refetch,
+				subscribeToMore: params =>
+					clips.subscribeToMore({
+						document: gql`${clipsSubscription}`,
+						variables: { clipboardId: params.clipboardId },
+						updateQuery: (
+							{ allClips, Clipboard },
+							{ subscriptionData: { data: { Clip: { mutation, node } } } },
+						) => {
+							if (mutation === 'CREATED') {
+								return {
+									allClips: [node, ...allClips],
+									Clipboard,
+								};
+							}
 							return {
-								allClips: [node, ...allClips],
+								allClips,
 								Clipboard,
 							};
-						}
-						return {
-							allClips,
-							Clipboard,
-						};
-					},
-				}),
-			error: clips.error,
-			refetch: clips.refetch,
-		}),
+						},
+					}),
+			};
+		},
 	},
 );
 
@@ -109,6 +117,9 @@ const recomposeEnhancer = compose(
 	}),
 	lifecycle({
 		componentDidUpdate(prevProps) {
+			if (this.props.clipboardId === null && !this.props.loading) {
+				this.props.history.push('/boards/NOW');
+			}
 			if (prevProps.clipboardId !== this.props.clipboardId) {
 				if (typeof this.unsubscribe === 'function') {
 					this.unsubscribe();
