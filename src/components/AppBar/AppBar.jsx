@@ -145,7 +145,9 @@ const recomposeEnhancer = compose(
 					{ allClipboards },
 					{
 						subscriptionData: {
-							Clipboard: { mutation, node /* updatedFields, previousValues */ },
+							data: {
+								Clipboard: { mutation, node /* updatedFields, previousValues */ },
+							},
 						},
 					},
 				) => {
