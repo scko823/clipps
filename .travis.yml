@@ -14,6 +14,6 @@ deploy:
   provider: surge
   skip_cleanup: true
   project: ./dist/
-  domain: clipps.surge.sh
+  domain: https://clipps.surge.sh
   on:
     branch: master
