@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { compose, withStateHandlers } from 'recompose';
+import { withRouter } from 'react-router';
+
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Grid from 'material-ui/Grid';
@@ -81,9 +83,13 @@ AddClipboard.defaultProps = {
 };
 
 const withcreateClipboard = graphql(gql`${createClipboard}`, {
-	props: ({ ownProps: { name = '' }, mutate }) => ({
+	props: ({ ownProps: { history, name = '' }, mutate }) => ({
 		submit: () => {
-			mutate({ variables: { name } });
+			mutate({ variables: { name } }).then(
+				({ data: { createClipboard: { name: clipboardName } } }) => {
+					history.push(`/boards/${clipboardName}`);
+				},
+			);
 		},
 	}),
 });
@@ -96,6 +102,6 @@ const recomposeEnhancer = compose(
 		}),
 	}),
 );
-const enhancer = compose(withStyles(styles), recomposeEnhancer, withcreateClipboard);
+const enhancer = compose(withStyles(styles), withRouter, recomposeEnhancer, withcreateClipboard);
 
 export default enhancer(AddClipboard);
