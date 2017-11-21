@@ -1,25 +1,43 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 // material-ui
+import { lightGreen } from 'material-ui/colors';
+
 import Dialog, {
 	DialogActions,
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
-} from 'material-ui/Dialog'
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
+} from 'material-ui/Dialog';
+import Button from 'material-ui/Button';
+import { CircularProgress } from 'material-ui/Progress';
+import { withStyles } from 'material-ui/styles';
+import TextField from 'material-ui/TextField';
 
 // recompse
-import { compose, withStateHandlers } from 'recompose'
+import { compose, withStateHandlers } from 'recompose';
 
 // GraphQL
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import createClipMutation from '../../../graphql/mutations/createClip'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import createClipMutation from '../../../graphql/mutations/createClip';
+
+const styles = {
+	progressWrapper: {
+		position: 'relative',
+	},
+	progress: {
+		color: lightGreen['500'],
+		position: 'absolute',
+		left: '25%',
+		marginTop: '-3px',
+		zIndex: 1,
+	},
+};
 
 const AddClipDialog = ({
 	submit,
+	classes,
 	loading,
 	showLoadingSpinner,
 	toggleShowDialog,
@@ -30,16 +48,14 @@ const AddClipDialog = ({
 	formState: { name, content },
 }) => {
 	const submitHandle = () => {
-		showLoadingSpinner()
-		submit()
-	}
+		showLoadingSpinner();
+		submit();
+	};
 	return (
   <Dialog onRequestClose={toggleShowDialog} open={showDialog} fullWidth>
     <DialogTitle>New Clip</DialogTitle>
     <DialogContent>
-      <DialogContentText>
-					Add a new clip to {clipboardName}
-      </DialogContentText>
+      <DialogContentText>Add a new clip to {clipboardName}</DialogContentText>
       <form noValidate autoComplete="off">
         <TextField
           autoFocus
@@ -63,21 +79,25 @@ const AddClipDialog = ({
           <Button onClick={toggleShowDialog} color="accent">
 							Cancel
           </Button>
-          <Button
-            disabled={!name || !content}
-            onClick={submitHandle}
-            color="primary"
-          >
-            {loading ? 'Loading' : 'Create'}
-          </Button>
+          <div className={classes.progressWrapper}>
+            <Button
+              disabled={!name || !content|| loading}
+              onClick={submitHandle}
+              color="primary"
+            >
+              {loading ? 'Loading' : 'Create'}
+            </Button>
+            {loading && <CircularProgress className={classes.progress} />}
+          </div>
         </DialogActions>
       </form>
     </DialogContent>
   </Dialog>
-	)
-}
+	);
+};
 
 AddClipDialog.propTypes = {
+	classes: PropTypes.object.isRequired,
 	submit: PropTypes.func.isRequired,
 	toggleShowDialog: PropTypes.func.isRequired,
 	onNameFieldChange: PropTypes.func.isRequired,
@@ -90,7 +110,7 @@ AddClipDialog.propTypes = {
 		name: PropTypes.string,
 		content: PropTypes.string,
 	}).isRequired,
-}
+};
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
@@ -105,9 +125,7 @@ const recomposeEnhancer = compose(
 					name: value,
 				},
 			}),
-			onContentFieldChange: ({ formState }) => ({
-				target: { value },
-			}) => ({
+			onContentFieldChange: ({ formState }) => ({ target: { value } }) => ({
 				formState: {
 					...formState,
 					content: value,
@@ -117,7 +135,7 @@ const recomposeEnhancer = compose(
 			hideLoadingSpinner: () => () => ({ loading: false }),
 		},
 	),
-)
+);
 
 const withCreateClip = graphql(gql`${createClipMutation}`, {
 	props: ({ ownProps, mutate }) => {
@@ -126,7 +144,7 @@ const withCreateClip = graphql(gql`${createClipMutation}`, {
 			hideLoadingSpinner,
 			clipboardId,
 			formState: { content, name },
-		} = ownProps
+		} = ownProps;
 		return {
 			submit: () =>
 				mutate({
@@ -138,9 +156,10 @@ const withCreateClip = graphql(gql`${createClipMutation}`, {
 				})
 					.then(hideLoadingSpinner)
 					.then(toggleShowDialog),
-		}
+		};
 	},
-})
+});
 
-const enhancer = compose(recomposeEnhancer, withCreateClip)
-export default enhancer(AddClipDialog)
+const enhancer = compose(withStyles(styles), recomposeEnhancer, withCreateClip);
+
+export default enhancer(AddClipDialog);
