@@ -17,23 +17,23 @@ import AppBar from './components/AppBar/AppBar';
 
 const theme = createMuiTheme({
 	palette: {
-		primary1Color: '#27bc9c'
+		primary1Color: '#27bc9c',
 	},
 	appBar: {
-		height: 50
-	}
+		height: 50,
+	},
 });
 
 const httpLink = new HttpLink({
 	uri: process.env.QUERY_API,
-	fetch
+	fetch,
 });
 
 const wsLink = new WebSocketLink({
 	uri: process.env.SUBSCRIPTION_API,
 	options: {
-		reconnect: true
-	}
+		reconnect: true,
+	},
 });
 
 const link = split(
@@ -43,22 +43,22 @@ const link = split(
 		return kind === 'OperationDefinition' && operation === 'subscription';
 	},
 	wsLink,
-	httpLink
+	httpLink,
 );
 
 const client = new ApolloClient({
 	link,
-	cache: new InMemoryCache()
+	cache: new InMemoryCache(),
 });
 
 const render = () => {
 	ReactDOM.render(
-		<ApolloProvider client={client}>
-			<MuiThemeProvider theme={theme}>
-				<AppBar />
-			</MuiThemeProvider>
-		</ApolloProvider>,
-		document.getElementById('root')
+  <ApolloProvider client={client}>
+    <MuiThemeProvider theme={theme}>
+      <AppBar />
+    </MuiThemeProvider>
+  </ApolloProvider>,
+		document.getElementById('root'),
 	);
 };
 
