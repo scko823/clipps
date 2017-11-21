@@ -70,42 +70,34 @@ const withclipsQuery = graphql(
 		options: ({ match: { params: { clipboardName } } }) => ({
 			variables: { clipboardName },
 		}),
-		props: ({ ownProps, clips }) => {
-			let clipboardId = null;
-			if (clips.Clipboard) {
-				if (clips.Clipboard.id) {
-					clipboardId = clips.Clipboard.id;
-				}
-			}
-			return {
-				...ownProps,
-				loading: clips.loading,
-				clips: clips.allClips || [],
-				clipboardId,
-				error: clips.error,
-				refetch: clips.refetch,
-				subscribeToMore: params =>
-					clips.subscribeToMore({
-						document: gql`${clipsSubscription}`,
-						variables: { clipboardId: params.clipboardId },
-						updateQuery: (
-							{ allClips, Clipboard },
-							{ subscriptionData: { data: { Clip: { mutation, node } } } },
-						) => {
-							if (mutation === 'CREATED') {
-								return {
-									allClips: [node, ...allClips],
-									Clipboard,
-								};
-							}
+		props: ({ ownProps, clips }) => ({
+			...ownProps,
+			loading: clips.loading,
+			clips: clips.allClips || [],
+			clipboardId: (clips.Clipboard && clips.Clipboard.id) || null,
+			subscribeToMore: params =>
+				clips.subscribeToMore({
+					document: gql`${clipsSubscription}`,
+					variables: { clipboardId: params.clipboardId },
+					updateQuery: (
+						{ allClips, Clipboard },
+						{ subscriptionData: { data: { Clip: { mutation, node } } } },
+					) => {
+						if (mutation === 'CREATED') {
 							return {
-								allClips,
+								allClips: [node, ...allClips],
 								Clipboard,
 							};
-						},
-					}),
-			};
-		},
+						}
+						return {
+							allClips,
+							Clipboard,
+						};
+					},
+				}),
+			error: clips.error,
+			refetch: clips.refetch,
+		}),
 	},
 );
 
