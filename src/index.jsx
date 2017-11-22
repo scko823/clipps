@@ -15,6 +15,8 @@ import fetch from 'unfetch';
 
 import AppBar from './components/AppBar/AppBar';
 
+import offlineSW from './sw';
+
 const theme = createMuiTheme({
 	palette: {
 		primary1Color: '#27bc9c',
@@ -60,6 +62,7 @@ const render = () => {
   </ApolloProvider>,
 		// $FlowFixMe
 		document.getElementById('root'),
+		offlineSW,
 	);
 };
 

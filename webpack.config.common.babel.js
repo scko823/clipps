@@ -1,9 +1,9 @@
-import webpack from 'webpack'
-import path from 'path'
-import HtmkWebpackPlugin from 'html-webpack-plugin'
-import endpoints from './endpoints.json'
+import webpack from 'webpack';
+import path from 'path';
+import HtmkWebpackPlugin from 'html-webpack-plugin';
+import endpoints from './endpoints.json';
 
-const { graphcool: { websockets, api } } = endpoints
+const { graphcool: { websockets, api } } = endpoints;
 export default {
 	entry: {
 		app: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
@@ -54,4 +54,4 @@ export default {
 		}),
 		new webpack.NamedModulesPlugin(),
 	],
-}
+};

@@ -1,28 +1,23 @@
-import merge from 'webpack-merge'
-import webpack from 'webpack'
-import path from 'path'
-import CompressionPlugin from 'compression-webpack-plugin'
+import merge from 'webpack-merge';
+import webpack from 'webpack';
+import path from 'path';
+import CompressionPlugin from 'compression-webpack-plugin';
+import OfflinePlugin from 'offline-plugin';
+
 // import webpack from 'webpack'
 // import MinifyPlugin from 'babel-minify-webpack-plugin'
 
-import UglifyJsPlugin from 'uglifyjs-webpack-plugin'
+import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
 // import ClosureCompilerPlugin from 'webpack-closure-compiler'
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
-import common from './webpack.config.common.babel'
+import common from './webpack.config.common.babel';
 
 const prodConfig = merge(common, {
 	entry: {
 		highlight: ['react-highlight'],
-		react: [
-			'react',
-			'react-dom',
-			'recompose',
-			'react-router',
-			'react-router-dom',
-			'history',
-		],
+		react: ['react', 'react-dom', 'recompose', 'react-router', 'react-router-dom', 'history'],
 	},
 	plugins: [
 		new webpack.optimize.CommonsChunkPlugin({
@@ -47,16 +42,13 @@ const prodConfig = merge(common, {
 			),
 			openAnalyzer: true,
 			generateStatsFile: true,
-			statsFilename: path.join(
-				'..',
-				'bundle-size',
-				`stats-${new Date().toISOString()}.json`,
-			),
+			statsFilename: path.join('..', 'bundle-size', `stats-${new Date().toISOString()}.json`),
 			statsOptions: null,
 			logLevel: 'info',
 		}),
+		new OfflinePlugin(),
 	],
 
 	devtool: 'source-map',
-})
-export default prodConfig
+});
+export default prodConfig;
