@@ -1,5 +1,6 @@
+// @flow
+
 import React from 'react';
-import PropTypes from 'prop-types';
 import { compose, withStateHandlers } from 'recompose';
 import { withRouter } from 'react-router';
 
@@ -26,7 +27,13 @@ const styles = theme => ({
 	},
 });
 
-const AddClipboard = props => {
+const AddClipboard = (props: {
+	name: string,
+	onInputChange: (prop?: Object) => (event: SyntheticEvent<HTMLFormElement>) => Object,
+	submit: (event?: SyntheticEvent<HTMLButtonElement>) => void,
+	classes: { root?: cssInJS, inputError: cssInJS },
+	error: boolean,
+}) => {
 	const { name, onInputChange, submit, classes, error } = props;
 	return (
   <Grid className={classes.root} container>
@@ -67,19 +74,6 @@ const AddClipboard = props => {
     </Grid>
   </Grid>
 	);
-};
-
-AddClipboard.propTypes = {
-	name: PropTypes.string,
-	onInputChange: PropTypes.func.isRequired,
-	submit: PropTypes.func.isRequired,
-	classes: PropTypes.object.isRequired,
-	error: PropTypes.bool,
-};
-
-AddClipboard.defaultProps = {
-	name: '',
-	error: false,
 };
 
 const withcreateClipboard = graphql(gql`${createClipboard}`, {

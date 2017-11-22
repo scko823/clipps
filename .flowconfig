@@ -1,32 +1,15 @@
 [ignore]
-# prefix with .* to get nested ignores
-.*/node_modules/editions
-.*/node_modules/babel-plugin-flow-react-proptypes
-.*/node_modules/babel-plugin-transform-react-remove-prop-types
-.*/node_modules/eslint-plugin-jsx-a11y
-.*/node_modules/graphql
-.*/node_modules/graphql-tag
-.*/node_modules/kefir
-.*/node_modules/react-event-listener/src
-.*/node_modules/material-ui/
-.*/node_modules/material-ui/Divider
-.*/node_modules/material-ui/Drawer
-.*/node_modules/material-ui/Form
-.*/node_modules/material-ui/List/
-.*/node_modules/material-ui/List/ListSubheader
-.*/node_modules/material-ui/List/ListItemText
-
-# temporary - flow 54 update revealed this
-.*/node_modules/jss/lib/renderers/DomRenderer.js.flow
-.*/node_modules/jss/lib/utils/findRenderer.js.flow
-.*/node_modules/react-apollo/react-apollo.umd.js.flow
+<PROJECT_ROOT>/node_modules/material-ui/*
+<PROJECT_ROOT>/node_modules/react-apollo/*
+# <PROJECT_ROOT>/node_modules/jss/*
 [include]
 
 [libs]
 # local/custom libdefs
-./flow
+#./flow
 # jss flow-typed libdefs
-./node_modules/jss/flow-typed
+#./node_modules/jss/flow-typed
+material-ui
 
 [lints]
 

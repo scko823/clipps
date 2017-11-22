@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
@@ -42,7 +43,9 @@ export const snippetStyles = {
 
 const stlyes = () => snippetStyles;
 
-export const Snippet = ({ clip: { name, content }, classes, copyContent, clipboardName }) => (
+export const Snippet = (props: SnippetPropType) => {
+	const { clip: { name, content }, classes, copyContent, clipboardName } = props;
+	return (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
       <Typography type="headline" component="h2">
@@ -52,7 +55,8 @@ export const Snippet = ({ clip: { name, content }, classes, copyContent, clipboa
     </div>
     <HighLight className="code">{content}</HighLight>
   </Paper>
-);
+	);
+};
 
 Snippet.propTypes = {
 	clip: PropTypes.shape({
@@ -66,11 +70,12 @@ Snippet.propTypes = {
 const recomposeEnhancer = compose(
 	mapProps(props => ({
 		...props,
-		copyContent: e => {
+		copyContent: (e: SyntheticMouseEvent<*>) => {
 			e.preventDefault();
 			const { content } = props.clip;
-			const text = document.createElement('textarea');
+			const text: HTMLTextAreaElement = document.createElement('textarea');
 			text.innerText = content;
+			// $FlowFixMe
 			document.body.appendChild(text);
 			text.select();
 			document.execCommand('Copy');
