@@ -1,4 +1,4 @@
-// @flow
+// @flow weak
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
@@ -58,6 +58,7 @@ const render = () => {
       <AppBar />
     </MuiThemeProvider>
   </ApolloProvider>,
+		// $FlowFixMe
 		document.getElementById('root'),
 	);
 };

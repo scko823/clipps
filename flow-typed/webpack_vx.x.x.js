@@ -5,7 +5,3 @@ declare var module: {
 };
 
 declare var require: any;
-
-declare var document: {
-	getElementById(id: string): Element,
-};

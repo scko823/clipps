@@ -76,11 +76,6 @@ const AddClipboard = (props: {
 	);
 };
 
-// AddClipboard.defaultProps = {
-// 	name: '',
-// 	error: false,
-// };
-
 const withcreateClipboard = graphql(gql`${createClipboard}`, {
 	props: ({ ownProps: { history, name = '' }, mutate }) => ({
 		submit: () => {
