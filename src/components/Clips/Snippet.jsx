@@ -26,6 +26,9 @@ export const snippetStyles = {
 			marginLeft: '2.5%',
 			marginRight: '2.5%',
 		},
+		'& .code': {
+			textAlign: 'left'
+		}
 	},
 	subheader: {
 		display: 'flex',
