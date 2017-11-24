@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "npm run dev:start",
-		"dev:start": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
-		"build": "NODE_ENV=production webpack --config webpack.config.prod.babel.js --progress && cp dist/index.html dist/200.html",
+		"dev:start":
+			"NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
+		"build": "NODE_ENV=production webpack --config webpack.config.prod.babel.js --progress",
 		"prebuild": "echo \"getting ready to build\" && rm -rf dist/",
 		"test": "echo \"Error: no test specified\" && exit 0",
 		"precommit": "npm run lint && npm run flow",

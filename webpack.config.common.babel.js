@@ -4,6 +4,11 @@ import HtmkWebpackPlugin from 'html-webpack-plugin';
 import endpoints from './endpoints.json';
 
 const { graphcool: { websockets, api } } = endpoints;
+
+const htmlPluginDefaultOpts = {
+	template: path.join(__dirname, 'src', 'index.ejs'),
+	inject: true,
+};
 export default {
 	entry: {
 		app: ['babel-polyfill', path.join(__dirname, 'src', 'index.jsx')],
@@ -48,10 +53,12 @@ export default {
 			},
 		}),
 		new webpack.NoEmitOnErrorsPlugin(),
+		new HtmkWebpackPlugin({ ...htmlPluginDefaultOpts }),
 		new HtmkWebpackPlugin({
-			template: path.join(__dirname, 'src', 'index.ejs'),
-			inject: true,
+			...htmlPluginDefaultOpts,
+			filename: '200.html',
 		}),
+
 		new webpack.NamedModulesPlugin(),
 	],
 };
