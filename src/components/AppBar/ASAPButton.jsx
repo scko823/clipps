@@ -1,23 +1,23 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { withRouter } from 'react-router'
-import Button from 'material-ui/Button'
-import { grey, blue, lightGreen } from 'material-ui/colors'
-import TextField from 'material-ui/TextField'
-import Typography from 'material-ui/Typography'
-import { CircularProgress } from 'material-ui/Progress'
-import Popover from 'material-ui/Popover'
-import { withStyles } from 'material-ui/styles'
-import SendIcon from 'material-ui-icons/Send'
+import { withRouter } from 'react-router';
+import Button from 'material-ui/Button';
+import { grey, blue, lightGreen } from 'material-ui/colors';
+import TextField from 'material-ui/TextField';
+import Typography from 'material-ui/Typography';
+import { CircularProgress } from 'material-ui/Progress';
+import Popover from 'material-ui/Popover';
+import { withStyles } from 'material-ui/styles';
+import SendIcon from 'material-ui-icons/Send';
 
-import { compose, withStateHandlers, withProps } from 'recompose'
+import { compose, withStateHandlers, withProps } from 'recompose';
 
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
-import createClipMutation from '../../../graphql/mutations/createClip'
-import randomClipName from '../../utils/randomName'
+import createClipMutation from '../../../graphql/mutations/createClip';
+import randomClipName from '../../utils/randomName';
 
 const styles = () => ({
 	popover: { padding: '1% 2%' },
@@ -30,6 +30,9 @@ const styles = () => ({
 	},
 	icon: {
 		cursor: 'pointer',
+	},
+	ASAPBtn: {
+		color: grey['900'],
 	},
 	disabledIcon: {
 		cursor: 'disabled',
@@ -50,7 +53,7 @@ const styles = () => ({
 		left: '0',
 		zIndex: 1,
 	},
-})
+});
 
 const ASAPButton = ({
 	open,
@@ -71,12 +74,11 @@ const ASAPButton = ({
       id="ASAP-btn"
       disabled={nowBoardId === '1'}
       onClick={togglePopover}
+      className={classes.ASAPBtn}
     >
 			ASAP
     </Button>
-    {nowBoardId === '1' && (
-    <CircularProgress className={classes.progress} />
-		)}
+    {nowBoardId === '1' && <CircularProgress className={classes.progress} />}
   </div>,
   <Popover
     open={open}
@@ -111,11 +113,7 @@ const ASAPButton = ({
 				) : (
   <SendIcon
     color={clipContent !== '' ? blue['500'] : grey['500']}
-    className={
-							clipName && clipContent
-								? classes.icon
-								: classes.disabledIcon
-						}
+    className={clipName && clipContent ? classes.icon : classes.disabledIcon}
     onClick={submitAndRedirect}
   />
 				)}
@@ -145,7 +143,7 @@ const ASAPButton = ({
       />
     </form>
   </Popover>,
-]
+];
 
 ASAPButton.propTypes = {
 	open: PropTypes.bool.isRequired,
@@ -156,7 +154,7 @@ ASAPButton.propTypes = {
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
 	nowBoardId: PropTypes.string.isRequired,
-}
+};
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
@@ -192,19 +190,19 @@ const recomposeEnhancer = compose(
 		}) => ({
 			submitAndRedirect: () => {
 				if (!(clipName && clipContent)) {
-					return
+					return;
 				}
-				setSubmitting(true)
+				setSubmitting(true);
 				createASAP(clipName, clipContent, nowBoardId).then(() => {
-					togglePopover()
-					setSubmitting(false)
-					handleClipCreateSuccess()
-					history.push(`/NOW/${clipName}`)
-				})
+					togglePopover();
+					setSubmitting(false);
+					handleClipCreateSuccess();
+					history.push(`/NOW/${clipName}`);
+				});
 			},
 		}),
 	),
-)
+);
 
 const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
 	props: ({ mutate }) => ({
@@ -217,13 +215,13 @@ const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
 				},
 			}),
 	}),
-})
+});
 
 const enhancer = compose(
 	compose(withStyles(styles)),
 	withRouter,
 	withCreateClipMutation,
 	recomposeEnhancer,
-)
+);
 
-export default enhancer(ASAPButton)
+export default enhancer(ASAPButton);
