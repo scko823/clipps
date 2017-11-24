@@ -4,6 +4,8 @@ import path from 'path';
 import CompressionPlugin from 'compression-webpack-plugin';
 import OfflinePlugin from 'offline-plugin';
 
+import ManifestPlugin from 'webpack-manifest-plugin';
+
 // import webpack from 'webpack'
 // import MinifyPlugin from 'babel-minify-webpack-plugin'
 
@@ -45,6 +47,13 @@ const prodConfig = merge(common, {
 			statsFilename: path.join('..', 'bundle-size', `stats-${new Date().toISOString()}.json`),
 			statsOptions: null,
 			logLevel: 'info',
+		}),
+		new ManifestPlugin({
+			seed: {
+				name: 'Clipps',
+				short_name: 'Clipps',
+				description: 'A site to share code snippets',
+			},
 		}),
 		new OfflinePlugin({
 			externals: [

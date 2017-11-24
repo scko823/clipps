@@ -5,8 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "npm run dev:start",
-		"dev:start":
-			"NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
+		"dev:start": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
 		"build": "NODE_ENV=production webpack --config webpack.config.prod.babel.js --progress",
 		"prebuild": "echo \"getting ready to build\" && rm -rf dist/",
 		"test": "echo \"Error: no test specified\" && exit 0",
@@ -64,6 +63,7 @@
 		"webpack-bundle-analyzer": "^2.9.1",
 		"webpack-closure-compiler": "^2.1.5",
 		"webpack-dev-server": "^2.9.4",
+		"webpack-manifest-plugin": "^2.0.0-rc.1",
 		"webpack-merge": "^4.1.1"
 	},
 	"dependencies": {
