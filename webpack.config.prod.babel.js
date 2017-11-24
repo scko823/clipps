@@ -48,10 +48,16 @@ const prodConfig = merge(common, {
 		}),
 		new OfflinePlugin({
 			externals: [
+				'/',
 				'https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css',
 				'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&subset=latin',
-				'https://highlightjs.org/static/demo/styles/solarized-dark.css',
 			],
+			excludes: ['**/*.map'],
+			ServiceWorker: {
+				events: true,
+				navigateFallbackURL: '/',
+				mode: 'no-cors',
+			},
 		}),
 	],
 
