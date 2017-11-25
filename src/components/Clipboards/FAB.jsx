@@ -7,10 +7,10 @@ import { withStyles } from 'material-ui/styles';
 const style = () => ({
 	fab: {
 		float: 'right',
-		marginTop: '25px',
+		marginBottom: '25px',
 		position: 'sticky',
 		marginRight: '20px',
-		top: '30px',
+		bottom: '60px',
 	},
 });
 
