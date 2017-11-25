@@ -36,6 +36,7 @@ const ClipboardView = ({
     {clips.map(clip => (
       <SnippetCard clipboardName={clipboardName} key={clip.id} clip={clip} />
 			))}
+    <br />
     <FAB onClick={toggleAddClipDialog} />
   </div>
 	);
