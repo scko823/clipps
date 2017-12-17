@@ -28,11 +28,11 @@ functions:
     handler:
       code: src/graphql-funcs/resolvers/signup.js
 #
-#   authenticate:
-#     type: resolver
-#     schema: src/email-password/authenticate.graphql
-#     handler:
-#       code: src/email-password/authenticate.ts
+  authenticate:
+    type: resolver
+    schema: src/graphql-funcs/resolvers/authenticate.graphql
+    handler:
+      code: src/graphql-funcs/resolvers/authenticate.js
 # 
 #   loggedInUser:
 #     type: resolver
