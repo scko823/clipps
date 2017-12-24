@@ -1,6 +1,7 @@
 import { fromEvent } from 'graphcool-lib';
 import * as bcrypt from 'bcryptjs';
 import * as validator from 'validator';
+import { v4 as uuidv4 } from 'uuid';
 
 const SALT_ROUNDS = 10;
 
@@ -14,7 +15,7 @@ async function getUser(api, email) {
   `;
 
     const variables = {
-        email,
+        email
     };
 
     return api.request(query, variables);
@@ -22,10 +23,11 @@ async function getUser(api, email) {
 
 async function createGraphcoolUser(api, email, password) {
     const mutation = `
-    mutation createGraphcoolUser($email: String!, $password: String!) {
+    mutation createGraphcoolUser($email: String!, $password: String!, $validationSecret: String!) {
       createUser(
         email: $email,
-        password: $password
+        password: $password,
+        validationSecret: $validationSecret
       ) {
         id
       }
@@ -35,6 +37,7 @@ async function createGraphcoolUser(api, email, password) {
     const variables = {
         email,
         password,
+        validationSecret: uuidv4()
     };
 
     return api.request(mutation, variables).then(r => r.createUser.id);
@@ -50,13 +53,17 @@ export default async event => {
         const { email, password } = event.data;
 
         if (!validator.isEmail(email)) {
-            return { error: 'Not a valid email' };
+            return {
+                error: 'Not a valid email'
+            };
         }
 
         // check if user exists already
         const userExists = await getUser(api, email).then(r => r.User !== null);
         if (userExists) {
-            return { error: 'Email already in use' };
+            return {
+                error: 'Email already in use'
+            };
         }
 
         // create password hash
@@ -67,11 +74,17 @@ export default async event => {
         const userId = await createGraphcoolUser(api, email, hash);
 
         // generate node token for new User node
-        const token = await graphcool.generateNodeToken(userId, 'User');
+        // const token = await graphcool.generateNodeToken(userId, 'User');
 
-        return { data: { id: userId, token } };
+        return {
+            data: {
+                id: userId
+            }
+        };
     } catch (e) {
         console.log(e);
-        return { error: 'An unexpected error occured during signup.' };
+        return {
+            error: 'An unexpected error occured during signup.'
+        };
     }
 };
