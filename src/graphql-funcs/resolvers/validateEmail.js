@@ -1,8 +1,7 @@
-// @flow
 import { fromEvent } from 'graphcool-lib';
 import * as validator from 'validator';
 
-async function getUser(api, email: String): Promise<any> {
+async function getUser(api, email) {
     const query = `
     query getUser($email: String!) {
       User(email: $email) {
@@ -22,7 +21,7 @@ async function getUser(api, email: String): Promise<any> {
     return api.request(query, variables);
 }
 
-async function validateEmailMutation(api, id: String): Promise<any> {
+async function validateEmailMutation(api, id) {
     const mutation = `
     mutation validateUserEmail($id: ID!){
         updateUser(id: $id, validated: true){
@@ -40,12 +39,7 @@ async function validateEmailMutation(api, id: String): Promise<any> {
     return api.request(mutation, variables).then(r => r.updateUser);
 }
 
-export default async (event: {
-    data: {
-        email: String,
-        validationSecret: String
-    }
-}) => {
+export default async event => {
     try {
         const graphcool = fromEvent(event);
         const api = graphcool.api('simple/v1');
