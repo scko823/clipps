@@ -27,7 +27,13 @@ functions:
     schema: src/graphql-funcs/resolvers/signup.graphql
     handler:
       code: src/graphql-funcs/resolvers/signup.js
-#
+
+  validateEmail:
+    type: resolver
+    schema: src/graphql-funcs/resolvers/validateEmail.graphql
+    handler:
+      code: src/graphql-funcs/resolvers/validateEmail.js
+
   authenticate:
     type: resolver
     schema: src/graphql-funcs/resolvers/authenticate.graphql
