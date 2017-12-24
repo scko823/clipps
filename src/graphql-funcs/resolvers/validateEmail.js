@@ -1,7 +1,8 @@
+// @flow
 import { fromEvent } from 'graphcool-lib';
 import * as validator from 'validator';
 
-async function getUser(api, email) {
+async function getUser(api, email: String): Promise<any> {
     const query = `
     query getUser($email: String!) {
       User(email: $email) {
@@ -21,7 +22,7 @@ async function getUser(api, email) {
     return api.request(query, variables);
 }
 
-async function validateEmailMutation(api, id) {
+async function validateEmailMutation(api, id: String): Promise<any> {
     const mutation = `
     mutation validateUserEmail($id: ID!){
         updateUser(id: $id, validated: true){
@@ -39,34 +40,35 @@ async function validateEmailMutation(api, id) {
     return api.request(mutation, variables).then(r => r.updateUser);
 }
 
-export default async event => {
-    console.log(JSON.stringify(event));
-
+export default async (event: {
+    data: {
+        email: String,
+        validationSecret: String
+    }
+}) => {
     try {
         const graphcool = fromEvent(event);
         const api = graphcool.api('simple/v1');
 
-        console.log(JSON.stringify(event.data));
         const { email, validationSecret } = event.data;
-
+        const validationFailError = {
+            error: 'Email validation fail'
+        };
         if (!validator.isEmail(email)) {
             return {
                 error: 'Not a valid email'
             };
         }
 
-        // check if user exists already
         const userPayload = await getUser(api, email);
-        console.log('===========User Payload');
-        console.log(JSON.stringify(userPayload));
+        // check if user exists already
         const userExists = userPayload.User !== null;
         if (!userExists) {
-            return { error: 'Email validation fail' };
+            return validationFailError;
         }
         const user = userPayload.User;
         const userId = user.id;
         if (user.validationSecret === validationSecret) {
-            // happy path
             await validateEmailMutation(api, userId);
             return {
                 data: {
@@ -75,12 +77,10 @@ export default async event => {
                 }
             };
         }
-        return { error: 'Email validation fail' };
+        return validationFailError;
     } catch (e) {
-        console.log(JSON.stringify(e));
         return {
-            error: 'An unexpected error occured during validate email.',
-            detail: JSON.stringify(e)
+            error: 'An unexpected error occured during validate email.'
         };
     }
 };
