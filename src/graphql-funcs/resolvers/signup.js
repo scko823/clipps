@@ -44,8 +44,6 @@ async function createGraphcoolUser(api, email, password) {
 }
 
 export default async event => {
-    console.log(event);
-
     try {
         const graphcool = fromEvent(event);
         const api = graphcool.api('simple/v1');
@@ -82,7 +80,6 @@ export default async event => {
             }
         };
     } catch (e) {
-        console.log(JSON.stringify(e));
         return {
             error: 'An unexpected error occured during signup.'
         };

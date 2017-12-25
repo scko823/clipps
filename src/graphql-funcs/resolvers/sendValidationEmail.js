@@ -1,70 +1,61 @@
-import { fromEvent } from 'graphcool-lib';
-import { email as sendemail } from 'sendemail';
+// https://github.com/graphcool/templates/blob/master/messaging/mailgun/src/sendEmail.ts
+const fetch = require('isomorphic-fetch');
 
-async function getUser(api, email) {
-    const query = `
-    query getUser($email: String!) {
-      User(email: $email) {
-        id
-        validated
-        validationSecret
-      }
-    }
-  `;
+const FormData = require('form-data');
 
-    const variables = {
-        email
-    };
+const generateHTML = (userEmail, validationSecret) => `
+<p>Hi ${userEmail},</p>
 
-    return api.request(query, variables);
-}
+<p>Thank you for joining Clipps. When prompted to verify your email, please enter the following secret:</p>
+
+<p>${validationSecret}</p>
+
+<p>Thanks,</p>
+<p>Clipps</p>
+`;
+
+const EMAIL_FROM = `Welcome to Clipps <no-reply@${process.env.MAILGUN_DOMAIN}>`;
+const EMAIL_SUBJECT = 'Welcome to Clipps';
 
 export default async event => {
+    if (!process.env.MAILGUN_API_KEY) {
+        console.log('Please provide a valid mailgun secret key!');
+        return { error: 'Module not configured correctly.' };
+    }
+
+    if (!process.env.MAILGUN_DOMAIN) {
+        console.log('Please provide a valid mailgun domain!');
+        return { error: 'Module not configured correctly.' };
+    }
     try {
-        console.log('inside try block \n');
-        sendemail.set_template_directory('../email-templates');
-        const { email } = event.data;
+        const token = Buffer.from(`api:${process.env.MAILGUN_API_KEY}`, 'utf-8').toString('base64');
+        const endpoint = `https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`;
+        const { email, validationSecret } = event.data;
 
-        const graphcool = fromEvent(event);
-        const api = graphcool.api('simple/v1');
+        // build form for MailGun
+        const form = new FormData();
+        form.append('from', EMAIL_FROM);
+        form.append('to', email);
+        form.append('subject', EMAIL_SUBJECT);
+        form.append('html', generateHTML(email, validationSecret));
 
-        console.log('about to get user');
-        const user = await getUser(api, email).then(r => r.User);
-        console.log(`got user ${JSON.stringify(user)}\n`);
-        if (user.validated) {
-            return {
-                data: event.data
-            };
-        }
-        const emailOpts = {
-            user_email: email,
-            validation_secert: user.validationSecret,
-            email: 'sko.axway.1@gmail.com',
-            subject: 'Welcome to Clipps'
-        };
-        console.log('about to send email');
-        const sendEmailPromise = new Promise((resolve, reject) => {
-            email('emailValidation', emailOpts, (error, result) => {
-                console.log(' - - - - - - - - - - - - - - - - - - - - -> email sent: ');
-                console.log(JSON.stringify(result));
-                console.log(' - - - - - - - - - - - - - - - - - - - - - - - - - - - -');
-                if (!error) {
-                    resolve(result);
-                } else {
-                    reject(error);
-                }
-            });
-        });
-        console.log('got sendEmailPromise');
+        const result = await fetch(endpoint, {
+            headers: {
+                Authorization: `Basic ${token}`
+            },
+            method: 'POST',
+            body: form
+        }).then(response => response.json());
 
-        const result = await sendEmailPromise;
         console.log('====================result:');
         console.log(JSON.stringify(result));
         return {
             data: event.data
         };
     } catch (e) {
+        console.error(e);
         console.log(JSON.stringify(e));
+        console.log(e.error);
         return {
             error: 'An unexpected error occured during send validation email.'
         };
