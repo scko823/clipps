@@ -1,4 +1,3 @@
 targets:
-  clipps-dev: local/cjbbe6fkl000401916z6o3zoj
-  Throwaway1: shared-us-west-2/cjblhhumy1ngb01376s4kssqv
+  clipps-dev: local/cjbmm6714000401267k1gx7lx
   default: clipps-dev
