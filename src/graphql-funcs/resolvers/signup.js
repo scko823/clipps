@@ -82,7 +82,7 @@ export default async event => {
             }
         };
     } catch (e) {
-        console.log(e);
+        console.log(JSON.stringify(e));
         return {
             error: 'An unexpected error occured during signup.'
         };

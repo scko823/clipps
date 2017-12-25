@@ -32,7 +32,14 @@ functions:
     type: operationAfter
     operation: User.create
     handler:
-      code: src/graphql-funcs/resolvers/sendValidationEmail.js
+      code:
+        src: src/graphql-funcs/resolvers/sendValidationEmail.js
+        environment:
+          SENDER_EMAIL_ADDRESS: sko.axway.1@gmail.com
+          AWS_REGION: us-east-2
+          AWS_ACCESS_KEY_ID: {env.AWS_ACCESS_KEY_ID}
+          AWS_SECRET_ACCESS_KEY: {env.AWS_SECRET_ACCESS_KEY}
+          # TEMPLATE_DIRECTORY: src/graphql-funcs/
 
   validateEmail:
     type: resolver
