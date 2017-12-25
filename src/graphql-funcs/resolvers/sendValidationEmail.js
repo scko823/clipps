@@ -1,3 +1,4 @@
+/* eslint no-console: "off" */
 // https://github.com/graphcool/templates/blob/master/messaging/mailgun/src/sendEmail.ts
 const fetch = require('isomorphic-fetch');
 
