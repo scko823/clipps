@@ -10,10 +10,10 @@ script:
   - npm test
   - npm run lint
   - npm run build
-# deploy:
-#   provider: surge
-#   skip_cleanup: true
-#   project: ./dist/
-#   domain: https://clipps.surge.sh
-#   on:
-#     branch: master
+deploy:
+  provider: surge
+  skip_cleanup: true
+  project: ./dist/
+  domain: https://clipps.surge.sh
+  on:
+    branch: master

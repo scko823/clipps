@@ -38,12 +38,12 @@ import ClipView from '../Clips/ClipView';
  * @param {function} toggleDrawer toggle show drawer state
  */
 const ClipboardAppBar = ({
-	loadingClipboards,
-	clipboards,
-	refetchClipboard,
-	showDrawer,
-	toggleDrawer,
-	nowBoardId,
+    loadingClipboards,
+    clipboards,
+    refetchClipboard,
+    showDrawer,
+    toggleDrawer,
+    nowBoardId
 }) => (
   <Router>
     <div id="clipboard">
@@ -53,7 +53,7 @@ const ClipboardAppBar = ({
             <MenuIcon />
           </IconButton>
           <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-						ClipBoards
+                        ClipBoards
           </Typography>
           <ASAPButton nowBoardId={nowBoardId} />
         </Toolbar>
@@ -70,7 +70,11 @@ const ClipboardAppBar = ({
       <Switch>
         <Redirect exact from="/" to="/boards/NOW" />
         <Route exact path="/add" component={AddClipboard} />
-        <Route exact path="/boards/:clipboardName" component={ClipboardView} />
+        <Route
+          exact
+          path="/boards/:clipboardName"
+          component={ClipboardView}
+        />
         <Route exact path="/:clipboardName/:clipName" component={ClipView} />
       </Switch>
     </div>
@@ -78,114 +82,110 @@ const ClipboardAppBar = ({
 );
 
 ClipboardAppBar.propTypes = {
-	loadingClipboards: PropTypes.bool.isRequired,
-	refetchClipboard: PropTypes.func.isRequired,
-	nowBoardId: PropTypes.string.isRequired,
-	clipboards: PropTypes.arrayOf(
-		PropTypes.shape({
-			id: PropTypes.string.isRequired,
-			name: PropTypes.string.isRequired,
-		}),
-	).isRequired,
-	showDrawer: PropTypes.bool,
-	toggleDrawer: PropTypes.func.isRequired,
+    loadingClipboards: PropTypes.bool.isRequired,
+    refetchClipboard: PropTypes.func.isRequired,
+    nowBoardId: PropTypes.string.isRequired,
+    clipboards: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        })
+    ).isRequired,
+    showDrawer: PropTypes.bool,
+    toggleDrawer: PropTypes.func.isRequired
 };
 
 ClipboardAppBar.defaultProps = {
-	showDrawer: false,
+    showDrawer: false
 };
 
 // GraphQL Clipboard query
 const withAllClipboardsQuery = graphql(
-	gql`
+    gql`
   ${allClipboardsQuery}
 `,
-	{
-		options: {
-			notifyOnNetworkStatusChange: true,
-		},
-		props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
-			...ownProps,
-			loadingClipboards: loading,
-			clipboards: allClipboards,
-			refetchClipboard: refetch,
-			subscribeToMore,
-		}),
-	},
+    {
+        options: {
+            notifyOnNetworkStatusChange: true
+        },
+        props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
+            ...ownProps,
+            loadingClipboards: loading,
+            clipboards: allClipboards,
+            refetchClipboard: refetch,
+            subscribeToMore
+        })
+    }
 );
 
 // GraphQL createNowBoard mutation
 const withCreateNowClipboardMutation = graphql(gql`${createNowClipboardMutation}`, {
-	props: ({ ownProps, mutate }) => ({
-		...ownProps,
-		createNowBoard: mutate,
-	}),
+    props: ({ ownProps, mutate }) => ({
+        ...ownProps,
+        createNowBoard: mutate
+    })
 });
 
 const recomposeEnhancer = compose(
-	// make component "stateful" to toggle the drawer
-	withStateHandlers(
-		({ initShowDrawer = false, nowBoardId = '1' }) => ({
-			showDrawer: initShowDrawer,
-			nowBoardId,
-		}),
-		{
-			toggleDrawer: ({ showDrawer }) => () => ({
-				showDrawer: !showDrawer,
-			}),
-			setNowBoardId: () => id => ({ nowBoardId: id }),
-		},
-	),
-	// add subscription for CREATED, UPDATED , DELETED for clipboards
-	lifecycle({
-		componentWillMount() {
-			this.props.subscribeToMore({
-				document: gql`${clipboardsSubscription}`,
-				updateQuery: (
-					{ allClipboards },
-					{
-						subscriptionData: {
-							data: {
-								Clipboard: { mutation, node /* updatedFields, previousValues */ },
-							},
-						},
-					},
-				) => {
-					if (mutation === 'CREATED') {
-						return { allClipboards: [...allClipboards, node] };
-					}
-					return { allClipboards };
-				},
-			});
-		},
-		componentDidUpdate({ clipboards: pClipboards }) {
-			const {
-				clipboards: cClipboards,
-				createNowBoard,
-				refetchClipboard,
-				setNowBoardId,
-			} = this.props;
-			const prevClipsEmpty = !pClipboards || (pClipboards && pClipboards.length === 0);
-			if (!prevClipsEmpty) {
-				return;
-			}
-			const currentClipsEmpty =
-				cClipboards && Array.isArray(cClipboards) && cClipboards.length === 0;
-			if (currentClipsEmpty) {
-				return;
-			}
-			const NowBoardExist = cClipboards.some(b => b.name === 'NOW');
-			if (!NowBoardExist) {
-				createNowBoard().then(({ data: { createClipboard: { id } } }) => {
-					setNowBoardId(id);
-					refetchClipboard();
-				});
-			} else {
-				const nowBoard = cClipboards.find(b => b.name === 'NOW');
-				setNowBoardId(nowBoard.id);
-			}
-		},
-	}),
+    // make component "stateful" to toggle the drawer
+    withStateHandlers(
+        ({ initShowDrawer = false, nowBoardId = '1' }) => ({
+            showDrawer: initShowDrawer,
+            nowBoardId
+        }),
+        {
+            toggleDrawer: ({ showDrawer }) => () => ({
+                showDrawer: !showDrawer
+            }),
+            setNowBoardId: () => id => ({ nowBoardId: id })
+        }
+    ),
+    // add subscription for CREATED, UPDATED , DELETED for clipboards
+    lifecycle({
+        componentDidMount() {
+            const { createNowBoard, refetchClipboard, setNowBoardId, subscribeToMore } = this.props;
+            createNowBoard()
+                .then(({ data: { createClipboard: { id } } }) => {
+                    setNowBoardId(id);
+                    refetchClipboard();
+                })
+                .catch(() => {
+                    console.log('unable to create NOW board. Likely it already exists'); // eslint-disable-line
+                });
+            subscribeToMore({
+                document: gql`${clipboardsSubscription}`,
+                updateQuery: (
+                    { allClipboards },
+                    {
+                        subscriptionData: {
+                            data: {
+                                Clipboard: { mutation, node /* updatedFields, previousValues */ }
+                            }
+                        }
+                    }
+                ) => {
+                    if (mutation === 'CREATED') {
+                        return { allClipboards: [...allClipboards, node] };
+                    }
+                    return { allClipboards };
+                }
+            });
+        },
+        componentDidUpdate() {
+            const { clipboards = [], setNowBoardId } = this.props;
+            const currentClipsEmpty =
+                clipboards && Array.isArray(clipboards) && clipboards.length === 0;
+            if (currentClipsEmpty) {
+                return;
+            }
+            const NowBoardExist = clipboards.some(b => b.name === 'NOW');
+            if (!NowBoardExist) {
+                return;
+            }
+            const nowBoard = clipboards.find(b => b.name === 'NOW');
+            setNowBoardId(nowBoard.id);
+        }
+    })
 );
 
 const enhancer = compose(withAllClipboardsQuery, withCreateNowClipboardMutation, recomposeEnhancer);

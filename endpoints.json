@@ -1,7 +1,10 @@
 {
-	"graphcool": {
-		"api": "https://api.graph.cool/simple/v1/cj9t4731sef190109pcyynlkc",
-		"websockets":
-			"wss://subscriptions.us-west-2.graph.cool/v1/cj9t4731sef190109pcyynlkc"
-	}
+    "graphcool": {
+        "api": "https://api.graph.cool/simple/v1/cjblhhumy1ngb01376s4kssqv",
+        "websockets": "wss://subscriptions.us-west-2.graph.cool/v1/cjblhhumy1ngb01376s4kssqv"
+    },
+    "dev": {
+        "api": "http://localhost:60000/simple/v1/cjbmm6714000401267k1gx7lx",
+        "websockets": "ws://localhost:60000/subscriptions/v1/cjbmm6714000401267k1gx7lx"
+    }
 }
