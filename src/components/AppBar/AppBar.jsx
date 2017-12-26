@@ -24,7 +24,7 @@ import createNowClipboardMutation from '../../../graphql/mutations/createNowClip
 import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
 import AddClipboard from '../AddClipboard';
-// import ClipboardView from '../Clipboards/ClipboardView';
+import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
 
 /**
@@ -73,7 +73,7 @@ const ClipboardAppBar = ({
         <Route
           exact
           path="/boards/:clipboardName"
-          component={() => <h6>now</h6> /* ClipboardView */}
+          component={ClipboardView}
         />
         <Route exact path="/:clipboardName/:clipName" component={ClipView} />
       </Switch>
