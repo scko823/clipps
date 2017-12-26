@@ -142,8 +142,17 @@ const recomposeEnhancer = compose(
     ),
     // add subscription for CREATED, UPDATED , DELETED for clipboards
     lifecycle({
-        componentWillMount() {
-            this.props.subscribeToMore({
+        componentDidMount() {
+            const { createNowBoard, refetchClipboard, setNowBoardId, subscribeToMore } = this.props;
+            createNowBoard()
+                .then(({ data: { createClipboard: { id } } }) => {
+                    setNowBoardId(id);
+                    refetchClipboard();
+                })
+                .catch(() => {
+                    console.log('unable to create NOW board. Likely it already exists'); // eslint-disable-line
+                });
+            subscribeToMore({
                 document: gql`${clipboardsSubscription}`,
                 updateQuery: (
                     { allClipboards },
@@ -162,22 +171,8 @@ const recomposeEnhancer = compose(
                 }
             });
         },
-        componentDidMount() {
-            const { createNowBoard, refetchClipboard, setNowBoardId } = this.props;
-            createNowBoard()
-                .then(({ data: { createClipboard: { id } } }) => {
-                    setNowBoardId(id);
-                    refetchClipboard();
-                })
-                .catch(e => {
-									console.log(e)
-								})
-        },
         componentDidUpdate() {
-            const {
-                clipboards = [],
-                setNowBoardId
-            } = this.props;
+            const { clipboards = [], setNowBoardId } = this.props;
             const currentClipsEmpty =
                 clipboards && Array.isArray(clipboards) && clipboards.length === 0;
             if (currentClipsEmpty) {
@@ -187,8 +182,8 @@ const recomposeEnhancer = compose(
             if (!NowBoardExist) {
                 return;
             }
-							const nowBoard = clipboards.find(b => b.name === 'NOW');
-							setNowBoardId(nowBoard.id);
+            const nowBoard = clipboards.find(b => b.name === 'NOW');
+            setNowBoardId(nowBoard.id);
         }
     })
 );
