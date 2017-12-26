@@ -3,8 +3,7 @@ import path from 'path';
 import HtmkWebpackPlugin from 'html-webpack-plugin';
 import endpoints from './endpoints.json';
 
-const envEndpoints = process.env.NODE_ENV === 'production' ? endpoints.dev : endpoints.graphcool;
-const { websockets, api } = envEndpoints;
+const { graphcool: { websockets, api } } = endpoints
 const htmlPluginDefaultOpts = {
     template: path.join(__dirname, 'src', 'index.ejs'),
     inject: true
