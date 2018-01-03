@@ -23,6 +23,7 @@ import createNowClipboardMutation from '../../../graphql/mutations/createNowClip
 // components
 import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
+import LoginButton from './LoginButton';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
@@ -55,6 +56,7 @@ const ClipboardAppBar = ({
           <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
                         ClipBoards
           </Typography>
+          <LoginButton />
           <ASAPButton nowBoardId={nowBoardId} />
         </Toolbar>
       </MUIAppBar>
@@ -142,17 +144,8 @@ const recomposeEnhancer = compose(
     ),
     // add subscription for CREATED, UPDATED , DELETED for clipboards
     lifecycle({
-        componentDidMount() {
-            const { createNowBoard, refetchClipboard, setNowBoardId, subscribeToMore } = this.props;
-            createNowBoard()
-                .then(({ data: { createClipboard: { id } } }) => {
-                    setNowBoardId(id);
-                    refetchClipboard();
-                })
-                .catch(() => {
-                    console.log('unable to create NOW board. Likely it already exists'); // eslint-disable-line
-                });
-            subscribeToMore({
+        componentWillMount() {
+            this.props.subscribeToMore({
                 document: gql`${clipboardsSubscription}`,
                 updateQuery: (
                     { allClipboards },
@@ -171,19 +164,32 @@ const recomposeEnhancer = compose(
                 }
             });
         },
-        componentDidUpdate() {
-            const { clipboards = [], setNowBoardId } = this.props;
+        componentDidUpdate({ clipboards: pClipboards }) {
+            const {
+                clipboards: cClipboards,
+                createNowBoard,
+                refetchClipboard,
+                setNowBoardId
+            } = this.props;
+            const prevClipsEmpty = !pClipboards || (pClipboards && pClipboards.length === 0);
+            if (!prevClipsEmpty) {
+                return;
+            }
             const currentClipsEmpty =
-                clipboards && Array.isArray(clipboards) && clipboards.length === 0;
+                cClipboards && Array.isArray(cClipboards) && cClipboards.length === 0;
             if (currentClipsEmpty) {
                 return;
             }
-            const NowBoardExist = clipboards.some(b => b.name === 'NOW');
+            const NowBoardExist = cClipboards.some(b => b.name === 'NOW');
             if (!NowBoardExist) {
-                return;
+                createNowBoard().then(({ data: { createClipboard: { id } } }) => {
+                    setNowBoardId(id);
+                    refetchClipboard();
+                });
+            } else {
+                const nowBoard = cClipboards.find(b => b.name === 'NOW');
+                setNowBoardId(nowBoard.id);
             }
-            const nowBoard = clipboards.find(b => b.name === 'NOW');
-            setNowBoardId(nowBoard.id);
         }
     })
 );
