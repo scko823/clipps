@@ -36,6 +36,11 @@ const Login = ({
     submit,
     onEmailFocus,
     showEmailError,
+    onPasswordFocus,
+    showPasswordError,
+    passwordError,
+    onPasswordBlur,
+    onPasswordChange,
     disabled
 }) => (
   <Grid className={classes.root} container>
@@ -47,10 +52,21 @@ const Login = ({
               autoFocus
               onFocus={onEmailFocus}
               error={showEmailError && emailError}
-              helperText={emailError ? <span>Must be a valid email</span> : null}
+              helperText={showEmailError && <span>Must be a valid email</span>}
               label="Email"
               onChange={onEmailChange}
               onBlur={onEmailBlur}
+            />
+            <TextField
+              onFocus={onPasswordFocus}
+              type="password"
+              error={showPasswordError && passwordError}
+              onChange={onPasswordChange}
+              helperText={
+                                showPasswordError && <span>Must be at least 6 characters</span>
+                            }
+              label="password"
+              onBlur={onPasswordBlur}
             />
             <br />
             <Button
@@ -73,36 +89,58 @@ Login.propTypes = {
     classes: PropTypes.object.isRequired,
     emailError: PropTypes.bool.isRequired,
     showEmailError: PropTypes.bool.isRequired,
-    disabled: PropTypes.bool.isRequired,
-    submit: PropTypes.func.isRequired,
     onEmailChange: PropTypes.func.isRequired,
     onEmailFocus: PropTypes.func.isRequired,
-    onEmailBlur: PropTypes.func.isRequired
+    onEmailBlur: PropTypes.func.isRequired,
+    passwordError: PropTypes.bool.isRequired,
+    showPasswordError: PropTypes.bool.isRequired,
+    onPasswordChange: PropTypes.func.isRequired,
+    onPasswordFocus: PropTypes.func.isRequired,
+    onPasswordBlur: PropTypes.func.isRequired,
+    disabled: PropTypes.bool.isRequired,
+    submit: PropTypes.func.isRequired
 };
 
 const recomposeEnhancer = compose(
     withStateHandlers(
-        ({ email = '' }) => ({
+        ({ email = '', password = '', emailError = false, passwordError = false }) => ({
             email,
-            password: 'test',
-            emailError: false
+            password,
+            emailError,
+            passwordError
         }),
         {
             onEmailChange: () => ({ target }) => ({
                 email: target.value,
                 showEmailError: false,
-                emailError: !validator.isEmail(target.value)
+                emailError: !validator.isEmail(target.value) && !!target.value
             }),
             onEmailBlur: () => () => ({
                 showEmailError: true
             }),
             onEmailFocus: () => () => ({
                 showEmailError: false
+            }),
+            onPasswordChange: () => ({ target }) => ({
+                password: target.value,
+                showPasswordError: false,
+                passwordError: target.value.length < 6 && target.value !== ''
+            }),
+            onPasswordBlur: () => () => ({
+                showPasswordError: true
+            }),
+            onPasswordFocus: () => () => ({
+                showPasswordError: false
             })
         }
     ),
-    withProps(({ email, password, emailError }) => ({
-        disabled: !email || !password || emailError
+    withProps(({ email, password, passwordError, emailError }) => ({
+        disabled: !email || !password || emailError || passwordError,
+        submit: () => {
+            const signupPayload = { // eslint-disable-line
+                email, password
+            }
+        }
     }))
 );
 
