@@ -5,19 +5,16 @@ import PropTypes from 'prop-types';
 
 import validator from 'validator';
 import Grid from 'material-ui/Grid';
-
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
-// import IconButton from 'material-ui/IconButton';
-// import AccountCircle from 'material-ui-icons/AccountCircle';
 import { red } from 'material-ui/colors';
 import TextField from 'material-ui/TextField';
-// import Typography from 'material-ui/Typography';
-// import { CircularProgress } from 'material-ui/Progress';
-// import Popover from 'material-ui/Popover';
 import { withStyles } from 'material-ui/styles';
-// import SendIcon from 'material-ui-icons/Send';
 import { compose, withStateHandlers, withProps } from 'recompose';
+
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import signupUserMutation from '../../../graphql/mutations/signupUser';
 
 const styles = theme => ({
     root: {
@@ -52,7 +49,9 @@ const Login = ({
               autoFocus
               onFocus={onEmailFocus}
               error={showEmailError && emailError}
-              helperText={showEmailError && <span>Must be a valid email</span>}
+              helperText={
+                                showEmailError && emailError && <span>Must be a valid email</span>
+                            }
               label="Email"
               onChange={onEmailChange}
               onBlur={onEmailBlur}
@@ -63,7 +62,8 @@ const Login = ({
               error={showPasswordError && passwordError}
               onChange={onPasswordChange}
               helperText={
-                                showPasswordError && <span>Must be at least 6 characters</span>
+                                showPasswordError &&
+                                passwordError && <span>Must be at least 6 characters</span>
                             }
               label="password"
               onBlur={onPasswordBlur}
@@ -76,7 +76,7 @@ const Login = ({
               onClick={submit}
               disabled={disabled}
             >
-                            Login
+                            Sign up
             </Button>
           </FormGroup>
         </Grid>
@@ -100,6 +100,8 @@ Login.propTypes = {
     disabled: PropTypes.bool.isRequired,
     submit: PropTypes.func.isRequired
 };
+
+const withSignUpUserMutation = graphql(gql`${signupUserMutation}`);
 
 const recomposeEnhancer = compose(
     withStateHandlers(
@@ -134,14 +136,12 @@ const recomposeEnhancer = compose(
             })
         }
     ),
-    withProps(({ email, password, passwordError, emailError }) => ({
+    withProps(({ email, password, passwordError, emailError, mutate }) => ({
         disabled: !email || !password || emailError || passwordError,
         submit: () => {
-            const signupPayload = { // eslint-disable-line
-                email, password
-            }
+            mutate({ variables: { email, password } });
         }
     }))
 );
 
-export default compose(withStyles(styles), recomposeEnhancer)(Login);
+export default compose(withStyles(styles), withSignUpUserMutation, recomposeEnhancer)(Login);
