@@ -154,6 +154,12 @@ const recomposeEnhancer = compose(
                         )
                     ) {
                         history.push(`/validate-email?email=${email}`);
+                    } else if (
+                        graphQLErrors.some(
+                            e => e.functionError === 'Email already in use and validated'
+                        )
+                    ) {
+                        history.push(`/login?email=${email}`);
                     }
                 });
         }
