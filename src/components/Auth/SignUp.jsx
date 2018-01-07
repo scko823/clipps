@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// import { withRouter } from 'react-router';
-
+import { withRouter } from 'react-router';
 import validator from 'validator';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
@@ -136,12 +135,31 @@ const recomposeEnhancer = compose(
             })
         }
     ),
-    withProps(({ email, password, passwordError, emailError, mutate }) => ({
+    withProps(({ email, password, passwordError, emailError, mutate, history }) => ({
         disabled: !email || !password || emailError || passwordError,
         submit: () => {
-            mutate({ variables: { email, password } });
+            mutate({ variables: { email, password } })
+                .then(() => {
+                    console.log('signup success');
+                    history.push(`/validate-email?email=${email}`);
+                })
+                .catch(err => {
+                    const { graphQLErrors } = err;
+                    console.log(err);
+                    if (
+                        graphQLErrors.some(
+                            e =>
+                                e.functionError ===
+                                'Email already registered, need email validation'
+                        )
+                    ) {
+                        history.push(`/validate-email?email=${email}`);
+                    }
+                });
         }
     }))
 );
 
-export default compose(withStyles(styles), withSignUpUserMutation, recomposeEnhancer)(Login);
+export default compose(withStyles(styles), withRouter, withSignUpUserMutation, recomposeEnhancer)(
+    Login
+);
