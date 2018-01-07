@@ -27,7 +27,7 @@ import LoginButton from './LoginButton';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
-import Login from '../Auth/Login';
+import SignUp from '../Auth/SignUp';
 
 /**
  *
@@ -72,7 +72,7 @@ const ClipboardAppBar = ({
       </Drawer>
       <Switch>
         <Redirect exact from="/" to="/boards/NOW" />
-        <Route path="/login" component={Login} />
+        <Route path="/signup" component={SignUp} />
         <Route exact path="/add" component={AddClipboard} />
         <Route
           exact

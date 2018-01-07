@@ -24,6 +24,6 @@ LoginButton.propTypes = {
     login: PropTypes.bool.isRequired
 };
 
-const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/login') }));
+const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/signup') }));
 
 export default compose(withRouter, recomposeEnchancer, withStyles(styles))(LoginButton);
