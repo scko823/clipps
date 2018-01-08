@@ -28,6 +28,7 @@ import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
 import SignUp from '../Auth/SignUp';
+import ValidateEmail from '../Auth/ValidateEmail';
 
 /**
  *
@@ -73,6 +74,7 @@ const ClipboardAppBar = ({
       <Switch>
         <Redirect exact from="/" to="/boards/NOW" />
         <Route path="/signup" component={SignUp} />
+        <Route path="/validate-email" component={ValidateEmail} />
         <Route exact path="/add" component={AddClipboard} />
         <Route
           exact
