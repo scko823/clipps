@@ -11,8 +11,6 @@ import { split } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities/lib';
 
-// import fetch from 'unfetch';
-
 import AppBar from './components/AppBar/AppBar';
 
 import offlineSW from './sw';

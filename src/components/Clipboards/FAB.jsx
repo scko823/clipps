@@ -9,14 +9,20 @@ const style = () => ({
 		float: 'right',
 		position: 'sticky',
 		marginRight: '20px',
-		bottom: '2%',
-	},
+		bottom: '2%'
+	}
 });
 
 const FAB = (props: FABPropType) => {
 	const { classes, onClick } = props;
 	return (
-  <Button fab color="primary" aria-label="add" className={classes.fab} onClick={onClick}>
+  <Button
+    variant="fab"
+    color="primary"
+    aria-label="add"
+    className={classes.fab}
+    onClick={onClick}
+		>
     <AddIcon />
   </Button>
 	);

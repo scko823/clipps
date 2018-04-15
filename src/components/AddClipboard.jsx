@@ -20,11 +20,11 @@ import clip from '../images/clip.png';
 const styles = theme => ({
 	root: {
 		// flexGrow: 1,
-		margin: `${theme.spacing.unit * 2}px 0`,
+		margin: `${theme.spacing.unit * 2}px 0`
 	},
 	inputError: {
-		color: red['100'],
-	},
+		color: red['100']
+	}
 });
 
 const AddClipboard = (props: {
@@ -32,7 +32,7 @@ const AddClipboard = (props: {
 	onInputChange: (prop?: Object) => (event: SyntheticEvent<HTMLFormElement>) => Object,
 	submit: (event?: SyntheticEvent<HTMLButtonElement>) => void,
 	classes: { root?: cssInJS, inputError: cssInJS },
-	error: boolean,
+	error: boolean
 }) => {
 	const { name, onInputChange, submit, classes, error } = props;
 	return (
@@ -60,7 +60,7 @@ const AddClipboard = (props: {
             />
             <br />
             <Button
-              raised
+              variant="raised"
               label="Create Clipboard"
               color="primary"
               onClick={submit}
@@ -76,25 +76,34 @@ const AddClipboard = (props: {
 	);
 };
 
-const withcreateClipboard = graphql(gql`${createClipboard}`, {
-	props: ({ ownProps: { history, name = '' }, mutate }) => ({
-		submit: () => {
-			mutate({ variables: { name } }).then(
-				({ data: { createClipboard: { name: clipboardName } } }) => {
-					history.push(`/boards/${clipboardName}`);
-				},
-			);
-		},
-	}),
-});
+const withcreateClipboard = graphql(
+	gql`
+		${createClipboard}
+	`,
+	{
+		props: ({ ownProps: { history, name = '' }, mutate }) => ({
+			submit: () => {
+				mutate({ variables: { name } }).then(
+					({
+						data: {
+							createClipboard: { name: clipboardName }
+						}
+					}) => {
+						history.push(`/boards/${clipboardName}`);
+					}
+				);
+			}
+		})
+	}
+);
 
 const recomposeEnhancer = compose(
 	withStateHandlers(({ name = '', error = false }) => ({ name, error }), {
 		onInputChange: () => ({ target: { value = '' } = { value: '' } }) => ({
 			name: value,
-			error: value === 'boards' || /[^0-9a-zA-Z_-]/g.test(value),
-		}),
-	}),
+			error: value === 'boards' || /[^0-9a-zA-Z_-]/g.test(value)
+		})
+	})
 );
 const enhancer = compose(withStyles(styles), withRouter, recomposeEnhancer, withcreateClipboard);
 

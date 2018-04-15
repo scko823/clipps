@@ -32,7 +32,7 @@ const styles = () => ({
 		cursor: 'pointer'
 	},
 	ASAPBtn: {
-		color: '#ff4081'
+		backgroundColor: '#ff4081'
 	},
 	disabledIcon: {
 		cursor: 'disabled'
@@ -69,7 +69,7 @@ const ASAPButton = ({
 }) => [
   <div key="asap-btn-wrapper" className={classes.progressWrapper}>
     <Button
-      raised
+      variant="raised"
       color="inherit"
       id="ASAP-btn"
       disabled={nowBoardId === '1'}
@@ -204,18 +204,23 @@ const recomposeEnhancer = compose(
 	)
 );
 
-const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
-	props: ({ mutate }) => ({
-		createASAP: (name, content, nowBoardId) =>
-			mutate({
-				variables: {
-					clipboardId: nowBoardId,
-					name,
-					content
-				}
-			})
-	})
-});
+const withCreateClipMutation = graphql(
+	gql`
+		${createClipMutation}
+	`,
+	{
+		props: ({ mutate }) => ({
+			createASAP: (name, content, nowBoardId) =>
+				mutate({
+					variables: {
+						clipboardId: nowBoardId,
+						name,
+						content
+					}
+				})
+		})
+	}
+);
 
 const enhancer = compose(
 	compose(withStyles(styles)),

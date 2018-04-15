@@ -10,9 +10,28 @@ import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 import { compose, withStateHandlers /* withProps */ } from 'recompose';
 
+// import fetch from 'unfetch';
 // import { graphql } from 'react-apollo';
 // import gql from 'graphql-tag';
 // import validateEmail from '../../../graphql/mutations/validateEmail';
+
+const uuidSecretAttrs = [
+	{
+		length: 8
+	},
+	{
+		length: 4
+	},
+	{
+		length: 4
+	},
+	{
+		length: 4
+	},
+	{
+		length: 12
+	}
+];
 
 const styles = theme => ({
 	root: {
@@ -45,23 +64,7 @@ class ValidateEmail extends Component {
 		focus: PropTypes.number.isRequired
 	};
 	static defaultProps = {
-		uuidAttrs: [
-			{
-				length: 8
-			},
-			{
-				length: 4
-			},
-			{
-				length: 4
-			},
-			{
-				length: 4
-			},
-			{
-				length: 12
-			}
-		]
+		uuidAttrs: uuidSecretAttrs
 	};
 	constructor(...args) {
 		super(...args);
@@ -97,7 +100,7 @@ class ValidateEmail extends Component {
           {uuidAttrs.map((attr, index) => (
             <Fragment>
               <TextField
-                autoFocus={index===0}
+                autoFocus={index === 0}
                 value={validationSecret[index]}
                 error={validationError[index]}
                 inputProps={{
@@ -110,16 +113,19 @@ class ValidateEmail extends Component {
 											this._inputs[index] = node;
 										}}
               />
-              {index!==4 && '-'}
+              {index !== 4 && '-'}
             </Fragment>
 							))}
         </FormGroup>
         <Button
-          raised
+          variant="raised"
           label="Create Clipboard"
           color="primary"
           onClick={submit}
           disabled={disabled}
+          ref={node => {
+								this._inputs[5] = node;
+							}}
         >
 							validate my email
         </Button>
@@ -140,7 +146,7 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 	newSecret[section] = value;
 	// handle error (not number or lowercase)
 	const length = parseInt(data.length, 10);
-	const alphaNumOnly = /^[0-9a-z]$/g.test(value);
+	const alphaNumOnly = /^[0-9a-z]*$/.test(value);
 	const newValidationError = [...validationError];
 	newValidationError[section] = value === '' ? false : length < value.length || !alphaNumOnly;
 	// try to jump focus
@@ -148,10 +154,21 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 	const newSectionValue = newSecret[section];
 	if (prevSectionValue !== '' && newSectionValue === '' && section !== 0) {
 		newFocus = section - 1;
-	} else if (newSectionValue.length === length && !newValidationError[section] && section !== 4) {
+	} else if (newSectionValue.length === length && !newValidationError[section]) {
 		newFocus = section + 1;
 	}
-	return { validationSecret: newSecret, validationError: newValidationError, focus: newFocus };
+	// see if user is ready
+	const noError = newValidationError.every(acc => acc === false);
+	const sercetFilled = newSecret.every(
+		(secret, i) => secret.length === uuidSecretAttrs[i].length
+	);
+	const disabled = !noError || !sercetFilled;
+	return {
+		validationSecret: newSecret,
+		validationError: newValidationError,
+		focus: newFocus,
+		disabled
+	};
 };
 
 const onFocusChange = () => newFocus => ({ focus: newFocus });
