@@ -86,7 +86,7 @@ const ASAPButton = ({
     anchorEl={document.getElementById('ASAP-btn')}
     anchorReference="anchorEl"
     anchorPosition={{ top: 200, left: 400 }}
-    onRequestClose={togglePopover}
+    onClose={togglePopover}
     anchorOrigin={{
 			vertical: 'bottom',
 			horizontal: 'left'
