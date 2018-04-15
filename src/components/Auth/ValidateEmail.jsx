@@ -39,17 +39,22 @@ class ValidateEmail extends React.Component {
 		validationError: PropTypes.arrayOf(PropTypes.bool).isRequired,
 		submit: PropTypes.func.isRequired,
 		disabled: PropTypes.bool.isRequired,
-		onFieldChange: PropTypes.func.isRequired
+		onFieldChange: PropTypes.func.isRequired,
+		onFocusChange: PropTypes.func.isRequired,
+		focus: PropTypes.number.isRequired
 	};
 	constructor(...args) {
 		super(...args);
 		this._inputs = {};
 	}
-	componentDidUpdate() {
-		if (this._inputs && typeof this._inputs[0]) {
+	componentDidUpdate(prevProps) {
+		const { focus: prevFocus } = prevProps;
+		const { focus: newFocus, onFocusChange } = this.props;
+		if (prevFocus !== newFocus) {
 			try {
-				this._inputs[0].focus();
-			} catch (ex) {
+				this._inputs[newFocus].focus();
+				onFocusChange(newFocus);
+			} catch (err) {
 				// nothing
 			}
 		}
@@ -75,7 +80,7 @@ class ValidateEmail extends React.Component {
             inputProps={{ 'data-section': 0, 'data-length': 8 }}
             onChange={onFieldChange}
             inputRef={node => {
-									this._inputs = this._input || {};
+									this._inputs = this._inputs || {};
 									this._inputs[0] = node;
 								}}
           />
@@ -85,6 +90,10 @@ class ValidateEmail extends React.Component {
             error={validationError[1]}
             inputProps={{ 'data-section': 1, 'data-length': 4 }}
             onChange={onFieldChange}
+            inputRef={node => {
+									this._inputs = this._inputs || {};
+									this._inputs[1] = node;
+								}}
           />
           {'-'}
           <TextField
@@ -92,6 +101,10 @@ class ValidateEmail extends React.Component {
             error={validationError[2]}
             inputProps={{ 'data-section': 2, 'data-length': 4 }}
             onChange={onFieldChange}
+            inputRef={node => {
+									this._inputs = this._inputs || {};
+									this._inputs[2] = node;
+								}}
           />
           {'-'}
           <TextField
@@ -99,6 +112,10 @@ class ValidateEmail extends React.Component {
             error={validationError[3]}
             inputProps={{ 'data-section': 3, 'data-length': 4 }}
             onChange={onFieldChange}
+            inputRef={node => {
+									this._inputs = this._inputs || {};
+									this._inputs[3] = node;
+								}}
           />
           {'-'}
           <TextField
@@ -106,6 +123,10 @@ class ValidateEmail extends React.Component {
             error={validationError[4]}
             inputProps={{ 'data-section': 4, 'data-length': 12 }}
             onChange={onFieldChange}
+            inputRef={node => {
+									this._inputs = this._inputs || {};
+									this._inputs[4] = node;
+								}}
           />
         </FormGroup>
         <Button
@@ -128,28 +149,43 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 	const prevSecret = validationSecret;
 	const { dataset: data = {}, value = '' } = event.target;
 	const section = parseInt(data.section, 10);
+	let newFocus = section;
+	// handle user input something
 	const newSecret = [...prevSecret];
 	newSecret[section] = value;
+	// handle error (not number or lowercase)
 	const length = parseInt(data.length, 10);
-	const alphaNumOnly = /[0-9a-z]/.test(value);
+	const alphaNumOnly = /^[0-9a-z]$/g.test(value);
 	const newValidationError = [...validationError];
 	newValidationError[section] = value === '' ? false : length < value.length || !alphaNumOnly;
-	return { validationSecret: newSecret, validationError: newValidationError, focus: 3 };
+	// try to jump focus
+	const prevSectionValue = prevSecret[section];
+	const newSectionValue = newSecret[section];
+	if (prevSectionValue !== '' && newSectionValue === '' && section !== 0) {
+		newFocus = section - 1;
+	} else if (newSectionValue.length === length && !newValidationError[section] && section !== 4) {
+		newFocus = section + 1;
+	}
+	return { validationSecret: newSecret, validationError: newValidationError, focus: newFocus };
 };
 
+const onFocusChange = () => newFocus => ({ focus: newFocus });
 const recomposeEnhancer = compose(
 	withStateHandlers(
 		({
 			validationSecret = new Array(5).fill(''),
 			validationError = new Array(5).fill('').map(() => false),
-			disabled = true
+			disabled = true,
+			focus = -1
 		}) => ({
 			validationSecret,
 			validationError,
-			disabled
+			disabled,
+			focus
 		}),
 		{
-			onFieldChange
+			onFieldChange,
+			onFocusChange
 		}
 	)
 );
