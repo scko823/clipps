@@ -15,28 +15,71 @@ import { compose, withStateHandlers /* withProps */ } from 'recompose';
 // import validateEmail from '../../../graphql/mutations/validateEmail';
 
 const styles = theme => ({
-    root: {
-        margin: `${theme.spacing.unit * 2}px 0`
-    },
-    inputError: {
-        color: red['100']
-    },
-    form: {
-        'flex-grow': 0.8
-    }
+	root: {
+		margin: `${theme.spacing.unit * 2}px 0`
+	},
+	inputError: {
+		color: red['100']
+	},
+	sercet: {
+		'flex-grow': 0.8,
+		'flex-direction': 'row',
+		justifyContent: 'center',
+		margin: `${theme.spacing.unit * 2}px 0`,
+		'&>div': {
+			margin: `0 ${theme.spacing.unit}px`
+		}
+	}
 });
 
-const ValidateEmail = ({ classes, validationSecert, submit, disabled, onValueChange }) => (
+const ValidateEmail = ({
+	classes,
+	validationSecret,
+	submit,
+	disabled,
+	onFieldChange,
+	validationError
+}) => (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
       <FormGroup className={classes.form}>
-        <TextField
-          autoFocus
-          value={validationSecert}
-          label="secert"
-          onChange={onValueChange}
-        />
-        <br />
+        <FormGroup className={classes.sercet}>
+          <TextField
+            autoFocus
+            value={validationSecret[0]}
+            error={validationError[0]}
+            inputProps={{ 'data-section': 0, 'data-length': 8 }}
+            onChange={onFieldChange}
+          />
+          {'-'}
+          <TextField
+            value={validationSecret[1]}
+            error={validationError[1]}
+            inputProps={{ 'data-section': 1, 'data-length': 4 }}
+            onChange={onFieldChange}
+          />
+          {'-'}
+          <TextField
+            value={validationSecret[2]}
+            error={validationError[2]}
+            inputProps={{ 'data-section': 2, 'data-length': 4 }}
+            onChange={onFieldChange}
+          />
+          {'-'}
+          <TextField
+            value={validationSecret[3]}
+            error={validationError[3]}
+            inputProps={{ 'data-section': 3, 'data-length': 4 }}
+            onChange={onFieldChange}
+          />
+          {'-'}
+          <TextField
+            value={validationSecret[4]}
+            error={validationError[4]}
+            inputProps={{ 'data-section': 4, 'data-length': 12 }}
+            onChange={onFieldChange}
+          />
+        </FormGroup>
         <Button
           raised
           label="Create Clipboard"
@@ -44,7 +87,7 @@ const ValidateEmail = ({ classes, validationSecert, submit, disabled, onValueCha
           onClick={submit}
           disabled={disabled}
         >
-                    validate my email
+					validate my email
         </Button>
       </FormGroup>
     </Grid>
@@ -52,23 +95,42 @@ const ValidateEmail = ({ classes, validationSecert, submit, disabled, onValueCha
 );
 
 ValidateEmail.propTypes = {
-    classes: PropTypes.object.isRequired,
-    validationSecert: PropTypes.string.isRequired,
-    submit: PropTypes.func.isRequired,
-    disabled: PropTypes.bool.isRequired,
-    onValueChange: PropTypes.func.isRequired
+	classes: PropTypes.object.isRequired,
+	validationSecret: PropTypes.arrayOf(PropTypes.string).isRequired,
+	validationError: PropTypes.arrayOf(PropTypes.bool).isRequired,
+	submit: PropTypes.func.isRequired,
+	disabled: PropTypes.bool.isRequired,
+	onFieldChange: PropTypes.func.isRequired
+};
+
+const onFieldChange = ({ validationSecret, validationError }) => event => {
+	const prevSecret = validationSecret;
+	const { dataset: data = {}, value = '' } = event.target;
+	const section = parseInt(data.section, 10);
+	const newSecret = [...prevSecret];
+	newSecret[section] = value;
+	const length = parseInt(data.length, 10);
+	const alphaNumOnly = /[0-9a-z]/.test(value);
+	const newValidationError = [...validationError];
+	newValidationError[section] = value === '' ? false : length < value.length || !alphaNumOnly;
+	return { validationSecret: newSecret, validationError: newValidationError };
 };
 
 const recomposeEnhancer = compose(
-    withStateHandlers(
-        ({ validationSecert = '', disabled = true }) => ({
-            validationSecert,
-            disabled
-        }),
-        {
-            onValueChange: () => ({ target }) => ({ validationSecert: target.value })
-        }
-    )
+	withStateHandlers(
+		({
+			validationSecret = new Array(5).fill(''),
+			validationError = new Array(5).fill('').map(() => false),
+			disabled = true
+		}) => ({
+			validationSecret,
+			validationError,
+			disabled
+		}),
+		{
+			onFieldChange
+		}
+	)
 );
 
 export default compose(withStyles(styles), withRouter, recomposeEnhancer)(ValidateEmail);
