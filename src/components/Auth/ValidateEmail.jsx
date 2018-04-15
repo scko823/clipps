@@ -32,14 +32,38 @@ const styles = theme => ({
 	}
 });
 
-const ValidateEmail = ({
-	classes,
-	validationSecret,
-	submit,
-	disabled,
-	onFieldChange,
-	validationError
-}) => (
+class ValidateEmail extends React.Component {
+	static propTypes = {
+		classes: PropTypes.object.isRequired,
+		validationSecret: PropTypes.arrayOf(PropTypes.string).isRequired,
+		validationError: PropTypes.arrayOf(PropTypes.bool).isRequired,
+		submit: PropTypes.func.isRequired,
+		disabled: PropTypes.bool.isRequired,
+		onFieldChange: PropTypes.func.isRequired
+	};
+	constructor(...args) {
+		super(...args);
+		this._inputs = {};
+	}
+	componentDidUpdate() {
+		if (this._inputs && typeof this._inputs[0]) {
+			try {
+				this._inputs[0].focus();
+			} catch (ex) {
+				// nothing
+			}
+		}
+	}
+	render() {
+		const {
+			classes,
+			validationSecret,
+			submit,
+			disabled,
+			onFieldChange,
+			validationError
+		} = this.props;
+		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
       <FormGroup className={classes.form}>
@@ -50,6 +74,10 @@ const ValidateEmail = ({
             error={validationError[0]}
             inputProps={{ 'data-section': 0, 'data-length': 8 }}
             onChange={onFieldChange}
+            inputRef={node => {
+									this._inputs = this._input || {};
+									this._inputs[0] = node;
+								}}
           />
           {'-'}
           <TextField
@@ -87,21 +115,14 @@ const ValidateEmail = ({
           onClick={submit}
           disabled={disabled}
         >
-					validate my email
+							validate my email
         </Button>
       </FormGroup>
     </Grid>
   </Grid>
-);
-
-ValidateEmail.propTypes = {
-	classes: PropTypes.object.isRequired,
-	validationSecret: PropTypes.arrayOf(PropTypes.string).isRequired,
-	validationError: PropTypes.arrayOf(PropTypes.bool).isRequired,
-	submit: PropTypes.func.isRequired,
-	disabled: PropTypes.bool.isRequired,
-	onFieldChange: PropTypes.func.isRequired
-};
+		);
+	}
+}
 
 const onFieldChange = ({ validationSecret, validationError }) => event => {
 	const prevSecret = validationSecret;
@@ -113,7 +134,7 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 	const alphaNumOnly = /[0-9a-z]/.test(value);
 	const newValidationError = [...validationError];
 	newValidationError[section] = value === '' ? false : length < value.length || !alphaNumOnly;
-	return { validationSecret: newSecret, validationError: newValidationError };
+	return { validationSecret: newSecret, validationError: newValidationError, focus: 3 };
 };
 
 const recomposeEnhancer = compose(
