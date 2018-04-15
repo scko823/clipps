@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { withRouter } from 'react-router';
@@ -32,16 +32,36 @@ const styles = theme => ({
 	}
 });
 
-class ValidateEmail extends React.Component {
+class ValidateEmail extends Component {
 	static propTypes = {
 		classes: PropTypes.object.isRequired,
 		validationSecret: PropTypes.arrayOf(PropTypes.string).isRequired,
 		validationError: PropTypes.arrayOf(PropTypes.bool).isRequired,
+		uuidAttrs: PropTypes.arrayOf(PropTypes.object),
 		submit: PropTypes.func.isRequired,
 		disabled: PropTypes.bool.isRequired,
 		onFieldChange: PropTypes.func.isRequired,
 		onFocusChange: PropTypes.func.isRequired,
 		focus: PropTypes.number.isRequired
+	};
+	static defaultProps = {
+		uuidAttrs: [
+			{
+				length: 8
+			},
+			{
+				length: 4
+			},
+			{
+				length: 4
+			},
+			{
+				length: 4
+			},
+			{
+				length: 12
+			}
+		]
 	};
 	constructor(...args) {
 		super(...args);
@@ -66,68 +86,33 @@ class ValidateEmail extends React.Component {
 			submit,
 			disabled,
 			onFieldChange,
-			validationError
+			validationError,
+			uuidAttrs
 		} = this.props;
 		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
       <FormGroup className={classes.form}>
         <FormGroup className={classes.sercet}>
-          <TextField
-            autoFocus
-            value={validationSecret[0]}
-            error={validationError[0]}
-            inputProps={{ 'data-section': 0, 'data-length': 8 }}
-            onChange={onFieldChange}
-            inputRef={node => {
-									this._inputs = this._inputs || {};
-									this._inputs[0] = node;
-								}}
-          />
-          {'-'}
-          <TextField
-            value={validationSecret[1]}
-            error={validationError[1]}
-            inputProps={{ 'data-section': 1, 'data-length': 4 }}
-            onChange={onFieldChange}
-            inputRef={node => {
-									this._inputs = this._inputs || {};
-									this._inputs[1] = node;
-								}}
-          />
-          {'-'}
-          <TextField
-            value={validationSecret[2]}
-            error={validationError[2]}
-            inputProps={{ 'data-section': 2, 'data-length': 4 }}
-            onChange={onFieldChange}
-            inputRef={node => {
-									this._inputs = this._inputs || {};
-									this._inputs[2] = node;
-								}}
-          />
-          {'-'}
-          <TextField
-            value={validationSecret[3]}
-            error={validationError[3]}
-            inputProps={{ 'data-section': 3, 'data-length': 4 }}
-            onChange={onFieldChange}
-            inputRef={node => {
-									this._inputs = this._inputs || {};
-									this._inputs[3] = node;
-								}}
-          />
-          {'-'}
-          <TextField
-            value={validationSecret[4]}
-            error={validationError[4]}
-            inputProps={{ 'data-section': 4, 'data-length': 12 }}
-            onChange={onFieldChange}
-            inputRef={node => {
-									this._inputs = this._inputs || {};
-									this._inputs[4] = node;
-								}}
-          />
+          {uuidAttrs.map((attr, index) => (
+            <Fragment>
+              <TextField
+                autoFocus={index===0}
+                value={validationSecret[index]}
+                error={validationError[index]}
+                inputProps={{
+											'data-section': index,
+											'data-length': attr.length
+										}}
+                onChange={onFieldChange}
+                inputRef={node => {
+											this._inputs = this._inputs || {};
+											this._inputs[index] = node;
+										}}
+              />
+              {index!==4 && '-'}
+            </Fragment>
+							))}
         </FormGroup>
         <Button
           raised

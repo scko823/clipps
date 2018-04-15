@@ -18,55 +18,56 @@ import AppBar from './components/AppBar/AppBar';
 import offlineSW from './sw';
 
 const theme = createMuiTheme({
-    palette: {
-        primary1Color: '#27bc9c'
-    },
-    appBar: {
-        height: 50
-    }
+	palette: {
+		primary1Color: '#27bc9c',
+		accent: '#ff4081'
+	},
+	appBar: {
+		height: 50
+	}
 });
 
 const httpLink = new HttpLink({
-    uri: process.env.QUERY_API
+	uri: process.env.QUERY_API
 });
 
 const wsLink = new WebSocketLink({
-    uri: process.env.SUBSCRIPTION_API,
-    options: {
-        reconnect: true
-    }
+	uri: process.env.SUBSCRIPTION_API,
+	options: {
+		reconnect: true
+	}
 });
 
 const link = split(
-    // split based on operation type
-    ({ query }) => {
-        const { kind, operation } = getMainDefinition(query);
-        return kind === 'OperationDefinition' && operation === 'subscription';
-    },
-    wsLink,
-    httpLink
+	// split based on operation type
+	({ query }) => {
+		const { kind, operation } = getMainDefinition(query);
+		return kind === 'OperationDefinition' && operation === 'subscription';
+	},
+	wsLink,
+	httpLink
 );
 
 const client = new ApolloClient({
-    link,
-    cache: new InMemoryCache()
+	link,
+	cache: new InMemoryCache()
 });
 
 const render = () => {
-    ReactDOM.render(
-      <ApolloProvider client={client}>
-        <MuiThemeProvider theme={theme}>
-          <AppBar />
-        </MuiThemeProvider>
-      </ApolloProvider>,
-        // $FlowFixMe
-        document.getElementById('root'),
-        offlineSW
-    );
+	ReactDOM.render(
+  <ApolloProvider client={client}>
+    <MuiThemeProvider theme={theme}>
+      <AppBar />
+    </MuiThemeProvider>
+  </ApolloProvider>,
+		// $FlowFixMe
+		document.getElementById('root'),
+		offlineSW
+	);
 };
 
 render();
 
 if (module.hot) {
-    module.hot.accept('./components/AppBar/AppBar', render);
+	module.hot.accept('./components/AppBar/AppBar', render);
 }

@@ -25,34 +25,34 @@ const styles = () => ({
 		display: 'flex',
 		justifyContent: 'space-between',
 		'&>h2': {
-			alignSelf: 'center',
-		},
+			alignSelf: 'center'
+		}
 	},
 	icon: {
-		cursor: 'pointer',
+		cursor: 'pointer'
 	},
 	ASAPBtn: {
-		color: grey['900'],
+		color: '#ff4081'
 	},
 	disabledIcon: {
-		cursor: 'disabled',
+		cursor: 'disabled'
 	},
 	progressWrapper: {
-		position: 'relative',
+		position: 'relative'
 	},
 	progress: {
 		color: lightGreen['500'],
 		position: 'absolute',
 		left: '25%',
 		marginTop: '-3px',
-		zIndex: 1,
+		zIndex: 1
 	},
 	progress2: {
 		color: lightGreen['500'],
 		position: 'absolute',
 		left: '0',
-		zIndex: 1,
-	},
+		zIndex: 1
+	}
 });
 
 const ASAPButton = ({
@@ -65,12 +65,12 @@ const ASAPButton = ({
 	classes,
 	nowBoardId,
 	submitAndRedirect,
-	submitting,
+	submitting
 }) => [
   <div key="asap-btn-wrapper" className={classes.progressWrapper}>
     <Button
       raised
-      color="accent"
+      color="inherit"
       id="ASAP-btn"
       disabled={nowBoardId === '1'}
       onClick={togglePopover}
@@ -89,11 +89,11 @@ const ASAPButton = ({
     onRequestClose={togglePopover}
     anchorOrigin={{
 			vertical: 'bottom',
-			horizontal: 'left',
+			horizontal: 'left'
 		}}
     transformOrigin={{
 			vertical: 'top',
-			horizontal: 'center',
+			horizontal: 'center'
 		}}
     classes={{ paper: classes.popover }}
   >
@@ -107,7 +107,7 @@ const ASAPButton = ({
             className={classes.progress2}
             style={{
 							width: '24px',
-							height: '24px',
+							height: '24px'
 						}}
           />
 				) : (
@@ -142,7 +142,7 @@ const ASAPButton = ({
         rows="4"
       />
     </form>
-  </Popover>,
+  </Popover>
 ];
 
 ASAPButton.propTypes = {
@@ -153,7 +153,7 @@ ASAPButton.propTypes = {
 	submitAndRedirect: PropTypes.func.isRequired,
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
-	nowBoardId: PropTypes.string.isRequired,
+	nowBoardId: PropTypes.string.isRequired
 };
 
 const recomposeEnhancer = compose(
@@ -162,20 +162,20 @@ const recomposeEnhancer = compose(
 			open: initOpenPopover,
 			clipName: randomClipName(),
 			clipContent: '',
-			submitting,
+			submitting
 		}),
 		{
 			togglePopover: ({ open }) => () => ({ open: !open }),
 			handleClipNameChange: () => ev => ({ clipName: ev.target.value }),
 			handleClipContentChange: () => ev => ({
-				clipContent: ev.target.value,
+				clipContent: ev.target.value
 			}),
 			setSubmitting: () => bool => ({ submitting: bool }),
 			handleClipCreateSuccess: () => () => ({
 				clipName: randomClipName(),
-				clipContent: '',
-			}),
-		},
+				clipContent: ''
+			})
+		}
 	),
 	withProps(
 		({
@@ -186,7 +186,7 @@ const recomposeEnhancer = compose(
 			history,
 			togglePopover,
 			setSubmitting,
-			handleClipCreateSuccess,
+			handleClipCreateSuccess
 		}) => ({
 			submitAndRedirect: () => {
 				if (!(clipName && clipContent)) {
@@ -199,9 +199,9 @@ const recomposeEnhancer = compose(
 					handleClipCreateSuccess();
 					history.push(`/NOW/${clipName}`);
 				});
-			},
-		}),
-	),
+			}
+		})
+	)
 );
 
 const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
@@ -211,17 +211,17 @@ const withCreateClipMutation = graphql(gql`${createClipMutation}`, {
 				variables: {
 					clipboardId: nowBoardId,
 					name,
-					content,
-				},
-			}),
-	}),
+					content
+				}
+			})
+	})
 });
 
 const enhancer = compose(
 	compose(withStyles(styles)),
 	withRouter,
 	withCreateClipMutation,
-	recomposeEnhancer,
+	recomposeEnhancer
 );
 
 export default enhancer(ASAPButton);
