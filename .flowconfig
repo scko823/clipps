@@ -2,7 +2,9 @@
 <PROJECT_ROOT>/node_modules/material-ui/*
 <PROJECT_ROOT>/node_modules/react-apollo/*
 <PROJECT_ROOT>/node_modules/bcryptjs/*
+<PROJECT_ROOT>/node_modules/config-chain/*
 # <PROJECT_ROOT>/node_modules/jss/*
+
 [include]
 
 [libs]
