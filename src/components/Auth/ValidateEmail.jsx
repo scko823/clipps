@@ -11,9 +11,9 @@ import { withStyles } from 'material-ui/styles';
 import { compose, withStateHandlers /* withProps */ } from 'recompose';
 
 // import fetch from 'unfetch';
-// import { graphql } from 'react-apollo';
-// import gql from 'graphql-tag';
-// import validateEmail from '../../../graphql/mutations/validateEmail';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import validateEmail from '../../../graphql/mutations/validateEmail';
 
 const uuidSecretAttrs = [
 	{
@@ -100,6 +100,7 @@ class ValidateEmail extends Component {
           {uuidAttrs.map((attr, index) => (
             <Fragment>
               <TextField
+                key={validationSecret[index]}
                 autoFocus={index === 0}
                 value={validationSecret[index]}
                 error={validationError[index]}
@@ -172,6 +173,28 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 };
 
 const onFocusChange = () => newFocus => ({ focus: newFocus });
+
+const withValidateEmail = graphql(
+	gql`
+		${validateEmail}
+	`,
+	{
+		props: ({ mutate, ownProps }) => ({
+			submit: e => {
+				e.preventDefault();
+				const { validationSecret = [], match: { params: { email = '' } } = {} } = ownProps;
+				// eslint-disable-next-line
+				mutate({ variables: { email, validationSecret: validationSecret.join('-') } }).then(r => {
+					debugger; // eslint-disable-line
+				// eslint-disable-next-line
+				}).catch(err => {
+					debugger; // eslint-disable-line
+				})
+			}
+		})
+	}
+);
+
 const recomposeEnhancer = compose(
 	withStateHandlers(
 		({
@@ -192,4 +215,6 @@ const recomposeEnhancer = compose(
 	)
 );
 
-export default compose(withStyles(styles), withRouter, recomposeEnhancer)(ValidateEmail);
+export default compose(withStyles(styles), withRouter, recomposeEnhancer, withValidateEmail)(
+	ValidateEmail
+);

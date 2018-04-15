@@ -74,7 +74,7 @@ const ClipboardAppBar = ({
       <Switch>
         <Redirect exact from="/" to="/boards/NOW" />
         <Route path="/signup" component={SignUp} />
-        <Route path="/validate-email" component={ValidateEmail} />
+        <Route path="/validate-email/:email" component={ValidateEmail} />
         <Route exact path="/add" component={AddClipboard} />
         <Route
           exact
