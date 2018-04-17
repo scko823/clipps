@@ -21,10 +21,13 @@ const styles = theme => ({
 	},
 	inputError: {
 		color: red['100']
+	},
+	h1: {
+		margin: `${theme.spacing.unit * 6}px 0`
 	}
 });
 
-const Login = ({
+const SignUp = ({
 	classes,
 	emailError,
 	onEmailChange,
@@ -43,6 +46,7 @@ const Login = ({
     <Grid item xs={12}>
       <Grid container justify="center">
         <Grid item>
+          <h1 className={classes.h1}>Sign Up</h1>
           <FormGroup>
             <TextField
               autoFocus
@@ -58,6 +62,7 @@ const Login = ({
             <TextField
               onFocus={onPasswordFocus}
               type="password"
+              name="password1"
               error={showPasswordError && passwordError}
               onChange={onPasswordChange}
               helperText={
@@ -65,6 +70,19 @@ const Login = ({
 								passwordError && <span>Must be at least 6 characters</span>
 							}
               label="password"
+              onBlur={onPasswordBlur}
+            />
+            <TextField
+              onFocus={onPasswordFocus}
+              type="password"
+              name="password2"
+              error={showPasswordError && passwordError}
+              onChange={onPasswordChange}
+              helperText={
+								showPasswordError &&
+								passwordError && <span>Must be at least 6 characters</span>
+							}
+              label="verify password"
               onBlur={onPasswordBlur}
             />
             <br />
@@ -84,7 +102,7 @@ const Login = ({
   </Grid>
 );
 
-Login.propTypes = {
+SignUp.propTypes = {
 	classes: PropTypes.object.isRequired,
 	emailError: PropTypes.bool.isRequired,
 	showEmailError: PropTypes.bool.isRequired,
@@ -108,9 +126,16 @@ const withSignUpUserMutation = graphql(
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
-		({ email = '', password = '', emailError = false, passwordError = false }) => ({
+		({
+			email = '',
+			password1 = '',
+			password2 = '',
+			emailError = false,
+			passwordError = false
+		}) => ({
 			email,
-			password,
+			password1,
+			password2,
 			emailError,
 			passwordError
 		}),
@@ -127,7 +152,7 @@ const recomposeEnhancer = compose(
 				showEmailError: false
 			}),
 			onPasswordChange: () => ({ target }) => ({
-				password: target.value,
+				[target.name]: target.value,
 				showPasswordError: false,
 				passwordError: target.value.length < 6 && target.value !== ''
 			}),
@@ -139,10 +164,16 @@ const recomposeEnhancer = compose(
 			})
 		}
 	),
-	withProps(({ email, password, passwordError, emailError, mutate, history }) => ({
-		disabled: !email || !password || emailError || passwordError,
+	withProps(({ email, password1, password2, passwordError, emailError, mutate, history }) => ({
+		disabled:
+			!email ||
+			password1 !== password2 ||
+			!password1 ||
+			!password2 ||
+			emailError ||
+			passwordError,
 		submit: () => {
-			mutate({ variables: { email, password } })
+			mutate({ variables: { email, password1 } })
 				.then(() => {
 					console.info('signup success');
 					history.push(`/validate-email/${email}`);
@@ -171,5 +202,5 @@ const recomposeEnhancer = compose(
 );
 
 export default compose(withStyles(styles), withRouter, withSignUpUserMutation, recomposeEnhancer)(
-	Login
+	SignUp
 );
