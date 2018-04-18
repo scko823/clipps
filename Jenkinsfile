@@ -6,10 +6,14 @@ pipeline {
     }
     stages {
         stage('install') {
-            sh 'npm install'
+            steps {
+                sh 'npm install'
+            }
         }
         stage('test') {
-            sh 'npm test'
+            steps {
+                sh 'npm test'
+            }
         }
     }
 }
