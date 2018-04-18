@@ -7,6 +7,7 @@ pipeline {
     stages {
         stage('install') {
             steps {
+                sh 'sudo chown -R $USER:$(id -gn $USER) /.config'
                 sh 'npm install'
             }
         }
