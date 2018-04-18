@@ -1,7 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'node:8.11.1-alpine'
+            image 'node:8.11.1'
+            args '-u 1001 --group-add 1002'
         }
     }
     stages {
