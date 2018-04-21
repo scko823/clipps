@@ -8,10 +8,10 @@ import AccountCircle from 'material-ui-icons/AccountCircle';
 import { compose, withProps } from 'recompose';
 
 const styles = () => ({
-    accountCircle: {
-        width: '60%',
-        height: '60%'
-    }
+	accountCircle: {
+		width: '60%',
+		height: '60%'
+	}
 });
 const LoginButton = ({ classes, login }) => (
   <IconButton id="login-btn" onClick={login} color="contrast">
@@ -20,10 +20,10 @@ const LoginButton = ({ classes, login }) => (
 );
 
 LoginButton.propTypes = {
-    classes: PropTypes.object.isRequired,
-    login: PropTypes.bool.isRequired
+	classes: PropTypes.object.isRequired,
+	login: PropTypes.bool.isRequired
 };
 
-const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/signup') }));
+const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/login') }));
 
 export default compose(withRouter, recomposeEnchancer, withStyles(styles))(LoginButton);

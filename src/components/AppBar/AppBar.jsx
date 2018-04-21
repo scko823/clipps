@@ -28,6 +28,7 @@ import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
 import SignUp from '../Auth/SignUp';
+import Login from '../Auth/Login';
 import ValidateEmail from '../Auth/ValidateEmail';
 
 /**
@@ -62,7 +63,7 @@ const ClipboardAppBar = ({
           <ASAPButton nowBoardId={nowBoardId} />
         </Toolbar>
       </MUIAppBar>
-      <Drawer open={showDrawer} onRequestClose={toggleDrawer} className="drawer">
+      <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
         <DrawerList
           nowBoardId={nowBoardId}
           loading={loadingClipboards}
@@ -74,6 +75,7 @@ const ClipboardAppBar = ({
       <Switch>
         <Redirect exact from="/" to="/boards/NOW" />
         <Route path="/signup" component={SignUp} />
+        <Route path="/login" component={Login} />
         <Route path="/validate-email/:email" component={ValidateEmail} />
         <Route exact path="/add" component={AddClipboard} />
         <Route exact path="/boards/:clipboardName" component={ClipboardView} />
@@ -179,7 +181,7 @@ const recomposeEnhancer = compose(
 					});
 				}
 				const nowBoard = allClipboards.find(b => b.name === 'NOW');
-                return setNowBoardId(nowBoard.id);
+				return setNowBoardId(nowBoard.id);
 			});
 		}
 	})

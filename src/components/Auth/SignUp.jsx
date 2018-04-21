@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import validator from 'validator';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
@@ -95,6 +96,8 @@ const SignUp = ({
             >
 							Sign up
             </Button>
+            <br />
+						Already have an account? <Link to="/login">Login</Link>
           </FormGroup>
         </Grid>
       </Grid>
