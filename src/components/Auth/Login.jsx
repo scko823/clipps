@@ -6,19 +6,19 @@ import { withRouter } from 'react-router';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
-// import { red } from 'material-ui/colors';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 import validator from 'validator';
 import { compose, withStateHandlers, withProps } from 'recompose';
 
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import loginMutation from '../../../graphql/mutations/login';
+
 const styles = theme => ({
 	root: {
 		margin: `${theme.spacing.unit * 2}px 0`
 	},
-	// inputError: {
-	// 	color: red['100']
-	// },
 	h1: {
 		margin: `${theme.spacing.unit * 2}px 0`
 	},
@@ -76,6 +76,18 @@ LoginForm.propTypes = {
 	disabled: PropTypes.bool.isRequired
 };
 
+const withLoginMutation = graphql(
+	gql`
+		${loginMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			login: mutate
+		})
+	}
+);
+
 const recomposeEnhancer = compose(
 	withStateHandlers(
 		({ emailError = false, email = '', password = '', disabled = true }) => ({
@@ -91,7 +103,7 @@ const recomposeEnhancer = compose(
 			onFieldChange: ({ emailError, email, password }) => ev => {
 				const { value, type } = ev.target;
 				const isEmail = validator.isEmail(email);
-				const disabled = !email || !isEmail || !password;
+				const disabled = !email || !isEmail || !password || !value;
 				return {
 					[type]: value,
 					disabled,
@@ -100,9 +112,19 @@ const recomposeEnhancer = compose(
 			}
 		}
 	),
-	withProps(() => ({}))
+	withProps(({ login, email, password }) => {
+		return {
+			submit: () => {
+				return login({variables: {email, password }}).then(({data: {authenticateUser: {id, token}}}) => {
+					console.log(id)
+					console.log(token)
+					debugger; // eslint-disable-line
+				} )
+			}
+		}
+	})
 );
 
-const enhancer = compose(withStyles(styles), withRouter, recomposeEnhancer);
+const enhancer = compose(withStyles(styles), withRouter, withLoginMutation, recomposeEnhancer );
 
 export default enhancer(LoginForm);
