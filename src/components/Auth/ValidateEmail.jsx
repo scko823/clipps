@@ -95,6 +95,7 @@ class ValidateEmail extends Component {
 		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
+      <h3>Enter your validation key we send to your email</h3>
       <FormGroup className={classes.form}>
         <FormGroup className={classes.sercet}>
           {uuidAttrs.map((attr, index) => (
@@ -184,12 +185,14 @@ const withValidateEmail = graphql(
 				e.preventDefault();
 				const { validationSecret = [], match: { params: { email = '' } } = {} } = ownProps;
 				// eslint-disable-next-line
-				mutate({ variables: { email, validationSecret: validationSecret.join('-') } }).then(r => {
-					debugger; // eslint-disable-line
-				// eslint-disable-next-line
-				}).catch(err => {
-					debugger; // eslint-disable-line
-				})
+				mutate({ variables: { email, validationSecret: validationSecret.join('-') } })
+					.then(r => {
+						debugger; // eslint-disable-line
+						// eslint-disable-next-line
+					})
+					.catch(err => {
+						debugger; // eslint-disable-line
+					});
 			}
 		})
 	}
