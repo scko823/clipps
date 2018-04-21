@@ -89,7 +89,7 @@ const SignUp = ({
             <br />
             <Button
               variant="raised"
-              label="Create Clipboard"
+              label="Sign Up"
               color="primary"
               onClick={submit}
               disabled={disabled}

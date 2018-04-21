@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { withRouter } from 'react-router';
+import { Link } from 'react-router-dom';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
@@ -67,6 +68,7 @@ class ValidateEmail extends Component {
 		submit: PropTypes.func.isRequired,
 		disabled: PropTypes.bool.isRequired,
 		attemptedValidation: PropTypes.bool.isRequired,
+		validationSuccess: PropTypes.bool.isRequired,
 		onFieldChange: PropTypes.func.isRequired,
 		onFocusChange: PropTypes.func.isRequired,
 		focus: PropTypes.number.isRequired
@@ -97,6 +99,7 @@ class ValidateEmail extends Component {
 			submit,
 			disabled,
 			attemptedValidation,
+			validationSuccess,
 			onFieldChange,
 			validationError,
 			uuidAttrs
@@ -104,7 +107,14 @@ class ValidateEmail extends Component {
 		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
-      <h3>Enter your validation key we send to your email</h3>
+      {validationSuccess ? (
+        <h6>
+							Email Verified. If you are not redirected to login page,{' '}
+          <Link to="/login">click here</Link>
+        </h6>
+					) : (
+  <h3>Enter your validation key we send to your email</h3>
+					)}
       <FormGroup className={classes.form}>
         <FormGroup className={classes.sercet}>
           {uuidAttrs.map((attr, index) => (
@@ -115,14 +125,14 @@ class ValidateEmail extends Component {
                 value={validationSecret[index]}
                 error={validationError[index]}
                 inputProps={{
-						'data-section': index,
-						'data-length': attr.length
-					}}
+											'data-section': index,
+											'data-length': attr.length
+										}}
                 onChange={onFieldChange}
                 inputRef={node => {
-						this._inputs = this._inputs || {};
-						this._inputs[index] = node;
-					}}
+											this._inputs = this._inputs || {};
+											this._inputs[index] = node;
+										}}
               />
               {index !== 4 && '-'}
             </Fragment>
@@ -135,12 +145,12 @@ class ValidateEmail extends Component {
           onClick={submit}
           disabled={disabled}
           ref={node => {
-			  this._inputs[5] = node;
-			}}
+								this._inputs[5] = node;
+							}}
         >
 							validate my email
         </Button>
-        { attemptedValidation && <h6>Check entry</h6>}
+        {attemptedValidation && <h6>Check entry</h6>}
       </FormGroup>
     </Grid>
   </Grid>
@@ -186,6 +196,7 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 const onFocusChange = () => newFocus => ({ focus: newFocus });
 
 const onValidationError = () => () => ({ attemptedValidation: true });
+const onValidationSuccess = () => () => ({ attemptedValidation: true, validationSuccess: true });
 
 const withValidateEmail = graphql(
 	gql`
@@ -198,12 +209,16 @@ const withValidateEmail = graphql(
 				const {
 					history,
 					onValidationError: onValidationErrorCb,
+					onValidationSuccess: onValidationSuccessCb,
 					validationSecret = [],
 					match: { params: { email = '' } } = {}
 				} = ownProps;
 				mutate({ variables: { email, validationSecret: validationSecret.join('-') } })
 					.then(() => {
-						history.push('/login');
+						onValidationSuccessCb();
+						setTimeout(() => {
+							history.push('/login');
+						}, 2500);
 					})
 					.catch(err => {
 						onValidationErrorCb(err);
@@ -220,18 +235,21 @@ const recomposeEnhancer = compose(
 			validationError = new Array(5).fill('').map(() => false),
 			disabled = true,
 			focus = -1,
-			attemptedValidation = false
+			attemptedValidation = false,
+			validationSuccess = false
 		}) => ({
 			validationSecret,
 			validationError,
 			disabled,
 			focus,
-			attemptedValidation
+			attemptedValidation,
+			validationSuccess
 		}),
 		{
 			onFieldChange,
 			onFocusChange,
-			onValidationError
+			onValidationError,
+			onValidationSuccess
 		}
 	)
 );
