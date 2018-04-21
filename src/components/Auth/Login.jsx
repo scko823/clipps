@@ -9,7 +9,7 @@ import FormGroup from 'material-ui/Form/FormGroup';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 import validator from 'validator';
-import { compose, withStateHandlers, withProps } from 'recompose';
+import { compose, withStateHandlers } from 'recompose';
 
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -30,7 +30,16 @@ const styles = theme => ({
 	}
 });
 
-const LoginForm = ({ classes, validateEmail, emailError, onFieldChange, submit, disabled }) => (
+const LoginForm = ({
+	classes,
+	validateEmail,
+	emailError,
+	onFieldChange,
+	login,
+	disabled,
+	loginError,
+	attempedLogin
+}) => (
   <Grid className={classes.root} container>
     <Grid item xs={12}>
       <Grid container justify="center">
@@ -54,12 +63,13 @@ const LoginForm = ({ classes, validateEmail, emailError, onFieldChange, submit, 
               variant="raised"
               label="login"
               color="primary"
-              onClick={submit}
+              onClick={login}
               disabled={disabled}
               className={classes['cta-btn']}
             >
 							Login
             </Button>
+            {attempedLogin && loginError && <span>Login Fail</span>}
           </FormGroup>
         </Grid>
       </Grid>
@@ -72,7 +82,9 @@ LoginForm.propTypes = {
 	validateEmail: PropTypes.func.isRequired,
 	onFieldChange: PropTypes.func.isRequired,
 	emailError: PropTypes.bool.isRequired,
-	submit: PropTypes.func.isRequired,
+	loginError: PropTypes.bool.isRequired,
+	attempedLogin: PropTypes.bool.isRequired,
+	login: PropTypes.func.isRequired,
 	disabled: PropTypes.bool.isRequired
 };
 
@@ -83,18 +95,38 @@ const withLoginMutation = graphql(
 	{
 		props: ({ ownProps, mutate }) => ({
 			...ownProps,
-			login: mutate
+			login: () => {
+				const { email, password, history, onAttemptLogin, onLoginFail } = ownProps;
+				onAttemptLogin();
+				mutate({ variables: { email, password } })
+					.then(({ data: { authenticateUser: { token } } }) => {
+						localStorage.setItem('token', token);
+						history.push('/boards/NOW');
+					})
+					.catch(() => {
+						onLoginFail();
+					});
+			}
 		})
 	}
 );
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
-		({ emailError = false, email = '', password = '', disabled = true }) => ({
+		({
+			emailError = false,
+			email = '',
+			password = '',
+			disabled = true,
+			attempedLogin = false,
+			loginError = false
+		}) => ({
 			emailError,
 			email,
 			password,
-			disabled
+			disabled,
+			attempedLogin,
+			loginError
 		}),
 		{
 			validateEmail: ({ email }) => () => ({
@@ -109,24 +141,19 @@ const recomposeEnhancer = compose(
 					disabled,
 					emailError: type === 'password' ? !isEmail : emailError
 				};
-			}
+			},
+			onAttemptLogin: () => () => ({
+				attempedLogin: true
+			}),
+			onLoginFail: () => () => ({
+				attempedLogin: true,
+				loginError: true,
+				disabled: true
+			})
 		}
-	),
-	withProps(({ login, email, password }) => ({
-			submit: () => login({ variables: { email, password } }).then(
-					({
-						data: {
-							authenticateUser: { id, token }
-						}
-					}) => {
-						console.log(id);
-						console.log(token);
-						localStorage.setItem('token', token);
-					}
-				)
-		}))
+	)
 );
 
-const enhancer = compose(withStyles(styles), withRouter, withLoginMutation, recomposeEnhancer);
+const enhancer = compose(withStyles(styles), withRouter, recomposeEnhancer, withLoginMutation);
 
 export default enhancer(LoginForm);
