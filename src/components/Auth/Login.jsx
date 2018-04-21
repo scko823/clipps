@@ -112,19 +112,21 @@ const recomposeEnhancer = compose(
 			}
 		}
 	),
-	withProps(({ login, email, password }) => {
-		return {
-			submit: () => {
-				return login({variables: {email, password }}).then(({data: {authenticateUser: {id, token}}}) => {
-					console.log(id)
-					console.log(token)
-					debugger; // eslint-disable-line
-				} )
-			}
-		}
-	})
+	withProps(({ login, email, password }) => ({
+			submit: () => login({ variables: { email, password } }).then(
+					({
+						data: {
+							authenticateUser: { id, token }
+						}
+					}) => {
+						console.log(id);
+						console.log(token);
+						localStorage.setItem('token', token);
+					}
+				)
+		}))
 );
 
-const enhancer = compose(withStyles(styles), withRouter, withLoginMutation, recomposeEnhancer );
+const enhancer = compose(withStyles(styles), withRouter, withLoginMutation, recomposeEnhancer);
 
 export default enhancer(LoginForm);
