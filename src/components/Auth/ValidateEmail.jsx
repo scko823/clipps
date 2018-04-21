@@ -1,3 +1,4 @@
+/* eslint react/no-array-index-key: 0 */
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
@@ -48,6 +49,12 @@ const styles = theme => ({
 		'&>div': {
 			margin: `0 ${theme.spacing.unit}px`
 		}
+	},
+	form: {
+		'&>h6': {
+			margin: `${theme.spacing.unit}px 0`,
+			textAlign: 'center'
+		}
 	}
 });
 
@@ -59,6 +66,7 @@ class ValidateEmail extends Component {
 		uuidAttrs: PropTypes.arrayOf(PropTypes.object),
 		submit: PropTypes.func.isRequired,
 		disabled: PropTypes.bool.isRequired,
+		attemptedValidation: PropTypes.bool.isRequired,
 		onFieldChange: PropTypes.func.isRequired,
 		onFocusChange: PropTypes.func.isRequired,
 		focus: PropTypes.number.isRequired
@@ -88,6 +96,7 @@ class ValidateEmail extends Component {
 			validationSecret,
 			submit,
 			disabled,
+			attemptedValidation,
 			onFieldChange,
 			validationError,
 			uuidAttrs
@@ -101,19 +110,19 @@ class ValidateEmail extends Component {
           {uuidAttrs.map((attr, index) => (
             <Fragment>
               <TextField
-                key={validationSecret[index]}
+                key={index}
                 autoFocus={index === 0}
                 value={validationSecret[index]}
                 error={validationError[index]}
                 inputProps={{
-											'data-section': index,
-											'data-length': attr.length
-										}}
+						'data-section': index,
+						'data-length': attr.length
+					}}
                 onChange={onFieldChange}
                 inputRef={node => {
-											this._inputs = this._inputs || {};
-											this._inputs[index] = node;
-										}}
+						this._inputs = this._inputs || {};
+						this._inputs[index] = node;
+					}}
               />
               {index !== 4 && '-'}
             </Fragment>
@@ -126,11 +135,12 @@ class ValidateEmail extends Component {
           onClick={submit}
           disabled={disabled}
           ref={node => {
-								this._inputs[5] = node;
-							}}
+			  this._inputs[5] = node;
+			}}
         >
 							validate my email
         </Button>
+        { attemptedValidation && <h6>Check entry</h6>}
       </FormGroup>
     </Grid>
   </Grid>
@@ -175,6 +185,8 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 
 const onFocusChange = () => newFocus => ({ focus: newFocus });
 
+const onValidationError = () => () => ({ attemptedValidation: true });
+
 const withValidateEmail = graphql(
 	gql`
 		${validateEmail}
@@ -183,15 +195,18 @@ const withValidateEmail = graphql(
 		props: ({ mutate, ownProps }) => ({
 			submit: e => {
 				e.preventDefault();
-				const { validationSecret = [], match: { params: { email = '' } } = {} } = ownProps;
-				// eslint-disable-next-line
+				const {
+					history,
+					onValidationError: onValidationErrorCb,
+					validationSecret = [],
+					match: { params: { email = '' } } = {}
+				} = ownProps;
 				mutate({ variables: { email, validationSecret: validationSecret.join('-') } })
-					.then(r => {
-						debugger; // eslint-disable-line
-						// eslint-disable-next-line
+					.then(() => {
+						history.push('/login');
 					})
 					.catch(err => {
-						debugger; // eslint-disable-line
+						onValidationErrorCb(err);
 					});
 			}
 		})
@@ -204,16 +219,19 @@ const recomposeEnhancer = compose(
 			validationSecret = new Array(5).fill(''),
 			validationError = new Array(5).fill('').map(() => false),
 			disabled = true,
-			focus = -1
+			focus = -1,
+			attemptedValidation = false
 		}) => ({
 			validationSecret,
 			validationError,
 			disabled,
-			focus
+			focus,
+			attemptedValidation
 		}),
 		{
 			onFieldChange,
-			onFocusChange
+			onFocusChange,
+			onValidationError
 		}
 	)
 );
