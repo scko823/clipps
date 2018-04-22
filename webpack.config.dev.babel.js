@@ -8,7 +8,7 @@ const devConfig = merge(common, {
 	devServer: {
 		contentBase: path.join(__dirname, 'dist'),
 		staticOptions: {
-			redirect: true,
+			redirect: true
 		},
 		compress: true,
 		hot: true,
@@ -18,19 +18,19 @@ const devConfig = merge(common, {
 			index: 'index.html',
 			rewrites: [
 				{
-					from: /^\/boards\/|\/add$/,
-					to: '/index.html',
-				},
-				{
 					from: /\.bundle.js$/,
 					to(context) {
 						return `${context.parsedUrl.pathname}`;
-					},
+					}
 				},
-			],
-		},
+				{
+					from: /./,
+					to: '/index.html'
+				}
+			]
+		}
 	},
-	devtool: 'cheap-module-source-map',
+	devtool: 'cheap-module-source-map'
 });
 
 export default devConfig;

@@ -23,9 +23,17 @@ import createNowClipboardMutation from '../../../graphql/mutations/createNowClip
 // components
 import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
+import LoginButton from './LoginButton';
+import UserAvatar from './UserAvatar';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
+import SignUp from '../Auth/SignUp';
+import Login from '../Auth/Login';
+import ValidateEmail from '../Auth/ValidateEmail';
+
+// contexts
+import AuthContext from '../contexts/AuthContext';
 
 /**
  *
@@ -38,154 +46,173 @@ import ClipView from '../Clips/ClipView';
  * @param {function} toggleDrawer toggle show drawer state
  */
 const ClipboardAppBar = ({
-    loadingClipboards,
-    clipboards,
-    refetchClipboard,
-    showDrawer,
-    toggleDrawer,
-    nowBoardId
+	loadingClipboards,
+	clipboards,
+	refetchClipboard,
+	showDrawer,
+	toggleDrawer,
+	nowBoardId,
+	isLogin,
+	onLogin
+	// onLogout
 }) => (
-  <Router>
-    <div id="clipboard">
-      <MUIAppBar position="static">
-        <Toolbar>
-          <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-                        ClipBoards
-          </Typography>
-          <ASAPButton nowBoardId={nowBoardId} />
-        </Toolbar>
-      </MUIAppBar>
-      <Drawer open={showDrawer} onRequestClose={toggleDrawer} className="drawer">
-        <DrawerList
-          nowBoardId={nowBoardId}
-          loading={loadingClipboards}
-          clipboards={clipboards}
-          refetch={refetchClipboard}
-          toggleDrawer={toggleDrawer}
-        />
-      </Drawer>
-      <Switch>
-        <Redirect exact from="/" to="/boards/NOW" />
-        <Route exact path="/add" component={AddClipboard} />
-        <Route
-          exact
-          path="/boards/:clipboardName"
-          component={ClipboardView}
-        />
-        <Route exact path="/:clipboardName/:clipName" component={ClipView} />
-      </Switch>
-    </div>
-  </Router>
+  <AuthContext.Provider value={isLogin}>
+    <Router>
+      <div id="clipboard">
+        <MUIAppBar position="static">
+          <Toolbar>
+            <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+            <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
+							ClipBoards
+            </Typography>
+            <AuthContext.Consumer>
+              {value => (value ? <UserAvatar /> : <LoginButton />)}
+            </AuthContext.Consumer>
+            <ASAPButton nowBoardId={nowBoardId} />
+          </Toolbar>
+        </MUIAppBar>
+        <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
+          <DrawerList
+            nowBoardId={nowBoardId}
+            loading={loadingClipboards}
+            clipboards={clipboards}
+            refetch={refetchClipboard}
+            toggleDrawer={toggleDrawer}
+          />
+        </Drawer>
+        <Switch>
+          <Redirect exact from="/" to="/boards/NOW" />
+          <Route path="/signup" component={SignUp} />
+          <Route
+            path="/login"
+            render={props => <Login {...props} onLoginSuccess={onLogin} />}
+          />
+          <Route path="/validate-email/:email" component={ValidateEmail} />
+          <Route exact path="/add" component={AddClipboard} />
+          <Route exact path="/boards/:clipboardName" component={ClipboardView} />
+          <Route exact path="/:clipboardName/:clipName" component={ClipView} />
+        </Switch>
+      </div>
+    </Router>
+  </AuthContext.Provider>
 );
 
 ClipboardAppBar.propTypes = {
-    loadingClipboards: PropTypes.bool.isRequired,
-    refetchClipboard: PropTypes.func.isRequired,
-    nowBoardId: PropTypes.string.isRequired,
-    clipboards: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired
-        })
-    ).isRequired,
-    showDrawer: PropTypes.bool,
-    toggleDrawer: PropTypes.func.isRequired
+	loadingClipboards: PropTypes.bool.isRequired,
+	refetchClipboard: PropTypes.func.isRequired,
+	nowBoardId: PropTypes.string.isRequired,
+	clipboards: PropTypes.arrayOf(
+		PropTypes.shape({
+			id: PropTypes.string.isRequired,
+			name: PropTypes.string.isRequired
+		})
+	).isRequired,
+	showDrawer: PropTypes.bool,
+	toggleDrawer: PropTypes.func.isRequired,
+	isLogin: PropTypes.bool.isRequired,
+	// onLogout: PropTypes.func.isRequired,
+	onLogin: PropTypes.func.isRequired
 };
 
 ClipboardAppBar.defaultProps = {
-    showDrawer: false
+	showDrawer: false
 };
 
 // GraphQL Clipboard query
 const withAllClipboardsQuery = graphql(
-    gql`
-  ${allClipboardsQuery}
-`,
-    {
-        options: {
-            notifyOnNetworkStatusChange: true
-        },
-        props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
-            ...ownProps,
-            loadingClipboards: loading,
-            clipboards: allClipboards,
-            refetchClipboard: refetch,
-            subscribeToMore
-        })
-    }
+	gql`
+		${allClipboardsQuery}
+	`,
+	{
+		options: {
+			notifyOnNetworkStatusChange: true
+		},
+		props: ({ ownProps, data: { loading, allClipboards, refetch, subscribeToMore } }) => ({
+			...ownProps,
+			loadingClipboards: loading,
+			clipboards: allClipboards,
+			refetchClipboard: refetch,
+			subscribeToMore
+		})
+	}
 );
 
 // GraphQL createNowBoard mutation
-const withCreateNowClipboardMutation = graphql(gql`${createNowClipboardMutation}`, {
-    props: ({ ownProps, mutate }) => ({
-        ...ownProps,
-        createNowBoard: mutate
-    })
-});
+const withCreateNowClipboardMutation = graphql(
+	gql`
+		${createNowClipboardMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			createNowBoard: mutate
+		})
+	}
+);
 
 const recomposeEnhancer = compose(
-    // make component "stateful" to toggle the drawer
-    withStateHandlers(
-        ({ initShowDrawer = false, nowBoardId = '1' }) => ({
-            showDrawer: initShowDrawer,
-            nowBoardId
-        }),
-        {
-            toggleDrawer: ({ showDrawer }) => () => ({
-                showDrawer: !showDrawer
-            }),
-            setNowBoardId: () => id => ({ nowBoardId: id })
-        }
-    ),
-    // add subscription for CREATED, UPDATED , DELETED for clipboards
-    lifecycle({
-        componentDidMount() {
-            const { createNowBoard, refetchClipboard, setNowBoardId, subscribeToMore } = this.props;
-            createNowBoard()
-                .then(({ data: { createClipboard: { id } } }) => {
-                    setNowBoardId(id);
-                    refetchClipboard();
-                })
-                .catch(() => {
-                    console.log('unable to create NOW board. Likely it already exists'); // eslint-disable-line
-                });
-            subscribeToMore({
-                document: gql`${clipboardsSubscription}`,
-                updateQuery: (
-                    { allClipboards },
-                    {
-                        subscriptionData: {
-                            data: {
-                                Clipboard: { mutation, node /* updatedFields, previousValues */ }
-                            }
-                        }
-                    }
-                ) => {
-                    if (mutation === 'CREATED') {
-                        return { allClipboards: [...allClipboards, node] };
-                    }
-                    return { allClipboards };
-                }
-            });
-        },
-        componentDidUpdate() {
-            const { clipboards = [], setNowBoardId } = this.props;
-            const currentClipsEmpty =
-                clipboards && Array.isArray(clipboards) && clipboards.length === 0;
-            if (currentClipsEmpty) {
-                return;
-            }
-            const NowBoardExist = clipboards.some(b => b.name === 'NOW');
-            if (!NowBoardExist) {
-                return;
-            }
-            const nowBoard = clipboards.find(b => b.name === 'NOW');
-            setNowBoardId(nowBoard.id);
-        }
-    })
+	// make component "stateful" to toggle the drawer
+	withStateHandlers(
+		({ initShowDrawer = false, nowBoardId = '1', isLogin = false }) => ({
+			showDrawer: initShowDrawer,
+			nowBoardId,
+			isLogin
+		}),
+		{
+			toggleDrawer: ({ showDrawer }) => () => ({
+				showDrawer: !showDrawer
+			}),
+			setNowBoardId: () => id => ({ nowBoardId: id }),
+			onLogout: () => () => ({ isLogin: false }),
+			onLogin: () => () => ({ isLogin: true })
+		}
+	),
+	lifecycle({
+		componentWillMount() {
+			const { createNowBoard, setNowBoardId, refetchClipboard, onLogin, onLogout } = this.props;
+			try {
+				const token = localStorage.getItem("token");
+				if (token) {
+					onLogin();
+				}
+			} catch (ex) {
+				onLogout()
+			}
+			// add subscription for CREATED, UPDATED , DELETED for clipboards
+			this.props.subscribeToMore({
+				document: gql`
+					${clipboardsSubscription}
+				`,
+				updateQuery: (
+					{ allClipboards },
+					{
+						subscriptionData: {
+							data: {
+								Clipboard: { mutation, node /* updatedFields, previousValues */ }
+							}
+						}
+					}
+				) => {
+					if (mutation === 'CREATED') {
+						return { allClipboards: [...allClipboards, node] };
+					}
+					return { allClipboards };
+				}
+			});
+			refetchClipboard().then(({ data: { allClipboards } }) => {
+				if (allClipboards.every(b => b.name !== 'NOW')) {
+					return createNowBoard().then(({ data: { createClipboard: { id } } }) => {
+						setNowBoardId(id);
+						refetchClipboard();
+					});
+				}
+				const nowBoard = allClipboards.find(b => b.name === 'NOW');
+				return setNowBoardId(nowBoard.id);
+			});
+		}
+	})
 );
 
 const enhancer = compose(withAllClipboardsQuery, withCreateNowClipboardMutation, recomposeEnhancer);
