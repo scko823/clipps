@@ -169,10 +169,18 @@ const recomposeEnhancer = compose(
 			onLogin: () => () => ({ isLogin: true })
 		}
 	),
-	// add subscription for CREATED, UPDATED , DELETED for clipboards
 	lifecycle({
 		componentWillMount() {
-			const { createNowBoard, setNowBoardId, refetchClipboard } = this.props;
+			const { createNowBoard, setNowBoardId, refetchClipboard, onLogin, onLogout } = this.props;
+			try {
+				const token = localStorage.getItem("token");
+				if (token) {
+					onLogin();
+				}
+			} catch (ex) {
+				onLogout()
+			}
+			// add subscription for CREATED, UPDATED , DELETED for clipboards
 			this.props.subscribeToMore({
 				document: gql`
 					${clipboardsSubscription}
