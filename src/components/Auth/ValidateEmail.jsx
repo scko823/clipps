@@ -107,7 +107,7 @@ class ValidateEmail extends Component {
 		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
-      {validationSuccess ? (
+      {attemptedValidation && validationSuccess ? (
         <h6>
 							Email Verified. If you are not redirected to login page,{' '}
           <Link to="/login">click here</Link>
@@ -150,7 +150,7 @@ class ValidateEmail extends Component {
         >
 							validate my email
         </Button>
-        {attemptedValidation && <h6>Check entry</h6>}
+        {attemptedValidation && !validationSuccess && <h6>Check entry</h6>}
       </FormGroup>
     </Grid>
   </Grid>
@@ -195,7 +195,7 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 
 const onFocusChange = () => newFocus => ({ focus: newFocus });
 
-const onValidationError = () => () => ({ attemptedValidation: true });
+const onValidationError = () => () => ({ attemptedValidation: true, validationSuccess: false });
 const onValidationSuccess = () => () => ({ attemptedValidation: true, validationSuccess: true });
 
 const withValidateEmail = graphql(

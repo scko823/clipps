@@ -176,7 +176,7 @@ const recomposeEnhancer = compose(
 			emailError ||
 			passwordError,
 		submit: () => {
-			mutate({ variables: { email, password1 } })
+			mutate({ variables: { email, password: password1 } })
 				.then(() => {
 					console.info('signup success');
 					history.push(`/validate-email/${email}`);
