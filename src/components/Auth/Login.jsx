@@ -9,7 +9,7 @@ import FormGroup from 'material-ui/Form/FormGroup';
 import TextField from 'material-ui/TextField';
 import { withStyles } from 'material-ui/styles';
 import validator from 'validator';
-import { compose, withStateHandlers } from 'recompose';
+import { compose, withStateHandlers, setDisplayName } from 'recompose';
 
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -35,6 +35,8 @@ const LoginForm = ({
 	validateEmail,
 	emailError,
 	onFieldChange,
+	email,
+	validationRequired,
 	login,
 	disabled,
 	loginError,
@@ -69,6 +71,13 @@ const LoginForm = ({
             >
 							Login
             </Button>
+            {attempedLogin &&
+							validationRequired && (
+								<span>
+									You must <Link to={`/validate-email/${email}`}>validate</Link>{' '}
+									your email before login{' '}
+								</span>
+							)}
             {attempedLogin && loginError && <span>Login Fail</span>}
           </FormGroup>
         </Grid>
@@ -84,9 +93,13 @@ LoginForm.propTypes = {
 	emailError: PropTypes.bool.isRequired,
 	loginError: PropTypes.bool.isRequired,
 	attempedLogin: PropTypes.bool.isRequired,
+	validationRequired: PropTypes.bool.isRequired,
+	email: PropTypes.string.isRequired,
 	login: PropTypes.func.isRequired,
 	disabled: PropTypes.bool.isRequired
 };
+
+LoginForm.displayName = 'LoginForm(Base)';
 
 const withLoginMutation = graphql(
 	gql`
@@ -96,15 +109,36 @@ const withLoginMutation = graphql(
 		props: ({ ownProps, mutate }) => ({
 			...ownProps,
 			login: () => {
-				const { email, password, history, onAttemptLogin, onLoginFail } = ownProps;
+				const {
+					email,
+					password,
+					history,
+					onAttemptLogin,
+					onLoginFail,
+					onValidationRequired
+				} = ownProps;
 				onAttemptLogin();
 				mutate({ variables: { email, password } })
 					.then(({ data: { authenticateUser: { token } } }) => {
 						localStorage.setItem('token', token);
 						history.push('/boards/NOW');
 					})
-					.catch(() => {
+					.catch(err => {
 						onLoginFail();
+						const { graphQLErrors = [] } = err;
+						if (!graphQLErrors.length) {
+							return;
+						}
+						const error = graphQLErrors[0];
+						if (
+							error.functionError &&
+							error.functionError === 'Email must be validated prior to login'
+						) {
+							onValidationRequired();
+							setTimeout(() => {
+								history.push(`/validate-email/${email}`);
+							}, 2500);
+						}
 					});
 			}
 		})
@@ -119,14 +153,16 @@ const recomposeEnhancer = compose(
 			password = '',
 			disabled = true,
 			attempedLogin = false,
-			loginError = false
+			loginError = false,
+			validationRequired = false
 		}) => ({
 			emailError,
 			email,
 			password,
 			disabled,
 			attempedLogin,
-			loginError
+			loginError,
+			validationRequired
 		}),
 		{
 			validateEmail: ({ email }) => () => ({
@@ -149,11 +185,22 @@ const recomposeEnhancer = compose(
 				attempedLogin: true,
 				loginError: true,
 				disabled: true
+			}),
+			onValidationRequired: () => () => ({
+				validationRequired: true
 			})
 		}
 	)
 );
 
-const enhancer = compose(withStyles(styles), withRouter, recomposeEnhancer, withLoginMutation);
+const enhancer = compose(
+	setDisplayName('LoginEnhancer'),
+	withStyles(styles),
+	withRouter,
+	setDisplayName('withRecomposeEnhacer'),
+	recomposeEnhancer,
+	setDisplayName('withLogin'),
+	withLoginMutation
+);
 
 export default enhancer(LoginForm);
