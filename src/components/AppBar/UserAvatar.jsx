@@ -5,7 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import { withRouter } from 'react-router';
 import IconButton from 'material-ui/IconButton';
 import AccountCircle from 'material-ui-icons/AccountCircle';
-import { compose, withProps } from 'recompose';
+import { compose } from 'recompose';
 
 const styles = () => ({
 	accountCircle: {
@@ -13,17 +13,17 @@ const styles = () => ({
 		height: '60%'
 	}
 });
-const LoginButton = ({ classes, login }) => (
-  <IconButton id="login-btn" onClick={login} color="secondary">
+const LoginButton = ({ classes }) => (
+  <IconButton id="login-btn" color="inherit">
     <AccountCircle className={classes.accountCircle} />
   </IconButton>
 );
 
 LoginButton.propTypes = {
-	classes: PropTypes.object.isRequired,
-	login: PropTypes.bool.isRequired
+	classes: PropTypes.object.isRequired
+	// login: PropTypes.bool.isRequired
 };
 
-const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/login') }));
+// const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/login') }));
 
-export default compose(withRouter, recomposeEnchancer, withStyles(styles))(LoginButton);
+export default compose(withRouter, withStyles(styles))(LoginButton);

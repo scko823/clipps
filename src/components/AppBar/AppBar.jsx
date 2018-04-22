@@ -24,12 +24,16 @@ import createNowClipboardMutation from '../../../graphql/mutations/createNowClip
 import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
 import LoginButton from './LoginButton';
+import UserAvatar from './UserAvatar';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
 import SignUp from '../Auth/SignUp';
 import Login from '../Auth/Login';
 import ValidateEmail from '../Auth/ValidateEmail';
+
+// contexts
+import AuthContext from '../contexts/AuthContext';
 
 /**
  *
@@ -47,42 +51,52 @@ const ClipboardAppBar = ({
 	refetchClipboard,
 	showDrawer,
 	toggleDrawer,
-	nowBoardId
+	nowBoardId,
+	isLogin,
+	onLogin
+	// onLogout
 }) => (
-  <Router>
-    <div id="clipboard">
-      <MUIAppBar position="static">
-        <Toolbar>
-          <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
-            <MenuIcon />
-          </IconButton>
-          <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-						ClipBoards
-          </Typography>
-          <LoginButton />
-          <ASAPButton nowBoardId={nowBoardId} />
-        </Toolbar>
-      </MUIAppBar>
-      <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
-        <DrawerList
-          nowBoardId={nowBoardId}
-          loading={loadingClipboards}
-          clipboards={clipboards}
-          refetch={refetchClipboard}
-          toggleDrawer={toggleDrawer}
-        />
-      </Drawer>
-      <Switch>
-        <Redirect exact from="/" to="/boards/NOW" />
-        <Route path="/signup" component={SignUp} />
-        <Route path="/login" component={Login} />
-        <Route path="/validate-email/:email" component={ValidateEmail} />
-        <Route exact path="/add" component={AddClipboard} />
-        <Route exact path="/boards/:clipboardName" component={ClipboardView} />
-        <Route exact path="/:clipboardName/:clipName" component={ClipView} />
-      </Switch>
-    </div>
-  </Router>
+  <AuthContext.Provider value={isLogin}>
+    <Router>
+      <div id="clipboard">
+        <MUIAppBar position="static">
+          <Toolbar>
+            <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
+              <MenuIcon />
+            </IconButton>
+            <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
+							ClipBoards
+            </Typography>
+            <AuthContext.Consumer>
+              {value => (value ? <UserAvatar /> : <LoginButton />)}
+            </AuthContext.Consumer>
+            <ASAPButton nowBoardId={nowBoardId} />
+          </Toolbar>
+        </MUIAppBar>
+        <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
+          <DrawerList
+            nowBoardId={nowBoardId}
+            loading={loadingClipboards}
+            clipboards={clipboards}
+            refetch={refetchClipboard}
+            toggleDrawer={toggleDrawer}
+          />
+        </Drawer>
+        <Switch>
+          <Redirect exact from="/" to="/boards/NOW" />
+          <Route path="/signup" component={SignUp} />
+          <Route
+            path="/login"
+            render={props => <Login {...props} onLoginSuccess={onLogin} />}
+          />
+          <Route path="/validate-email/:email" component={ValidateEmail} />
+          <Route exact path="/add" component={AddClipboard} />
+          <Route exact path="/boards/:clipboardName" component={ClipboardView} />
+          <Route exact path="/:clipboardName/:clipName" component={ClipView} />
+        </Switch>
+      </div>
+    </Router>
+  </AuthContext.Provider>
 );
 
 ClipboardAppBar.propTypes = {
@@ -96,7 +110,10 @@ ClipboardAppBar.propTypes = {
 		})
 	).isRequired,
 	showDrawer: PropTypes.bool,
-	toggleDrawer: PropTypes.func.isRequired
+	toggleDrawer: PropTypes.func.isRequired,
+	isLogin: PropTypes.bool.isRequired,
+	// onLogout: PropTypes.func.isRequired,
+	onLogin: PropTypes.func.isRequired
 };
 
 ClipboardAppBar.defaultProps = {
@@ -138,15 +155,18 @@ const withCreateNowClipboardMutation = graphql(
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
 	withStateHandlers(
-		({ initShowDrawer = false, nowBoardId = '1' }) => ({
+		({ initShowDrawer = false, nowBoardId = '1', isLogin = false }) => ({
 			showDrawer: initShowDrawer,
-			nowBoardId
+			nowBoardId,
+			isLogin
 		}),
 		{
 			toggleDrawer: ({ showDrawer }) => () => ({
 				showDrawer: !showDrawer
 			}),
-			setNowBoardId: () => id => ({ nowBoardId: id })
+			setNowBoardId: () => id => ({ nowBoardId: id }),
+			onLogout: () => () => ({ isLogin: false }),
+			onLogin: () => () => ({ isLogin: true })
 		}
 	),
 	// add subscription for CREATED, UPDATED , DELETED for clipboards

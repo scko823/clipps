@@ -115,12 +115,14 @@ const withLoginMutation = graphql(
 					history,
 					onAttemptLogin,
 					onLoginFail,
-					onValidationRequired
+					onValidationRequired,
+					onLoginSuccess
 				} = ownProps;
 				onAttemptLogin();
 				mutate({ variables: { email, password } })
 					.then(({ data: { authenticateUser: { token } } }) => {
 						localStorage.setItem('token', token);
+						onLoginSuccess() // notify AuthContext and AppBar login success
 						history.push('/boards/NOW');
 					})
 					.catch(err => {

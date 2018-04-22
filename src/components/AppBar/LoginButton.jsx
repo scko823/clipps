@@ -21,7 +21,7 @@ const LoginButton = ({ classes, login }) => (
 
 LoginButton.propTypes = {
 	classes: PropTypes.object.isRequired,
-	login: PropTypes.bool.isRequired
+	login: PropTypes.func.isRequired
 };
 
 const recomposeEnchancer = withProps(({ history }) => ({ login: () => history.push('/login') }));
