@@ -4,18 +4,18 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { withRouter } from 'react-router';
 import IconButton from 'material-ui/IconButton';
-import PersonPin from 'material-ui-icons/PersonPin';
+import AccountCircle from 'material-ui-icons/AccountCircle';
 import { compose, withProps } from 'recompose';
 
 const styles = () => ({
-	icons: {
+	accountCircle: {
 		width: '60%',
 		height: '60%'
 	}
 });
 const LoginButton = ({ classes, login }) => (
-  <IconButton id="login-btn" onClick={login} color="inherit">
-    <PersonPin className={classes.icons} />
+  <IconButton id="login-btn" onClick={login} color="secondary">
+    <AccountCircle className={classes.accountCircle} />
   </IconButton>
 );
 

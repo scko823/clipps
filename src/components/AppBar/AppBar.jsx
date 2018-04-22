@@ -53,7 +53,7 @@ const ClipboardAppBar = ({
     <div id="clipboard">
       <MUIAppBar position="static">
         <Toolbar>
-          <IconButton onClick={toggleDrawer} color="contrast" aria-label="Menu">
+          <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
             <MenuIcon />
           </IconButton>
           <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
