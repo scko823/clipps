@@ -52,7 +52,7 @@ const styles = theme => ({
 		}
 	},
 	form: {
-		'&>h6': {
+		'&>h3': {
 			margin: `${theme.spacing.unit}px 0`,
 			textAlign: 'center'
 		}
@@ -107,15 +107,15 @@ class ValidateEmail extends Component {
 		return (
   <Grid className={classes.root} container>
     <Grid container item xs={12} justify="center">
-      {attemptedValidation && validationSuccess ? (
-        <h6>
-							Email Verified. If you are not redirected to login page,{' '}
-          <Link to="/login">click here</Link>
-        </h6>
-					) : (
-  <h3>Enter your validation key we send to your email</h3>
-					)}
       <FormGroup className={classes.form}>
+        {attemptedValidation && validationSuccess ? (
+          <h6>
+								Email Verified. If you are not redirected to login page,{' '}
+            <Link to="/login">click here</Link>
+          </h6>
+						) : (
+  <h3>Enter your validation key we send to your email</h3>
+						)}
         <FormGroup className={classes.sercet}>
           {uuidAttrs.map((attr, index) => (
             <Fragment>

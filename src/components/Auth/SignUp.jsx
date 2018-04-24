@@ -23,6 +23,9 @@ const styles = theme => ({
 	inputError: {
 		color: red['100']
 	},
+	formGroup: {
+		margin: `${theme.spacing.unit * 3.5}px 0`
+	},
 	h1: {
 		margin: `${theme.spacing.unit * 6}px 0`
 	}
@@ -41,16 +44,40 @@ const SignUp = ({
 	passwordError,
 	onPasswordBlur,
 	onPasswordChange,
-	disabled
+	onFirstNameChange,
+	onLastNameChange,
+	firstName,
+	lastName,
+	disabled,
+	touchedInput
 }) => (
   <Grid className={classes.root} container>
     <Grid item xs={12}>
       <Grid container justify="center">
         <Grid item>
           <h1 className={classes.h1}>Sign Up</h1>
-          <FormGroup>
+          <h6>All fields are required</h6>
+          <FormGroup className={classes.formGroup}>
             <TextField
               autoFocus
+              error={touchedInput.firstName && !firstName}
+              helperText={
+								touchedInput.firstName &&
+								!firstName && <span>Must provide your first name</span>
+							}
+              label="First Name"
+              onChange={onFirstNameChange}
+              onBlur={() => {}}
+            />
+            <TextField
+              onFocus={() => {}}
+              error={touchedInput.lastName && !lastName}
+              helperText={touchedInput.lastName && !lastName && <span>Must provide your last name</span>}
+              label="Last Name"
+              onChange={onLastNameChange}
+              onBlur={() => {}}
+            />
+            <TextField
               onFocus={onEmailFocus}
               error={showEmailError && emailError}
               helperText={
@@ -116,9 +143,14 @@ SignUp.propTypes = {
 	showPasswordError: PropTypes.bool.isRequired,
 	onPasswordChange: PropTypes.func.isRequired,
 	onPasswordFocus: PropTypes.func.isRequired,
+	onFirstNameChange: PropTypes.func.isRequired,
+	onLastNameChange: PropTypes.func.isRequired,
 	onPasswordBlur: PropTypes.func.isRequired,
 	disabled: PropTypes.bool.isRequired,
-	submit: PropTypes.func.isRequired
+	submit: PropTypes.func.isRequired,
+	touchedInput: PropTypes.object.isRequired,
+	firstName: PropTypes.string.isRequired,
+	lastName: PropTypes.string.isRequired
 };
 
 const withSignUpUserMutation = graphql(
@@ -130,17 +162,23 @@ const withSignUpUserMutation = graphql(
 const recomposeEnhancer = compose(
 	withStateHandlers(
 		({
+			firstName = '',
+			lastName = '',
 			email = '',
 			password1 = '',
 			password2 = '',
 			emailError = false,
-			passwordError = false
+			passwordError = false,
+			touchedInput = {}
 		}) => ({
+			firstName,
+			lastName,
 			email,
 			password1,
 			password2,
 			emailError,
-			passwordError
+			passwordError,
+			touchedInput
 		}),
 		{
 			onEmailChange: () => ({ target }) => ({
@@ -164,44 +202,66 @@ const recomposeEnhancer = compose(
 			}),
 			onPasswordFocus: () => () => ({
 				showPasswordError: false
+			}),
+			onFirstNameChange: ({ touchedInput }) => ({ target }) => ({
+				firstName: target.value,
+				touchedInput: { ...touchedInput, firstName: true }
+			}),
+			onLastNameChange: ({ touchedInput }) => ({ target }) => ({
+				lastName: target.value,
+				touchedInput: { ...touchedInput, lastName: true }
 			})
 		}
 	),
-	withProps(({ email, password1, password2, passwordError, emailError, mutate, history }) => ({
-		disabled:
-			!email ||
-			password1 !== password2 ||
-			!password1 ||
-			!password2 ||
-			emailError ||
+	withProps(
+		({
+			email,
+			firstName,
+			lastName,
+			password1,
+			password2,
 			passwordError,
-		submit: () => {
-			mutate({ variables: { email, password: password1 } })
-				.then(() => {
-					console.info('signup success');
-					history.push(`/validate-email/${email}`);
-				})
-				.catch(err => {
-					const { graphQLErrors } = err;
-					console.error(err);
-					if (
-						graphQLErrors.some(
-							e =>
-								e.functionError ===
-								'Email already registered, need email validation'
-						)
-					) {
+			emailError,
+			mutate,
+			history
+		}) => ({
+			disabled:
+				!email ||
+				!firstName ||
+				!lastName ||
+				password1 !== password2 ||
+				!password1 ||
+				!password2 ||
+				emailError ||
+				passwordError,
+			submit: () => {
+				mutate({ variables: { firstName, lastName,  email, password: password1 } })
+					.then(() => {
+						console.info('signup success');
 						history.push(`/validate-email/${email}`);
-					} else if (
-						graphQLErrors.some(
-							e => e.functionError === 'Email already in use and validated'
-						)
-					) {
-						history.push(`/login?email=${email}`);
-					}
-				});
-		}
-	}))
+					})
+					.catch(err => {
+						const { graphQLErrors } = err;
+						console.error(err);
+						if (
+							graphQLErrors.some(
+								e =>
+									e.functionError ===
+									'Email already registered, need email validation'
+							)
+						) {
+							history.push(`/validate-email/${email}`);
+						} else if (
+							graphQLErrors.some(
+								e => e.functionError === 'Email already in use and validated'
+							)
+						) {
+							history.push(`/login?email=${email}`);
+						}
+					});
+			}
+		})
+	)
 );
 
 export default compose(withStyles(styles), withRouter, withSignUpUserMutation, recomposeEnhancer)(
