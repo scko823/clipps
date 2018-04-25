@@ -53,8 +53,8 @@ const ClipboardAppBar = ({
 	toggleDrawer,
 	nowBoardId,
 	isLogin,
-	onLogin
-	// onLogout
+	onLogin,
+	onLogout
 }) => (
   <AuthContext.Provider value={isLogin}>
     <Router>
@@ -68,7 +68,9 @@ const ClipboardAppBar = ({
 							ClipBoards
             </Typography>
             <AuthContext.Consumer>
-              {value => (value ? <UserAvatar /> : <LoginButton />)}
+              {value => (value ? React.createElement(UserAvatar, {
+								onLogout
+							}): <LoginButton />)}
             </AuthContext.Consumer>
             <ASAPButton nowBoardId={nowBoardId} />
           </Toolbar>
@@ -112,7 +114,7 @@ ClipboardAppBar.propTypes = {
 	showDrawer: PropTypes.bool,
 	toggleDrawer: PropTypes.func.isRequired,
 	isLogin: PropTypes.bool.isRequired,
-	// onLogout: PropTypes.func.isRequired,
+	onLogout: PropTypes.func.isRequired,
 	onLogin: PropTypes.func.isRequired
 };
 

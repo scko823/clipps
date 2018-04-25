@@ -237,12 +237,10 @@ const recomposeEnhancer = compose(
 			submit: () => {
 				mutate({ variables: { firstName, lastName,  email, password: password1 } })
 					.then(() => {
-						console.info('signup success');
 						history.push(`/validate-email/${email}`);
 					})
 					.catch(err => {
 						const { graphQLErrors } = err;
-						console.error(err);
 						if (
 							graphQLErrors.some(
 								e =>
