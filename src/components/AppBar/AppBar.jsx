@@ -68,7 +68,9 @@ const ClipboardAppBar = ({
 							ClipBoards
             </Typography>
             <AuthContext.Consumer>
-              {value => (value ? <UserAvatar onLogout={onLogout} /> : <LoginButton />)}
+              {value => (value ? React.createElement(UserAvatar, {
+								onLogout
+							}): <LoginButton />)}
             </AuthContext.Consumer>
             <ASAPButton nowBoardId={nowBoardId} />
           </Toolbar>
