@@ -15,12 +15,14 @@ import FAB from './FAB';
 import AddClipDialog from './AddClipDialog';
 
 const ClipboardView = ({
-	match: { params: { clipboardName } },
+	match: {
+		params: { clipboardName }
+	},
 	clips,
 	loading,
 	toggleAddClipDialog,
 	showAddClipDialog,
-	clipboardId,
+	clipboardId
 }) => {
 	if (loading) {
 		return <h4>loading!!!</h4>;
@@ -47,29 +49,33 @@ ClipboardView.propTypes = {
 		path: PropTypes.string,
 		url: PropTypes.string,
 		isExact: PropTypes.bool,
-		params: PropTypes.object,
+		params: PropTypes.object
 	}).isRequired,
 	toggleAddClipDialog: PropTypes.func.isRequired,
 	clips: PropTypes.object.isRequired,
 	loading: PropTypes.bool,
 	showAddClipDialog: PropTypes.bool,
-	clipboardId: PropTypes.string,
+	clipboardId: PropTypes.string
 };
 
 ClipboardView.defaultProps = {
 	loading: true,
 	showAddClipDialog: false,
-	clipboardId: '',
+	clipboardId: ''
 };
 
 const withclipsQuery = graphql(
 	gql`
-    ${clipsQuery}
-`,
+		${clipsQuery}
+	`,
 	{
 		name: 'clips',
-		options: ({ match: { params: { clipboardName } } }) => ({
-			variables: { clipboardName },
+		options: ({
+			match: {
+				params: { clipboardName }
+			}
+		}) => ({
+			variables: { clipboardName }
 		}),
 		props: ({ ownProps, clips }) => ({
 			...ownProps,
@@ -78,35 +84,43 @@ const withclipsQuery = graphql(
 			clipboardId: (clips.Clipboard && clips.Clipboard.id) || null,
 			subscribeToMore: params =>
 				clips.subscribeToMore({
-					document: gql`${clipsSubscription}`,
+					document: gql`
+						${clipsSubscription}
+					`,
 					variables: { clipboardId: params.clipboardId },
 					updateQuery: (
 						{ allClips, Clipboard },
-						{ subscriptionData: { data: { Clip: { mutation, node } } } },
+						{
+							subscriptionData: {
+								data: {
+									Clip: { mutation, node }
+								}
+							}
+						}
 					) => {
 						if (mutation === 'CREATED') {
 							return {
 								allClips: [node, ...allClips],
-								Clipboard,
+								Clipboard
 							};
 						}
 						return {
 							allClips,
-							Clipboard,
+							Clipboard
 						};
-					},
+					}
 				}),
 			error: clips.error,
-			refetch: clips.refetch,
-		}),
-	},
+			refetch: clips.refetch
+		})
+	}
 );
 
 const recomposeEnhancer = compose(
 	withStateHandlers(({ showAddClipDialog = false }) => ({ showAddClipDialog }), {
 		toggleAddClipDialog: ({ showAddClipDialog }) => () => ({
-			showAddClipDialog: !showAddClipDialog,
-		}),
+			showAddClipDialog: !showAddClipDialog
+		})
 	}),
 	lifecycle({
 		componentDidUpdate(prevProps) {
@@ -118,12 +132,12 @@ const recomposeEnhancer = compose(
 					this.unsubscribe();
 				}
 				this.unsubscribe = this.props.subscribeToMore({
-					clipboardId: this.props.clipboardId,
+					clipboardId: this.props.clipboardId
 				});
 			}
-		},
+		}
 	}),
-	toClass,
+	toClass
 );
 
 const enhancer = compose(withclipsQuery, recomposeEnhancer);

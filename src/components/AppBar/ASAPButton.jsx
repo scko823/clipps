@@ -65,14 +65,15 @@ const ASAPButton = ({
 	classes,
 	nowBoardId,
 	submitAndRedirect,
-	submitting
+	submitting,
+	disabled
 }) => [
   <div key="asap-btn-wrapper" className={classes.progressWrapper}>
     <Button
       variant="raised"
       color="inherit"
       id="ASAP-btn"
-      disabled={nowBoardId === '1'}
+      disabled={disabled || nowBoardId === '1'}
       onClick={togglePopover}
       className={classes.ASAPBtn}
     >
@@ -153,7 +154,8 @@ ASAPButton.propTypes = {
 	submitAndRedirect: PropTypes.func.isRequired,
 	clipName: PropTypes.string.isRequired,
 	clipContent: PropTypes.string.isRequired,
-	nowBoardId: PropTypes.string.isRequired
+	nowBoardId: PropTypes.string.isRequired,
+	disabled: PropTypes.bool.isRequired
 };
 
 const recomposeEnhancer = compose(

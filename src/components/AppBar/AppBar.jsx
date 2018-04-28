@@ -32,6 +32,9 @@ import SignUp from '../Auth/SignUp';
 import Login from '../Auth/Login';
 import ValidateEmail from '../Auth/ValidateEmail';
 
+// PrivateRoute
+import PrivateRoute from '../Auth/PrivateRoute';
+
 // contexts
 import AuthContext from '../contexts/AuthContext';
 
@@ -68,11 +71,17 @@ const ClipboardAppBar = ({
 							ClipBoards
             </Typography>
             <AuthContext.Consumer>
-              {value => (value ? React.createElement(UserAvatar, {
-								onLogout
-							}): <LoginButton />)}
+              {value =>
+								value ? (
+									React.createElement(UserAvatar, {
+										onLogout
+									})
+								) : (
+  <LoginButton />
+								)
+							}
             </AuthContext.Consumer>
-            <ASAPButton nowBoardId={nowBoardId} />
+            <ASAPButton disabled={!isLogin} nowBoardId={nowBoardId} />
           </Toolbar>
         </MUIAppBar>
         <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
@@ -91,10 +100,10 @@ const ClipboardAppBar = ({
             path="/login"
             render={props => <Login {...props} onLoginSuccess={onLogin} />}
           />
-          <Route path="/validate-email/:email" component={ValidateEmail} />
-          <Route exact path="/add" component={AddClipboard} />
-          <Route exact path="/boards/:clipboardName" component={ClipboardView} />
-          <Route exact path="/:clipboardName/:clipName" component={ClipView} />
+          <PrivateRoute path="/validate-email/:email" component={ValidateEmail} />
+          <PrivateRoute exact path="/add" component={AddClipboard} />
+          <PrivateRoute exact path="/boards/:clipboardName" component={ClipboardView} />
+          <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
         </Switch>
       </div>
     </Router>
@@ -173,14 +182,20 @@ const recomposeEnhancer = compose(
 	),
 	lifecycle({
 		componentWillMount() {
-			const { createNowBoard, setNowBoardId, refetchClipboard, onLogin, onLogout } = this.props;
+			const {
+				createNowBoard,
+				setNowBoardId,
+				refetchClipboard,
+				onLogin,
+				onLogout
+			} = this.props;
 			try {
-				const token = localStorage.getItem("token");
+				const token = localStorage.getItem('token');
 				if (token) {
 					onLogin();
 				}
 			} catch (ex) {
-				onLogout()
+				onLogout();
 			}
 			// add subscription for CREATED, UPDATED , DELETED for clipboards
 			this.props.subscribeToMore({
