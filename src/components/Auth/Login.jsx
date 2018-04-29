@@ -79,6 +79,7 @@ const LoginForm = ({
 								</span>
 							)}
             {attempedLogin && loginError && <span>Login Fail</span>}
+            <h6><Link to="/forget-password">Forget password</Link></h6>
           </FormGroup>
         </Grid>
       </Grid>

@@ -30,6 +30,7 @@ import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
 import SignUp from '../Auth/SignUp';
 import Login from '../Auth/Login';
+import ForgetPassword from '../Auth/ForgetPassword';
 import ValidateEmail from '../Auth/ValidateEmail';
 
 // PrivateRoute
@@ -101,6 +102,7 @@ const ClipboardAppBar = ({
             render={props => <Login {...props} onLoginSuccess={onLogin} />}
           />
           <Route path="/validate-email/:email" component={ValidateEmail} />
+          <Route path="/forget-password" component={ForgetPassword} />
           <PrivateRoute exact path="/add" component={AddClipboard} />
           <PrivateRoute exact path="/boards/:clipboardName" component={ClipboardView} />
           <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
