@@ -47,7 +47,6 @@ export class UUIDInput extends Component {
 	componentDidUpdate(prevProps) {
 		const { focus: prevFocus } = prevProps;
 		const { focus: newFocus, onFocusChange } = this.props;
-		debugger; // eslint-disable-line
 		if (prevFocus !== newFocus) {
 			try {
 				this._inputs[newFocus].focus();
