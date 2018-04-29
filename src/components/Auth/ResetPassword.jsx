@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// import { withRouter } from 'react-router';
-// import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
 import { withStyles } from 'material-ui/styles';
 import { compose, withProps } from 'recompose';
+
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import resetPasswordMutation from '../../../graphql/mutations/resetPassword';
 
 import { UUIDInput, uuidInputEnhancer } from './UUIDInput';
 import { passwordConfirmEnhancer, PasswordConfirm } from './PasswordConfirm';
@@ -52,7 +55,7 @@ const styles = theme => ({
 
 const ResetPassword = ({
 	classes,
-	onReset,
+	onResetPW,
 	disabled,
 	focus,
 	validationSecret,
@@ -90,7 +93,7 @@ const ResetPassword = ({
               variant="raised"
               label="login"
               color="primary"
-              onClick={onReset}
+              onClick={onResetPW}
               disabled={disabled}
               className={classes['cta-btn']}
             >
@@ -113,7 +116,7 @@ const ResetPassword = ({
 
 ResetPassword.propTypes = {
 	classes: PropTypes.object.isRequired,
-	onReset: PropTypes.func.isRequired,
+	onResetPW: PropTypes.func.isRequired,
 	disabled: PropTypes.bool.isRequired,
 	focus: PropTypes.number.isRequired,
 	validationSecret: PropTypes.arrayOf(PropTypes.number).isRequired,
@@ -134,11 +137,32 @@ const resetPasswordEnhancer = compose(
 	}))
 );
 
+const withResetPasswordMutation = graphql(
+	gql`
+		${resetPasswordMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			onResetPW: () => {
+				const { history, validationSecret, password1: password } = ownProps;
+				return mutate({
+					variables: { password, pwRestSecret: validationSecret.join('-') }
+				}).then(() => {
+					history.push('/login');
+				});
+			}
+		})
+	}
+);
+
 export default compose(
 	withStyles(styles),
+	withRouter,
 	passwordConfirmEnhancer,
 	uuidInputEnhancer,
-	resetPasswordEnhancer
+	resetPasswordEnhancer,
+	withResetPasswordMutation
 )(ResetPassword);
 
 // export default () => <h1>Reset Password</h1>;
