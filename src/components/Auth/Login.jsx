@@ -27,6 +27,13 @@ const styles = theme => ({
 	},
 	'cta-btn': {
 		margin: `${theme.spacing.unit * 2}px 0`
+	},
+	'forget-pw': {
+		backgroundColor: `rgb(225, 0, 80)`,
+		color: '#fff',
+		'&:hover': {
+			backgroundColor: `rgb(157, 0, 56)`
+		}
 	}
 });
 
@@ -40,7 +47,8 @@ const LoginForm = ({
 	login,
 	disabled,
 	loginError,
-	attempedLogin
+	attempedLogin,
+	history
 }) => (
   <Grid className={classes.root} container>
     <Grid item xs={12}>
@@ -79,6 +87,16 @@ const LoginForm = ({
 								</span>
 							)}
             {attempedLogin && loginError && <span>Login Fail</span>}
+            <Button
+              variant="raised"
+              label="Forget Password"
+              className={classes['forget-pw']}
+              onClick={() => {
+								history.push('/forget-password');
+							}}
+            >
+							Forget Password
+            </Button>
           </FormGroup>
         </Grid>
       </Grid>
@@ -88,6 +106,7 @@ const LoginForm = ({
 
 LoginForm.propTypes = {
 	classes: PropTypes.object.isRequired,
+	history: PropTypes.object.isRequired,
 	validateEmail: PropTypes.func.isRequired,
 	onFieldChange: PropTypes.func.isRequired,
 	emailError: PropTypes.bool.isRequired,
@@ -125,7 +144,7 @@ const withLoginMutation = graphql(
 						localStorage.setItem('id', id);
 						localStorage.setItem('firstName', firstName);
 						localStorage.setItem('lastName', lastName);
-						onLoginSuccess() // notify AuthContext and AppBar login success
+						onLoginSuccess(); // notify AuthContext and AppBar login success
 						history.push('/boards/NOW');
 					})
 					.catch(err => {
@@ -141,7 +160,7 @@ const withLoginMutation = graphql(
 						) {
 							onValidationRequired();
 							setTimeout(() => {
-								history.push(`/validate-email/${email}`);
+								history.push(`/validate-email?email=${email}`);
 							}, 2500);
 						}
 					});
@@ -159,7 +178,7 @@ const recomposeEnhancer = compose(
 			disabled = true,
 			attempedLogin = false,
 			loginError = false,
-			validationRequired = false
+			validationRequired = false,
 		}) => ({
 			emailError,
 			email,
@@ -167,12 +186,12 @@ const recomposeEnhancer = compose(
 			disabled,
 			attempedLogin,
 			loginError,
-			validationRequired
+			validationRequired,
 		}),
 		{
 			validateEmail: ({ email }) => () => ({
-				emailError: !validator.isEmail(email)
-			}),
+					emailError: !email ? false : !validator.isEmail(email)
+				}),
 			onFieldChange: ({ emailError, email, password }) => ev => {
 				const { value, type } = ev.target;
 				const isEmail = validator.isEmail(email);
