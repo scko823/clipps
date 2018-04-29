@@ -32,6 +32,7 @@ export class UUIDInput extends Component {
 		uuidAttrs: PropTypes.arrayOf(PropTypes.object),
 		onFieldChange: PropTypes.func.isRequired,
 		onFocusChange: PropTypes.func.isRequired,
+		onBlur: PropTypes.func.isRequired,
 		focus: PropTypes.number.isRequired,
 		className: PropTypes.string
 	};
@@ -63,7 +64,8 @@ export class UUIDInput extends Component {
 			uuidAttrs,
 			validationSecret,
 			validationError,
-			onFieldChange
+			onFieldChange,
+			onBlur
 		} = this.props;
 		return (
   <FormGroup className={className}>
@@ -71,6 +73,7 @@ export class UUIDInput extends Component {
       <Fragment>
         <TextField
           key={index}
+          onBlur={onBlur}
           autoFocus={index === 0}
           value={validationSecret[index]}
           error={validationError[index]}
@@ -128,6 +131,18 @@ const onFieldChange = ({ validationSecret, validationError }) => event => {
 };
 
 const onFocusChange = () => newFocus => ({ focus: newFocus });
+const onBlur = ({ validationError }) => ({ target }) => {
+	const { dataset: data = {}, value } = target;
+	const section = parseInt(data.section, 10);
+	// handle error (not number or lowercase)
+	const length = parseInt(data.length, 10);
+	const alphaNumOnly = /^[0-9a-z]*$/.test(value);
+	const newValidationError = [...validationError];
+	newValidationError[section] = length !== value.length || !alphaNumOnly;
+	return {
+		validationError: newValidationError
+	};
+};
 
 export const uuidInputEnhancer = compose(
 	withStateHandlers(
@@ -144,7 +159,8 @@ export const uuidInputEnhancer = compose(
 		}),
 		{
 			onFieldChange,
-			onFocusChange
+			onFocusChange,
+			onBlur
 		}
 	)
 );
