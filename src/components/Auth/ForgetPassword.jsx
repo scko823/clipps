@@ -9,7 +9,13 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
 import { withStyles } from 'material-ui/styles';
-import { compose } from 'recompose';
+import { compose, withStateHandlers } from 'recompose';
+
+import validator from 'validator';
+
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import requestPasswordResetMutation from '../../../graphql/mutations/requestPasswordReset';
 
 const styles = theme => ({
 	root: {
@@ -61,14 +67,14 @@ const ForgetPassword = ({
             >
 							Reset Password
             </Button>
-            {attempedReset &&
-							resetCompleted && (
-								<span>
-									Please check your email and follow the instruction in the{' '}
-  <Link to="/reset-password">next page</Link>{' '}
-								</span>
-							)}
           </FormGroup>
+          {attempedReset &&
+						resetCompleted && (
+							<span>
+								Please check your email and follow the instruction in the{' '}
+  <Link to="/reset-password">next page</Link>{' '}
+							</span>
+						)}
         </Grid>
       </Grid>
     </Grid>
@@ -82,8 +88,51 @@ ForgetPassword.propTypes = {
 	onFieldChange: PropTypes.func.isRequired,
 	onResetPassword: PropTypes.func.isRequired,
 	disabled: PropTypes.bool.isRequired,
-	attempedReset: PropTypes.func.isRequired,
+	attempedReset: PropTypes.bool.isRequired,
 	resetCompleted: PropTypes.bool.isRequired
 };
 
-export default compose(withStyles(styles))(ForgetPassword);
+const withRequestPasswordReset = graphql(
+	gql`
+		${requestPasswordResetMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			onResetPassword: () => {
+				const { email, attemptReset, resetSuccess } = ownProps;
+				attemptReset();
+				return mutate({ variables: { email } }).then(resetSuccess);
+			}
+		})
+	}
+);
+
+const recomposeEnhancer = compose(
+	withStateHandlers(
+		({ email = '', emailError = false, disabled = true, resetCompleted = false }) => ({
+			email,
+			emailError,
+			disabled,
+			resetCompleted
+		}),
+		{
+			validateEmail: ({ email }) => () => ({
+				emailError: !validator.isEmail(email),
+				disabled: !validator.isEmail(email)
+			}),
+			onFieldChange: ({ email }) => ({ target }) => ({
+				email: target.value,
+				disabled: !validator.isEmail(email)
+			}),
+			attemptReset: () => () => ({
+				attempedReset: true
+			}),
+			resetSuccess: () => () => ({ resetCompleted: true })
+		}
+	)
+);
+
+export default compose(withStyles(styles), recomposeEnhancer, withRequestPasswordReset)(
+	ForgetPassword
+);
