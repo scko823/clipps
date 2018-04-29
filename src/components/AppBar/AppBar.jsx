@@ -31,7 +31,7 @@ import ClipView from '../Clips/ClipView';
 import SignUp from '../Auth/SignUp';
 import Login from '../Auth/Login';
 import ForgetPassword from '../Auth/ForgetPassword';
-// import ResetPassword from '../Auth/ResetPassword';
+import ResetPassword from '../Auth/ResetPassword';
 import ValidateEmail from '../Auth/ValidateEmail';
 
 // PrivateRoute
@@ -104,7 +104,7 @@ const ClipboardAppBar = ({
           />
           <Route path="/validate-email/:email" component={ValidateEmail} />
           <Route path="/forget-password" component={ForgetPassword} />
-          {/* <Route path="/reset-password/:token?" component={ResetPassword} /> */}
+          <Route path="/reset-password/:token?" component={ResetPassword} />
           <PrivateRoute exact path="/add" component={AddClipboard} />
           <PrivateRoute exact path="/boards/:clipboardName" component={ClipboardView} />
           <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
