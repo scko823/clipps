@@ -100,7 +100,7 @@ const ClipboardAppBar = ({
             path="/login"
             render={props => <Login {...props} onLoginSuccess={onLogin} />}
           />
-          <PrivateRoute path="/validate-email/:email" component={ValidateEmail} />
+          <Route path="/validate-email/:email" component={ValidateEmail} />
           <PrivateRoute exact path="/add" component={AddClipboard} />
           <PrivateRoute exact path="/boards/:clipboardName" component={ClipboardView} />
           <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
