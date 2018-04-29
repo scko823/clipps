@@ -111,8 +111,9 @@ const withValidateEmail = graphql(
 					onValidationError: onValidationErrorCb,
 					onValidationSuccess: onValidationSuccessCb,
 					validationSecret = [],
-					match: { params: { email = '' } } = {}
+					location: { search } = {}
 				} = ownProps;
+				const email = search.replace('?email=', '');
 				mutate({ variables: { email, validationSecret: validationSecret.join('-') } })
 					.then(() => {
 						onValidationSuccessCb();

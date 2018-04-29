@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import FormGroup from 'material-ui/Form/FormGroup';
-// import { red } from 'material-ui/colors';
 import { withStyles } from 'material-ui/styles';
 import { compose, withProps } from 'recompose';
 

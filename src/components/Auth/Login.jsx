@@ -160,7 +160,7 @@ const withLoginMutation = graphql(
 						) {
 							onValidationRequired();
 							setTimeout(() => {
-								history.push(`/validate-email/${email}`);
+								history.push(`/validate-email?email=${email}`);
 							}, 2500);
 						}
 					});

@@ -191,7 +191,7 @@ const recomposeEnhancer = compose(
 			submit: () => {
 				mutate({ variables: { firstName, lastName, email, password: password1 } })
 					.then(() => {
-						history.push(`/validate-email/${email}`);
+						history.push(`/validate-email?email=${email}`);
 					})
 					.catch(err => {
 						const { graphQLErrors } = err;
@@ -208,7 +208,7 @@ const recomposeEnhancer = compose(
 								e => e.functionError === 'Email already in use and validated'
 							)
 						) {
-							history.push(`/login?email=${email}`);
+							history.push(`/login`);
 						}
 					});
 			}
