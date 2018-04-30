@@ -147,7 +147,7 @@ const withResetPasswordMutation = graphql(
 			onResetPW: () => {
 				const { history, validationSecret, password1: password } = ownProps;
 				return mutate({
-					variables: { password, pwRestSecret: validationSecret.join('-') }
+					variables: { password, pwResetSecret: validationSecret.join('-') }
 				}).then(() => {
 					history.push('/login');
 				});

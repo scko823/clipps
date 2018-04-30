@@ -1,7 +1,7 @@
 // // reset password
 export default `
-mutation resetPassword($pwRestSecret: String!, $password: String!){
-    resetPassword(pwRestSecret: $pwRestSecret, password: $password){
+mutation resetPassword($pwResetSecret: String!, $password: String!){
+    resetPassword(pwResetSecret: $pwResetSecret, password: $password){
         id
     }
 }`;
