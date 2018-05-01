@@ -202,7 +202,7 @@ const recomposeEnhancer = compose(
 									'Email already registered, need email validation'
 							)
 						) {
-							history.push(`/validate-email/${email}`);
+							history.push(`/validate-email?email=${email}`);
 						} else if (
 							graphQLErrors.some(
 								e => e.functionError === 'Email already in use and validated'
