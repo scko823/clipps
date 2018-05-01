@@ -82,7 +82,7 @@ const LoginForm = ({
             {attempedLogin &&
 							validationRequired && (
 								<span>
-									You must <Link to={`/validate-email/${email}`}>validate</Link>{' '}
+									You must <Link to={`/validate-email?email=${email}`}>validate</Link>{' '}
 									your email before login{' '}
 								</span>
 							)}
