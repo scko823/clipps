@@ -12,7 +12,11 @@ import { withStyles } from 'material-ui/styles';
 // react hightlight
 import HighLight from 'react-highlight';
 
+// recompose
 import { compose, mapProps } from 'recompose';
+
+// date-fns
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 export const snippetStyles = {
 	root: {
@@ -48,7 +52,12 @@ const stlyes = () => snippetStyles;
 
 export const Snippet = (props: SnippetPropType) => {
 	const {
-		clip: { name, content, owner: { firstName = '', lastName = '' } = {} },
+		clip: {
+			name = '',
+			content = '',
+			createdAt = '',
+			owner: { firstName = '', lastName = '' } = {}
+		},
 		classes,
 		copyContent,
 		clipboardName
@@ -63,7 +72,10 @@ export const Snippet = (props: SnippetPropType) => {
     </div>
     <HighLight className="code">{content}</HighLight>
     <Typography align="left" component="h3">
-      <div>By: {`${firstName} ${lastName}`}</div>
+      {firstName && lastName && <div>By: {`${firstName} ${lastName}`}</div>}
+      {createdAt && (
+      <div>created {`${distanceInWordsToNow(createdAt, { addSuffix: true })}`}</div>
+				)}
     </Typography>
   </Paper>
 	);

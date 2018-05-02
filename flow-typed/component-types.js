@@ -1,6 +1,7 @@
 type SnippetPropType = {
 	clip: {
 		name: string,
+		createdAt: string,
 		content: string,
 		owner: {
 			lastName: string,
