@@ -7,7 +7,7 @@ import Dialog, {
 	DialogActions,
 	DialogContent,
 	DialogContentText,
-	DialogTitle,
+	DialogTitle
 } from 'material-ui/Dialog';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
@@ -24,15 +24,15 @@ import createClipMutation from '../../../graphql/mutations/createClip';
 
 const styles = {
 	progressWrapper: {
-		position: 'relative',
+		position: 'relative'
 	},
 	progress: {
 		color: lightGreen['500'],
 		position: 'absolute',
 		left: '25%',
 		marginTop: '-3px',
-		zIndex: 1,
-	},
+		zIndex: 1
+	}
 };
 
 const AddClipDialog = ({
@@ -45,7 +45,7 @@ const AddClipDialog = ({
 	clipboardName,
 	onContentFieldChange,
 	onNameFieldChange,
-	formState: { name, content },
+	formState: { name, content }
 }) => {
 	const submitHandle = () => {
 		showLoadingSpinner();
@@ -81,7 +81,7 @@ const AddClipDialog = ({
           </Button>
           <div className={classes.progressWrapper}>
             <Button
-              disabled={!name || !content|| loading}
+              disabled={!name || !content || loading}
               onClick={submitHandle}
               color="primary"
             >
@@ -108,57 +108,67 @@ AddClipDialog.propTypes = {
 	clipboardName: PropTypes.string.isRequired,
 	formState: PropTypes.shape({
 		name: PropTypes.string,
-		content: PropTypes.string,
-	}).isRequired,
+		content: PropTypes.string
+	}).isRequired
 };
 
 const recomposeEnhancer = compose(
 	withStateHandlers(
 		({ loading = false, formState = { name: '', content: '' } }) => ({
 			formState,
-			loading,
+			loading
 		}),
 		{
 			onNameFieldChange: ({ formState }) => ({ target: { value } }) => ({
 				formState: {
 					...formState,
-					name: value,
-				},
+					name: value
+				}
 			}),
 			onContentFieldChange: ({ formState }) => ({ target: { value } }) => ({
 				formState: {
 					...formState,
-					content: value,
-				},
+					content: value
+				}
 			}),
 			showLoadingSpinner: () => () => ({ loading: true }),
-			hideLoadingSpinner: () => () => ({ loading: false }),
-		},
-	),
+			hideLoadingSpinner: () => () => ({ loading: false })
+		}
+	)
 );
 
-const withCreateClip = graphql(gql`${createClipMutation}`, {
-	props: ({ ownProps, mutate }) => {
-		const {
-			toggleShowDialog,
-			hideLoadingSpinner,
-			clipboardId,
-			formState: { content, name },
-		} = ownProps;
-		return {
-			submit: () =>
-				mutate({
-					variables: {
-						content,
-						name,
-						clipboardId,
-					},
-				})
-					.then(hideLoadingSpinner)
-					.then(toggleShowDialog),
-		};
-	},
-});
+const withCreateClip = graphql(
+	gql`
+		${createClipMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => {
+			const {
+				toggleShowDialog,
+				hideLoadingSpinner,
+				clipboardId,
+				formState: { content, name }
+			} = ownProps;
+			return {
+				submit: () =>
+					mutate({
+						variables: {
+							content,
+							name,
+							clipboardId,
+							user_id: localStorage.getItem('id')
+						}
+					})
+						.then(hideLoadingSpinner)
+						.then(toggleShowDialog)
+						.catch(() => {
+							// TODO: add something to indicate it fail to create
+							hideLoadingSpinner();
+						})
+			};
+		}
+	}
+);
 
 const enhancer = compose(withStyles(styles), recomposeEnhancer, withCreateClip);
 

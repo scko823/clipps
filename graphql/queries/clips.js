@@ -14,4 +14,4 @@ query getClips($clipboardName: String!) {
     id
   }
 }
-`
+`;
