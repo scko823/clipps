@@ -9,9 +9,14 @@ query getClips($clipboardName: String!) {
     id
     name
     content
+    createdAt
+    owner {
+        firstName
+        lastName
+    }
   }
   Clipboard(name: $clipboardName){
     id
   }
 }
-`
+`;

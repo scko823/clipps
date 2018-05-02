@@ -12,7 +12,11 @@ import { withStyles } from 'material-ui/styles';
 // react hightlight
 import HighLight from 'react-highlight';
 
+// recompose
 import { compose, mapProps } from 'recompose';
+
+// date-fns
+import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 export const snippetStyles = {
 	root: {
@@ -24,7 +28,7 @@ export const snippetStyles = {
 		'@media (max-width: 600px) and (min-width: 300px)': {
 			width: '95%',
 			marginLeft: '2.5%',
-			marginRight: '2.5%',
+			marginRight: '2.5%'
 		},
 		'& .code': {
 			textAlign: 'left'
@@ -34,20 +38,30 @@ export const snippetStyles = {
 		display: 'flex',
 		justifyContent: 'space-between',
 		padding: '9.5px 3px',
-		textOverflow: 'ellipsis',
+		textOverflow: 'ellipsis'
 	},
 	icon: {
 		color: '#27bc9c',
 		'&:hover': {
-			cursor: 'pointer',
-		},
-	},
+			cursor: 'pointer'
+		}
+	}
 };
 
 const stlyes = () => snippetStyles;
 
 export const Snippet = (props: SnippetPropType) => {
-	const { clip: { name, content }, classes, copyContent, clipboardName } = props;
+	const {
+		clip: {
+			name = '',
+			content = '',
+			createdAt = '',
+			owner: { firstName = '', lastName = '' } = {}
+		},
+		classes,
+		copyContent,
+		clipboardName
+	} = props;
 	return (
   <Paper className={classes.root} zdepth={3}>
     <div className={classes.subheader}>
@@ -57,6 +71,12 @@ export const Snippet = (props: SnippetPropType) => {
       <ContentCopy onClick={copyContent} tooltip="Copy" className={classes.icon} />
     </div>
     <HighLight className="code">{content}</HighLight>
+    <Typography align="left" component="h3">
+      {firstName && lastName && <div>By: {`${firstName} ${lastName}`}</div>}
+      {createdAt && (
+      <div>created {`${distanceInWordsToNow(createdAt, { addSuffix: true })}`}</div>
+				)}
+    </Typography>
   </Paper>
 	);
 };
@@ -64,10 +84,15 @@ export const Snippet = (props: SnippetPropType) => {
 Snippet.propTypes = {
 	clip: PropTypes.shape({
 		content: PropTypes.string.isRequired,
+		name: PropTypes.string.isRequired,
+		owner: PropTypes.shape({
+			firstName: PropTypes.string.isRequired,
+			lastName: PropTypes.string.isRequired
+		}).isRequired
 	}).isRequired,
 	classes: PropTypes.object.isRequired,
 	copyContent: PropTypes.func.isRequired,
-	clipboardName: PropTypes.string.isRequired,
+	clipboardName: PropTypes.string.isRequired
 };
 
 const recomposeEnhancer = compose(
@@ -83,8 +108,8 @@ const recomposeEnhancer = compose(
 			text.select();
 			document.execCommand('Copy');
 			text.remove();
-		},
-	})),
+		}
+	}))
 );
 
 export const withCopyEnhancer = recomposeEnhancer;

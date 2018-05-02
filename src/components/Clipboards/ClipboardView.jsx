@@ -64,7 +64,7 @@ ClipboardView.defaultProps = {
 	clipboardId: ''
 };
 
-const withclipsQuery = graphql(
+const withClipQuery = graphql(
 	gql`
 		${clipsQuery}
 	`,
@@ -140,6 +140,6 @@ const recomposeEnhancer = compose(
 	toClass
 );
 
-const enhancer = compose(withclipsQuery, recomposeEnhancer);
+const enhancer = compose(withClipQuery, recomposeEnhancer);
 
 export default enhancer(ClipboardView);

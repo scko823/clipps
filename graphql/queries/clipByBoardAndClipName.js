@@ -9,5 +9,10 @@ export default `query getClip($clipboardName: String!, $clipName: String!){
   }){
     content
     name
+    createdAt
+    owner {
+        lastName
+        firstName
+    }
   }
-}`
+}`;

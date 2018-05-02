@@ -80,22 +80,22 @@ const LoginForm = ({
 							Login
             </Button>
             {attempedLogin &&
-							validationRequired && (
-								<span>
-									You must <Link to={`/validate-email?email=${email}`}>validate</Link>{' '}
-									your email before login{' '}
-								</span>
-							)}
+                validationRequired && (
+                <span>
+                    You must <Link to={`/validate-email?email=${email}`}>validate</Link>{' '}
+                    your email before login{' '}
+                </span>
+                )}
             {attempedLogin && loginError && <span>Login Fail</span>}
             <Button
               variant="raised"
               label="Forget Password"
               className={classes['forget-pw']}
               onClick={() => {
-								history.push('/forget-password');
-							}}
+                history.push('/forget-password');
+                }}
             >
-							Forget Password
+                Forget Password
             </Button>
           </FormGroup>
         </Grid>
