@@ -10,6 +10,11 @@ export default `subscription subscribeClipUpdate($clipboardId: ID!) {
       content
       id
       name
+      createdAt
+      owner {
+          firstName
+          lastName
+      }
     }
     updatedFields
     previousValues {

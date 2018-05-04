@@ -76,11 +76,12 @@ const AddClipDialog = ({
           rows="4"
         />
         <DialogActions>
-          <Button onClick={toggleShowDialog} color="accent">
+          <Button onClick={toggleShowDialog} color="secondary">
 							Cancel
           </Button>
           <div className={classes.progressWrapper}>
             <Button
+              variant="raised"
               disabled={!name || !content || loading}
               onClick={submitHandle}
               color="primary"
