@@ -11,7 +11,8 @@ type SnippetPropType = {
 	classes: {
 		root: cssInJS,
 		subheader: cssInJS,
-		icon: cssInJS
+		icon: cssInJS,
+		metaData: cssInJS
 	},
 	copyContent: (e: SyntheticMouseEvent<*>) => void,
 	clipboardName: string
