@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// material-ui
+import Grid from 'material-ui/Grid';
+import { withStyles } from 'material-ui';
 // recompose
 import { compose, withStateHandlers, lifecycle, toClass } from 'recompose';
 
@@ -14,6 +17,12 @@ import SnippetCard from '../Clips/Snippet';
 import FAB from './FAB';
 import AddClipDialog from './AddClipDialog';
 
+const styles = () => ({
+	'clip-container': {
+		display: 'flex',
+		'flex-direction': 'row'
+	}
+});
 const ClipboardView = ({
 	match: {
 		params: { clipboardName }
@@ -22,7 +31,8 @@ const ClipboardView = ({
 	loading,
 	toggleAddClipDialog,
 	showAddClipDialog,
-	clipboardId
+	clipboardId,
+	classes
 }) => {
 	if (loading) {
 		return <h4>loading!!!</h4>;
@@ -35,9 +45,11 @@ const ClipboardView = ({
       toggleShowDialog={toggleAddClipDialog}
       showDialog={showAddClipDialog}
     />
-    {clips.map(clip => (
-      <SnippetCard clipboardName={clipboardName} key={clip.id} clip={clip} />
-			))}
+    <Grid className={classes['clip-container']}>
+      {clips.map(clip => (
+        <SnippetCard clipboardName={clipboardName} key={clip.id} clip={clip} />
+				))}
+    </Grid>
     <br />
     <FAB onClick={toggleAddClipDialog} />
   </div>
@@ -55,7 +67,8 @@ ClipboardView.propTypes = {
 	clips: PropTypes.object.isRequired,
 	loading: PropTypes.bool,
 	showAddClipDialog: PropTypes.bool,
-	clipboardId: PropTypes.string
+	clipboardId: PropTypes.string,
+	classes: PropTypes.object.isRequired
 };
 
 ClipboardView.defaultProps = {
@@ -140,6 +153,6 @@ const recomposeEnhancer = compose(
 	toClass
 );
 
-const enhancer = compose(withClipQuery, recomposeEnhancer);
+const enhancer = compose(withStyles(styles), withClipQuery, recomposeEnhancer);
 
 export default enhancer(ClipboardView);

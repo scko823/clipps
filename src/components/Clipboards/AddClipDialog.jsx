@@ -52,7 +52,7 @@ const AddClipDialog = ({
 		submit();
 	};
 	return (
-  <Dialog onRequestClose={toggleShowDialog} open={showDialog} fullWidth>
+  <Dialog onClose={toggleShowDialog} open={showDialog} fullWidth>
     <DialogTitle>New Clip</DialogTitle>
     <DialogContent>
       <DialogContentText>Add a new clip to {clipboardName}</DialogContentText>
