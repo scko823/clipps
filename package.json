@@ -5,9 +5,12 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "npm run dev:start",
-		"dev:start": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
+		"dev:start":
+			"NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
 		"build": "NODE_ENV=production webpack --config webpack.config.prod.babel.js --progress",
-		"prebuild": "echo \"getting ready to build\" && rm -rf dist/",
+		"copy-styles": "cp -r node_modules/highlight.js/styles dist",
+		"prebuild":
+			"echo \"getting ready to build\" && rm -rf dist/ && mkdir -p dist/styles && npm run copy-styles",
 		"test": "echo \"Error: no test specified\" && exit 0",
 		"precommit": "npm run lint && npm run flow",
 		"prepush": "npm test",
@@ -94,6 +97,7 @@
 		"react": "^16.3.2",
 		"react-apollo": "^2.1.3",
 		"react-dom": "^16.3.2",
+		"react-helmet": "^5.2.0",
 		"react-highlight": "0.12.0",
 		"react-router": "^4.2.0",
 		"react-router-dom": "^4.2.2",
