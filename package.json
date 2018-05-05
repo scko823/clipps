@@ -5,12 +5,10 @@
 	"main": "index.js",
 	"scripts": {
 		"start": "npm run dev:start",
-		"dev:start":
-			"NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
+		"dev:start": "NODE_ENV=development webpack-dev-server --config webpack.config.dev.babel.js --progress",
 		"build": "NODE_ENV=production webpack --config webpack.config.prod.babel.js --progress",
 		"copy-styles": "cp -r node_modules/highlight.js/styles dist",
-		"prebuild":
-			"echo \"getting ready to build\" && rm -rf dist/ && mkdir -p dist/styles && npm run copy-styles",
+		"prebuild": "echo \"getting ready to build\" && rm -rf dist/ && mkdir -p dist/styles && npm run copy-styles",
 		"test": "echo \"Error: no test specified\" && exit 0",
 		"precommit": "npm run lint && npm run flow",
 		"prepush": "npm test",
@@ -28,6 +26,7 @@
 	},
 	"homepage": "https://github.com/scko823/clipps",
 	"devDependencies": {
+		"@material-ui/codemod": "^1.0.0-beta.41",
 		"babel-core": "^6.25.0",
 		"babel-eslint": "^8.2.3",
 		"babel-loader": "^7.1.4",
@@ -70,6 +69,7 @@
 		"webpack-merge": "^4.1.2"
 	},
 	"dependencies": {
+		"@material-ui/icons": "^1.0.0-beta.43",
 		"@types/bcryptjs": "^2.4.1",
 		"@types/validator": "^6.3.0",
 		"apollo-cache-inmemory": "^1.1.12",

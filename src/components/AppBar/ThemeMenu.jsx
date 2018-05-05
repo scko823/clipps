@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Button from 'material-ui/Button';
 import Menu, { MenuItem } from 'material-ui/Menu';
+import Done from '@material-ui/icons/done';
 
 import themes from './themes';
 import HighlightThemeContext from '../contexts/HighlightThemeContext';

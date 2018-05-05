@@ -10,9 +10,9 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
-import DataUsageIcon from 'material-ui-icons/DataUsage';
-import CachedIcon from 'material-ui-icons/Cached';
-import AddIcon from 'material-ui-icons/Add';
+import DataUsageIcon from '@material-ui/icons/DataUsage';
+import CachedIcon from '@material-ui/icons/Cached';
+import AddIcon from '@material-ui/icons/Add';
 
 // recompose
 import { compose, withStateHandlers, withProps } from 'recompose';

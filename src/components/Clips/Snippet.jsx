@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 // material-ui
 import Paper from 'material-ui/Paper';
-import ContentCopy from 'material-ui-icons/ContentCopy';
+import ContentCopy from '@material-ui/icons/ContentCopy';
 import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles';
