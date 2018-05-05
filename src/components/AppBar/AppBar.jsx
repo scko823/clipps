@@ -88,7 +88,7 @@ const ClipboardAppBar = ({
 									)
 								}
               </AuthContext.Consumer>
-              <ASAPButton disabled={!isLogin} nowBoardId={nowBoardId} />
+              {isLogin && <ASAPButton disabled={!isLogin} nowBoardId={nowBoardId} />}
             </Toolbar>
           </MUIAppBar>
           <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
