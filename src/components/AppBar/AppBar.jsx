@@ -25,6 +25,7 @@ import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
 import LoginButton from './LoginButton';
 import UserAvatar from './UserAvatar';
+import HighlightTheme from './HighlightTheme';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
@@ -111,6 +112,7 @@ const ClipboardAppBar = ({
         </Switch>
       </div>
     </Router>
+    <HighlightTheme />
   </AuthContext.Provider>
 );
 
