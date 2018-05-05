@@ -1,49 +1,43 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import Button from 'material-ui/Button';
 import Menu, { MenuItem } from 'material-ui/Menu';
 
 import themes from './themes';
+import HighlightThemeContext from '../contexts/HighlightThemeContext';
 
-class SimpleMenu extends React.Component {
-	state = {
-		anchorEl: null
-	};
-
-	handleClick = event => {
-		this.setState({ anchorEl: event.currentTarget });
-	};
-
-	handleClose = () => {
-		this.setState({ anchorEl: null });
-	};
-
-	render() {
-		const { anchorEl } = this.state;
-
-		return (
+const ThemeMenu = ({ themeAnchorEl, onThemeMenuToggle }) => (
   <div>
     <Button
-      aria-owns={anchorEl ? 'simple-menu' : null}
+      aria-owns={themeAnchorEl ? 'simple-menu' : null}
       aria-haspopup="true"
-      onClick={this.handleClick}
+      onClick={onThemeMenuToggle}
     >
-					Open Menu
+			Open Menu
     </Button>
     <Menu
-      id="simple-menu"
-      anchorEl={anchorEl}
-      open={Boolean(anchorEl)}
-      onClose={this.handleClose}
+      id="theme-menu"
+      anchorEl={themeAnchorEl}
+      open={Boolean(themeAnchorEl)}
+      onClose={onThemeMenuToggle}
     >
       {themes.map(theme => (
-        <MenuItem onClick={this.handleClose}>{theme.replace('.css', '')}</MenuItem>
-					))}
+        <HighlightThemeContext.Consumer>
+          {({ onChangeTheme }) => (
+            <MenuItem id={`theme-${theme}`} onClick={onChangeTheme}>
+              {theme}
+            </MenuItem>
+					)}
+        </HighlightThemeContext.Consumer>
+			))}
     </Menu>
   </div>
-		);
-	}
-}
+);
 
-export default SimpleMenu;
+ThemeMenu.propTypes = {
+	themeAnchorEl: PropTypes.node.isRequired,
+	onThemeMenuToggle: PropTypes.func.isRequired
+};
+
+export default ThemeMenu;

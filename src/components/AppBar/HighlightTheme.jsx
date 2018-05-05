@@ -16,6 +16,6 @@ ThemeHelmet.propTypes = {
 
 export default () => (
   <HighlightThemeContext.Consumer>
-    {theme => <ThemeHelmet theme={theme} />}
+    {({ theme }) => <ThemeHelmet theme={theme} />}
   </HighlightThemeContext.Consumer>
 );

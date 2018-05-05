@@ -15,7 +15,7 @@ import CachedIcon from 'material-ui-icons/Cached';
 import AddIcon from 'material-ui-icons/Add';
 
 // recompose
-import { compose, withProps } from 'recompose';
+import { compose, withStateHandlers, withProps } from 'recompose';
 
 // GraphQL
 import { graphql } from 'react-apollo';
@@ -66,7 +66,9 @@ const DrawerList = ({
 	classes,
 	toggleDrawer,
 	pushRoute,
-	nowBoardId
+	nowBoardId,
+	onThemeMenuToggle,
+	themeAnchorEl
 }) => {
 	let listItems = <DataUsageIcon />;
 	const subheader = (
@@ -108,8 +110,8 @@ const DrawerList = ({
   <List className={classes.root} subheader={subheader}>
     <Divider />
     {listItems}
-    <ListItem button className={classes.lastItem}>
-      <ThemeMenu />
+    <ListItem button className={classes.lastItem} onClick={onThemeMenuToggle}>
+      <ThemeMenu themeAnchorEl={themeAnchorEl} />
     </ListItem>
   </List>
 	);
@@ -122,7 +124,9 @@ DrawerList.propTypes = {
 	refetch: PropTypes.func.isRequired,
 	toggleDrawer: PropTypes.func.isRequired,
 	pushRoute: PropTypes.func.isRequired,
-	nowBoardId: PropTypes.string.isRequired
+	nowBoardId: PropTypes.string.isRequired,
+	onThemeMenuToggle: PropTypes.func.isRequired,
+	themeAnchorEl: PropTypes.node.isRequired
 };
 
 DrawerList.defaultProps = {
@@ -143,7 +147,19 @@ const withupdateClipboardMutation = graphql(
 	`
 );
 
-const recomposeEnhancer = compose(withProps(({ history }) => ({ pushRoute: history.push })));
+const recomposeEnhancer = compose(
+	withStateHandlers(
+		({ themeAnchorEl = null }) => ({
+			themeAnchorEl
+		}),
+		{
+			onThemeMenuToggle: ({ themeAnchorEl }) => ({ target }) => ({
+				themeAnchorEl: themeAnchorEl ? null : target
+			})
+		}
+	),
+	withProps(({ history }) => ({ pushRoute: history.push }))
+);
 
 const enchancer = compose(
 	withStyles(styles),
