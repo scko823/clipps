@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Button from 'material-ui/Button';
 import Menu, { MenuItem } from 'material-ui/Menu';
-import Done from '@material-ui/icons/done';
+import DoneIcon from '@material-ui/icons/Done';
 
 import themes from './themes';
 import HighlightThemeContext from '../contexts/HighlightThemeContext';
@@ -15,7 +15,7 @@ const ThemeMenu = ({ themeAnchorEl, onThemeMenuToggle }) => (
       aria-haspopup="true"
       onClick={onThemeMenuToggle}
     >
-			Open Menu
+			Change Theme
     </Button>
     <Menu
       id="theme-menu"
@@ -25,9 +25,9 @@ const ThemeMenu = ({ themeAnchorEl, onThemeMenuToggle }) => (
     >
       {themes.map(theme => (
         <HighlightThemeContext.Consumer>
-          {({ onChangeTheme }) => (
+          {({ onChangeTheme, theme: currentTheme }) => (
             <MenuItem id={`theme-${theme}`} onClick={onChangeTheme}>
-              {theme}
+              {theme} {currentTheme === theme && <DoneIcon />}
             </MenuItem>
 					)}
         </HighlightThemeContext.Consumer>
