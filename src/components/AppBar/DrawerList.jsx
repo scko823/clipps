@@ -1,47 +1,53 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { Link } from 'react-router-dom'
-import { withRouter } from 'react-router'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 // material-ui components
-import Divider from 'material-ui/Divider'
-import ListSubheader from 'material-ui/List/ListSubheader'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import { CircularProgress } from 'material-ui/Progress'
-import { withStyles } from 'material-ui/styles'
-import Typography from 'material-ui/Typography'
-import DataUsageIcon from 'material-ui-icons/DataUsage'
-import CachedIcon from 'material-ui-icons/Cached'
-import AddIcon from 'material-ui-icons/Add'
+import Divider from 'material-ui/Divider';
+import ListSubheader from 'material-ui/List/ListSubheader';
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
+import { CircularProgress } from 'material-ui/Progress';
+import { withStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
+import DataUsageIcon from '@material-ui/icons/DataUsage';
+import CachedIcon from '@material-ui/icons/Cached';
+import AddIcon from '@material-ui/icons/Add';
 
 // recompose
-import { compose, withProps } from 'recompose'
+import { compose, withStateHandlers, withProps } from 'recompose';
 
 // GraphQL
-import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
-import updateClipboardMutation from '../../../graphql/mutations/updateClipboard'
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import updateClipboardMutation from '../../../graphql/mutations/updateClipboard';
+
+import ThemeMenu from './ThemeMenu';
 
 const styles = theme => ({
 	root: {
 		width: '100%',
 		maxWidth: 360,
 		minWidth: 200,
-		background: theme.palette.background.paper,
+		background: theme.palette.background.paper
 	},
 	subheader: {
-		padding: '0 0',
+		padding: '0 0'
 	},
 	icon: {
 		margin: '0 auto',
 		'&:hover': {
-			cursor: 'pointer',
-		},
+			cursor: 'pointer'
+		}
 	},
 	nested: {
-		paddingLeft: theme.spacing.unit * 4,
+		paddingLeft: theme.spacing.unit * 4
 	},
-})
+	lastItem: {
+		position: 'fixed',
+		bottom: 0
+	}
+});
 
 /**
  *
@@ -61,8 +67,10 @@ const DrawerList = ({
 	toggleDrawer,
 	pushRoute,
 	nowBoardId,
+	onThemeMenuToggle,
+	themeAnchorEl
 }) => {
-	let listItems = <DataUsageIcon />
+	let listItems = <DataUsageIcon />;
 	const subheader = (
   <ListSubheader className={classes.subheader}>
     <List>
@@ -71,48 +79,43 @@ const DrawerList = ({
         <ListItemIcon
           className={classes.icon}
           onClick={() => {
-							toggleDrawer()
-							pushRoute('/add')
+							toggleDrawer();
+							pushRoute('/add');
 						}}
         >
           <AddIcon />
         </ListItemIcon>
-        <ListItemIcon
-          className={classes.icon}
-          onClick={() => refetch()}
-        >
+        <ListItemIcon className={classes.icon} onClick={() => refetch()}>
           {loading ? <CircularProgress /> : <CachedIcon />}
         </ListItemIcon>
       </ListItem>
     </List>
   </ListSubheader>
-	)
+	);
 	if (!loading && clipboards) {
-		const NowBoard = clipboards.find(
-			clipboard => clipboard.name === 'NOW',
-		) || { id: nowBoardId, name: 'NOW' }
-		const restOfTheBoards = clipboards.filter(
-			clipboard => clipboard.name !== 'NOW',
-		)
+		const NowBoard = clipboards.find(clipboard => clipboard.name === 'NOW') || {
+			id: nowBoardId,
+			name: 'NOW'
+		};
+		const restOfTheBoards = clipboards.filter(clipboard => clipboard.name !== 'NOW');
 		listItems = [NowBoard, ...restOfTheBoards].map(clipboard => (
-  <Link
-    onClick={toggleDrawer}
-    key={clipboard.id}
-    to={`/boards/${clipboard.name}`}
-  >
+  <Link onClick={toggleDrawer} key={clipboard.id} to={`/boards/${clipboard.name}`}>
     <ListItem key={clipboard.id} button>
       <ListItemText primary={clipboard.name} />
     </ListItem>
   </Link>
-		))
+		));
 	}
 	return (
   <List className={classes.root} subheader={subheader}>
     <Divider />
     {listItems}
+    <ListItem button className={classes.lastItem} onClick={onThemeMenuToggle}>
+      <ThemeMenu themeAnchorEl={themeAnchorEl} />
+    </ListItem>
   </List>
-	)
-}
+	);
+};
 
 DrawerList.propTypes = {
 	clipboards: PropTypes.arrayOf(PropTypes.object),
@@ -122,7 +125,9 @@ DrawerList.propTypes = {
 	toggleDrawer: PropTypes.func.isRequired,
 	pushRoute: PropTypes.func.isRequired,
 	nowBoardId: PropTypes.string.isRequired,
-}
+	onThemeMenuToggle: PropTypes.func.isRequired,
+	themeAnchorEl: PropTypes.node.isRequired
+};
 
 DrawerList.defaultProps = {
 	clipboards: [],
@@ -131,22 +136,36 @@ DrawerList.defaultProps = {
 			width: '100%',
 			maxWidth: 360,
 			minWidth: 200,
-			background: 'white',
-		},
-	},
-}
+			background: 'white'
+		}
+	}
+};
 
-const withupdateClipboardMutation = graphql(gql`${updateClipboardMutation}`)
+const withupdateClipboardMutation = graphql(
+	gql`
+		${updateClipboardMutation}
+	`
+);
 
 const recomposeEnhancer = compose(
-	withProps(({ history }) => ({ pushRoute: history.push })),
-)
+	withStateHandlers(
+		({ themeAnchorEl = null }) => ({
+			themeAnchorEl
+		}),
+		{
+			onThemeMenuToggle: ({ themeAnchorEl }) => ({ target }) => ({
+				themeAnchorEl: themeAnchorEl ? null : target
+			})
+		}
+	),
+	withProps(({ history }) => ({ pushRoute: history.push }))
+);
 
 const enchancer = compose(
 	withStyles(styles),
 	withupdateClipboardMutation,
 	withRouter,
-	recomposeEnhancer,
-)
+	recomposeEnhancer
+);
 
-export default enchancer(DrawerList)
+export default enchancer(DrawerList);

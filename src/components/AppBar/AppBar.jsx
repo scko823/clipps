@@ -7,7 +7,7 @@ import MUIAppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
-import MenuIcon from 'material-ui-icons/Menu';
+import MenuIcon from '@material-ui/icons/Menu';
 import Drawer from 'material-ui/Drawer';
 
 // recompose
@@ -25,6 +25,7 @@ import DrawerList from './DrawerList';
 import ASAPButton from './ASAPButton';
 import LoginButton from './LoginButton';
 import UserAvatar from './UserAvatar';
+import HighlightTheme from './HighlightTheme';
 import AddClipboard from '../AddClipboard';
 import ClipboardView from '../Clipboards/ClipboardView';
 import ClipView from '../Clips/ClipView';
@@ -39,6 +40,7 @@ import PrivateRoute from '../Auth/PrivateRoute';
 
 // contexts
 import AuthContext from '../contexts/AuthContext';
+import HighlightThemeContext from '../contexts/HighlightThemeContext';
 
 /**
  *
@@ -58,59 +60,68 @@ const ClipboardAppBar = ({
 	toggleDrawer,
 	nowBoardId,
 	isLogin,
+    theme,
+    onChangeTheme,
 	onLogin,
 	onLogout
 }) => (
   <AuthContext.Provider value={isLogin}>
-    <Router>
-      <div id="clipboard">
-        <MUIAppBar position="static">
-          <Toolbar>
-            <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
-              <MenuIcon />
-            </IconButton>
-            <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
-							ClipBoards
-            </Typography>
-            <AuthContext.Consumer>
-              {value =>
-								value ? (
-									React.createElement(UserAvatar, {
-										onLogout
-									})
-								) : (
+    <HighlightThemeContext.Provider value={{onChangeTheme, theme}}>
+      <Router>
+        <div id="clipboard">
+          <MUIAppBar position="static">
+            <Toolbar>
+              <IconButton onClick={toggleDrawer} color="inherit" aria-label="Menu">
+                <MenuIcon />
+              </IconButton>
+              <Typography type="title" color="inherit" style={{ flexGrow: 1 }}>
+								ClipBoards
+              </Typography>
+              <AuthContext.Consumer>
+                {value =>
+									value ? (
+										React.createElement(UserAvatar, {
+											onLogout
+										})
+									) : (
   <LoginButton />
-								)
-							}
-            </AuthContext.Consumer>
-            <ASAPButton disabled={!isLogin} nowBoardId={nowBoardId} />
-          </Toolbar>
-        </MUIAppBar>
-        <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
-          <DrawerList
-            nowBoardId={nowBoardId}
-            loading={loadingClipboards}
-            clipboards={clipboards}
-            refetch={refetchClipboard}
-            toggleDrawer={toggleDrawer}
-          />
-        </Drawer>
-        <Switch>
-          <Redirect exact from="/" to="/boards/NOW" />
-          <Route path="/signup" component={SignUp} />
-          <Route
-            path="/login"
-            render={props => <Login {...props} onLoginSuccess={onLogin} />}
-          />
-          <Route path="/validate-email" component={ValidateEmail} />
-          <Route path="/forget-password" component={ForgetPassword} />
-          <Route path="/reset-password/:token?" component={ResetPassword} />
-          <PrivateRoute exact path="/add" component={AddClipboard} />
-          <PrivateRoute exact path="/boards/:clipboardName" component={ClipboardView} />
-          <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
-        </Switch>
-      </div>
-    </Router>
+									)
+								}
+              </AuthContext.Consumer>
+              {isLogin && <ASAPButton disabled={!isLogin} nowBoardId={nowBoardId} />}
+            </Toolbar>
+          </MUIAppBar>
+          <Drawer open={showDrawer} onClose={toggleDrawer} className="drawer">
+            <DrawerList
+              nowBoardId={nowBoardId}
+              loading={loadingClipboards}
+              clipboards={clipboards}
+              refetch={refetchClipboard}
+              toggleDrawer={toggleDrawer}
+            />
+          </Drawer>
+          <Switch>
+            <Redirect exact from="/" to="/boards/NOW" />
+            <Route path="/signup" component={SignUp} />
+            <Route
+              path="/login"
+              render={props => <Login {...props} onLoginSuccess={onLogin} />}
+            />
+            <Route path="/validate-email" component={ValidateEmail} />
+            <Route path="/forget-password" component={ForgetPassword} />
+            <Route path="/reset-password/:token?" component={ResetPassword} />
+            <PrivateRoute exact path="/add" component={AddClipboard} />
+            <PrivateRoute
+              exact
+              path="/boards/:clipboardName"
+              component={ClipboardView}
+            />
+            <PrivateRoute exact path="/:clipboardName/:clipName" component={ClipView} />
+          </Switch>
+        </div>
+      </Router>
+      <HighlightTheme />
+    </HighlightThemeContext.Provider>
   </AuthContext.Provider>
 );
 
@@ -128,7 +139,9 @@ ClipboardAppBar.propTypes = {
 	toggleDrawer: PropTypes.func.isRequired,
 	isLogin: PropTypes.bool.isRequired,
 	onLogout: PropTypes.func.isRequired,
-	onLogin: PropTypes.func.isRequired
+	onLogin: PropTypes.func.isRequired,
+	onChangeTheme: PropTypes.func.isRequired,
+	theme: PropTypes.string.isRequired
 };
 
 ClipboardAppBar.defaultProps = {
@@ -170,18 +183,29 @@ const withCreateNowClipboardMutation = graphql(
 const recomposeEnhancer = compose(
 	// make component "stateful" to toggle the drawer
 	withStateHandlers(
-		({ initShowDrawer = false, nowBoardId = '1', isLogin = false }) => ({
-			showDrawer: initShowDrawer,
-			nowBoardId,
-			isLogin
-		}),
+		({ initShowDrawer = false, nowBoardId = '1', isLogin = false }) => {
+			const theme = localStorage.getItem('theme') || 'solarized-dark';
+			return {
+				showDrawer: initShowDrawer,
+				nowBoardId,
+				isLogin,
+				theme
+			};
+		},
 		{
 			toggleDrawer: ({ showDrawer }) => () => ({
 				showDrawer: !showDrawer
 			}),
 			setNowBoardId: () => id => ({ nowBoardId: id }),
 			onLogout: () => () => ({ isLogin: false }),
-			onLogin: () => () => ({ isLogin: true })
+            onLogin: () => () => ({ isLogin: true }),
+            onChangeTheme: () => (event) => {
+                const newTheme = event.target.id.replace('theme-', '');
+                localStorage.setItem('theme', newTheme);
+                return {
+                    theme: newTheme
+                }
+            }
 		}
 	),
 	lifecycle({

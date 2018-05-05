@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add';
+import AddIcon from '@material-ui/icons/Add';
 import { withStyles } from 'material-ui/styles';
 
 const style = () => ({

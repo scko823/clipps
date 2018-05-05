@@ -9,7 +9,7 @@ import Typography from 'material-ui/Typography';
 import { CircularProgress } from 'material-ui/Progress';
 import Popover from 'material-ui/Popover';
 import { withStyles } from 'material-ui/styles';
-import SendIcon from 'material-ui-icons/Send';
+import SendIcon from '@material-ui/icons/Send';
 
 import { compose, withStateHandlers, withProps } from 'recompose';
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { withRouter } from 'react-router';
 import IconButton from 'material-ui/IconButton';
-import PersonPin from 'material-ui-icons/PersonPin';
+import PersonPin from '@material-ui/icons/PersonPin';
 import { compose, withProps } from 'recompose';
 
 const styles = () => ({
