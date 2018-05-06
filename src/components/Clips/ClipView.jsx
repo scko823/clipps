@@ -6,6 +6,7 @@ import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import clipByBoardAndClipNameQuery from '../../../graphql/queries/clipByBoardAndClipName';
+import getCommentsByBoardAndClipNameQuery from '../../../graphql/queries/getCommentsByBoardAndClipName';
 
 import { withCopyEnhancer, Snippet, styles as snippetStyles } from './Snippet';
 
@@ -17,18 +18,20 @@ const clipViewStyles = theme => ({
 	}
 });
 
+const extractVariablesFromRoutes = ({
+	match: {
+		params: { clipboardName, clipName }
+	}
+}) => ({
+	variables: { clipboardName, clipName }
+});
+
 const withClipQuery = graphql(
 	gql`
 		${clipByBoardAndClipNameQuery}
 	`,
 	{
-		options: ({
-			match: {
-				params: { clipboardName, clipName }
-			}
-		}) => ({
-			variables: { clipboardName, clipName }
-		}),
+		options: extractVariablesFromRoutes,
 		props: ({
 			ownProps,
 			data: { loading, allClips = [{ name: '', content: '' }], refetch }
@@ -42,4 +45,31 @@ const withClipQuery = graphql(
 	}
 );
 
-export default compose(withStyles(clipViewStyles), withCopyEnhancer, withClipQuery)(Snippet);
+const withCommentsQuery = graphql(
+	gql`
+		${getCommentsByBoardAndClipNameQuery}
+	`,
+	{
+		options: ({
+			match: {
+				params: { clipboardName, clipName }
+			}
+		}) => ({
+			variables: { clipboardName, clipName, pageSize: 10, skip: 0 }
+		}),
+		props: ({ ownProps, data: { loading, allComments, fetchMore } }) => ({
+			...ownProps,
+			commentLoading: loading,
+			allComments,
+			fetchMoreComments: fetchMore
+			// subscribeToMore
+		})
+	}
+);
+
+export default compose(
+	withStyles(clipViewStyles),
+	withCopyEnhancer,
+	withClipQuery,
+	withCommentsQuery
+)(Snippet);

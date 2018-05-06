@@ -14,5 +14,5 @@ export default `query getClip($clipboardName: String!, $clipName: String!){
         lastName
         firstName
     }
-  }
+}
 }`;
