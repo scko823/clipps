@@ -1,4 +1,6 @@
 // @flow
+import React from 'react';
+import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { compose } from 'recompose';
 
@@ -9,6 +11,7 @@ import clipByBoardAndClipNameQuery from '../../../graphql/queries/clipByBoardAnd
 import getCommentsByBoardAndClipNameQuery from '../../../graphql/queries/getCommentsByBoardAndClipName';
 
 import { withCopyEnhancer, Snippet, styles as snippetStyles } from './Snippet';
+import ClipComments from './ClipComments';
 
 const clipViewStyles = theme => ({
 	...snippetStyles(theme),
@@ -67,9 +70,33 @@ const withCommentsQuery = graphql(
 	}
 );
 
+const snippetPropsSelector = ({ clip, classes, copyContent, clipboardName }) => ({
+	clip,
+	classes,
+	copyContent,
+	clipboardName
+});
+
+const clipCommentsPropsSelector = ({ allComments, clip }) => ({ allComments, clip });
+
+const ClipView = props => {
+	const snippetProps = snippetPropsSelector(props);
+	const ClipCommentsProps = clipCommentsPropsSelector(props);
+	return (
+  <div className={props.classes.root}>
+    <Snippet {...snippetProps} />
+    <ClipComments {...ClipCommentsProps} />
+  </div>
+	);
+};
+
+ClipView.propTypes = {
+	classes: PropTypes.object.isRequired
+};
+
 export default compose(
 	withStyles(clipViewStyles),
 	withCopyEnhancer,
 	withClipQuery,
 	withCommentsQuery
-)(Snippet);
+)(ClipView);

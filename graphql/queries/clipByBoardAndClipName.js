@@ -7,6 +7,7 @@ export default `query getClip($clipboardName: String!, $clipName: String!){
       name: $clipboardName,
     }
   }){
+    id
     content
     name
     createdAt
