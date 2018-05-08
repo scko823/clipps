@@ -1,14 +1,21 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
+// recompose
+import { withStateHandlers, compose } from 'recompose';
+
 // material-ui
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
 
-// recompose
-import { withStateHandlers, compose } from 'recompose';
+// GraphQL
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import createCommentMutation from '../../../graphql/mutations/createComment';
+
+
 
 import { styles as progressStyles } from '../Clipboards/AddClipDialog';
 
@@ -75,4 +82,22 @@ const recomposeEnhancer = compose(
 		})
 	})
 );
-export default compose(recomposeEnhancer, withStyles(styles))(ClipComments);
+
+const withCreateCommentMutation = graphql(
+	gql`
+		${createCommentMutation}
+	`,
+	{
+		props: ({ ownProps, mutate }) => ({
+			...ownProps,
+			submitCommnet: () => {
+				const authorId = localStorage.getItem('id');
+				const { clip: { id: clipId } = {}, comment } = ownProps;
+				mutate({ variables: { clipId, content: comment, authorId } });
+			}
+		})
+	}
+);
+export default compose(withStyles(styles), recomposeEnhancer, withCreateCommentMutation)(
+	ClipComments
+);

@@ -84,8 +84,8 @@ const ClipView = props => {
 	const ClipCommentsProps = clipCommentsPropsSelector(props);
 	return (
   <div className={props.classes.root}>
-    <Snippet {...snippetProps} />
-    <ClipComments {...ClipCommentsProps} />
+    <Snippet key="snippet" {...snippetProps} />
+    <ClipComments key="clip-comments" {...ClipCommentsProps} />
   </div>
 	);
 };

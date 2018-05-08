@@ -13,6 +13,9 @@ query getCommentsByClip($clipName: String!, $clipboardName: String!, $pageSize: 
     createdAt
     updatedAt
     id
+    clip {
+        id
+    }
     author {
       id
       firstName
