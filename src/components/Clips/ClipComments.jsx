@@ -5,10 +5,12 @@ import PropTypes from 'prop-types';
 import { withStateHandlers, compose } from 'recompose';
 
 // material-ui
-import TextField from 'material-ui/TextField';
+// import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
 import { grey } from 'material-ui/colors';
+import Paper from 'material-ui/Paper';
+import Tabs, { Tab } from 'material-ui/Tabs';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
 
@@ -43,7 +45,7 @@ const styles = theme => ({
 });
 
 const ClipComments = ({
-	onCommentChange,
+	// onCommentChange,
 	allComments = [],
 	clip,
 	comment,
@@ -84,16 +86,28 @@ const ClipComments = ({
       <Grid container direction="row" wrap="wrap" justify="center">
         <Grid item xs={9}>
           <form noValidate autoComplete="off">
-            <TextField
-              multiline
-              fullWidth
-              margin="dense"
-              id="comment-content"
-              label="comments"
-              inputProps={{ type: 'textarea' }}
-              onChange={onCommentChange}
-              rows="3"
-            />
+            <Paper>
+              <Tabs
+                value={0}
+                indicatorColor="primary"
+                textColor="primary"
+                onChange={() => {}}
+              >
+                <Tab label="Comment" />
+                <Tab label="Preview" />
+              </Tabs>
+              {/* <TextField
+                multiline
+                fullWidth
+                margin="dense"
+                id="comment-content"
+                label="comments"
+                inputProps={{ type: 'textarea' }}
+                onChange={onCommentChange}
+                rows="3"
+              /> */}
+            </Paper>
+
             <div className={classes.progressWrapper}>
               <Button
                 variant="raised"
@@ -120,7 +134,7 @@ const ClipComments = ({
 ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
 	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
-	onCommentChange: PropTypes.func.isRequired,
+	// onCommentChange: PropTypes.func.isRequired,
 	comment: PropTypes.string.isRequired,
 	submitCommnet: PropTypes.func.isRequired,
 	classes: PropTypes.object.isRequired,
