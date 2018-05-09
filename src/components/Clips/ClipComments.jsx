@@ -27,10 +27,18 @@ const styles = theme => ({
 	comment: {
 		width: '70%',
 		margin: `${theme.spacing.unit * 2}px auto`,
-		border: `1px solid ${grey[500]}`
+		border: `1px solid ${grey[500]}`,
+		borderRadius: '3px'
+	},
+	'comment-markdown': {
+		'&:first-child': {
+			marginTop: '1rem'
+		}
 	},
 	'comments-metadata': {
-		backgroundColor: grey[200]
+		backgroundColor: grey[200],
+		margin: '0',
+		width: '100%'
 	}
 });
 
@@ -44,12 +52,11 @@ const ClipComments = ({
 	submitting
 }) => (
   <Fragment>
-    <pre>{JSON.stringify(allComments, null, 4)}</pre>
     <Grid container direction="column" wrap="wrap" justify="center">
       {allComments.map(c => (
         <Grid container direction="column" wrap="wrap" className={classes.comment}>
           {' '}
-          <ReactMarkdown className="comments" source={c.content} />
+          <ReactMarkdown className={classes['comment-markdown']} source={c.content} />
           <Grid
             container
             direction="row"
@@ -64,39 +71,48 @@ const ClipComments = ({
               ${distanceInWordsToNow(c.createdAt, {
 					addSuffix: true
 				})}`}{' '}
+              {c.createdAt !== c.updatedAt && (
+              <span style={{ color: grey[500] }}>(edited)</span>
+							)}
             </Grid>
           </Grid>
         </Grid>
 			))}
     </Grid>
 
-    <pre>{JSON.stringify(clip, null, 4)}</pre>
     {!clip || !clip.id ? null : (
-      <form noValidate autoComplete="off">
-        <TextField
-          multiline
-          fullWidth
-          margin="dense"
-          id="comment-content"
-          label="comments"
-          inputProps={{ type: 'textarea' }}
-          onChange={onCommentChange}
-          rows="3"
-        />
-        <div className={classes.progressWrapper}>
-          <Button
-            variant="raised"
-            disabled={!comment}
-            onClick={submitCommnet}
-            color="primary"
-          >
-						Submit Comment
-          </Button>
-          {submitting && (
-          <CircularProgress className={classes.progress} style={{ left: '50%' }} />
-					)}
-        </div>
-      </form>
+      <Grid container direction="row" wrap="wrap" justify="center">
+        <Grid item xs={9}>
+          <form noValidate autoComplete="off">
+            <TextField
+              multiline
+              fullWidth
+              margin="dense"
+              id="comment-content"
+              label="comments"
+              inputProps={{ type: 'textarea' }}
+              onChange={onCommentChange}
+              rows="3"
+            />
+            <div className={classes.progressWrapper}>
+              <Button
+                variant="raised"
+                disabled={!comment}
+                onClick={submitCommnet}
+                color="primary"
+              >
+								Submit Comment
+              </Button>
+              {submitting && (
+              <CircularProgress
+                className={classes.progress}
+                style={{ left: '50%' }}
+              />
+							)}
+            </div>
+          </form>
+        </Grid>
+      </Grid>
 		)}
   </Fragment>
 );
