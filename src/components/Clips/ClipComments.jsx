@@ -1,8 +1,12 @@
+import 'react-mde/lib/styles/css/react-mde-all.css';
+
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
+import cx from 'classnames';
+
 // recompose
-import { withStateHandlers, compose } from 'recompose';
+import { withStateHandlers, withProps, compose } from 'recompose';
 
 // material-ui
 // import TextField from 'material-ui/TextField';
@@ -14,7 +18,10 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import { CircularProgress } from 'material-ui/Progress';
 import { withStyles } from 'material-ui/styles';
 
+// editor and markdown preview
 import ReactMarkdown from 'react-markdown';
+import ReactMde, { ReactMdeTypes } from 'react-mde';
+import Showdown from 'showdown';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
 // GraphQL
@@ -33,22 +40,35 @@ const styles = theme => ({
 		borderRadius: '3px'
 	},
 	'comment-markdown': {
+		textAlign: 'left',
+		margin: `${theme.spacing.unit * 1}px`,
 		'&:first-child': {
 			marginTop: '1rem'
 		}
+    },
+    'comment-editor': {
+        textAlign: 'left',
+        margin: `${theme.spacing.unit * 2}px auto`
+    },
+	'comment-markdown-preview': {
+        minHeight: '200px',
+        margin: `${theme.spacing.unit * 1}px`,
 	},
 	'comments-metadata': {
 		backgroundColor: grey[200],
 		margin: '0',
 		width: '100%'
-	}
+	},
 });
 
 const ClipComments = ({
-	// onCommentChange,
+	onTabClick,
+	activeTab,
 	allComments = [],
 	clip,
-	comment,
+	mdeState,
+	onMdeChange,
+	converter,
 	submitCommnet,
 	classes,
 	submitting
@@ -88,34 +108,44 @@ const ClipComments = ({
           <form noValidate autoComplete="off">
             <Paper>
               <Tabs
-                value={0}
+                value={activeTab}
                 indicatorColor="primary"
                 textColor="primary"
-                onChange={() => {}}
+                onChange={onTabClick}
               >
-                <Tab label="Comment" />
-                <Tab label="Preview" />
+                <Tab label="Comment" value="comment" />
+                <Tab label="Preview" value="preview" />
               </Tabs>
-              {/* <TextField
-                multiline
-                fullWidth
-                margin="dense"
-                id="comment-content"
-                label="comments"
-                inputProps={{ type: 'textarea' }}
-                onChange={onCommentChange}
-                rows="3"
-              /> */}
+              {activeTab === 'comment' && (
+              <ReactMde
+                className={classes['comment-editor']}
+                layout="noPreview"
+                onChange={onMdeChange}
+                editorState={mdeState}
+                generateMarkdownPreview={markdown =>
+										Promise.resolve(converter.makeHtml(markdown))
+									}
+              />
+							)}
+              {activeTab === 'preview' && (
+              <ReactMarkdown
+                className={cx([
+										classes['comment-editor'],
+										classes['comment-markdown-preview']
+									])}
+                source={mdeState.markdown}
+              />
+							)}
             </Paper>
 
             <div className={classes.progressWrapper}>
               <Button
                 variant="raised"
-                disabled={!comment}
+                disabled={!mdeState.markdown}
                 onClick={submitCommnet}
                 color="primary"
               >
-								Submit Comment
+                Submit Comment
               </Button>
               {submitting && (
               <CircularProgress
@@ -133,20 +163,43 @@ const ClipComments = ({
 
 ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
-	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
-	// onCommentChange: PropTypes.func.isRequired,
-	comment: PropTypes.string.isRequired,
+    allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
+    mdeState: ReactMdeTypes.MdeState.isRequired, // eslint-disable-line react/no-typos
+	onMdeChange: PropTypes.func.isRequired,
+	onTabClick: PropTypes.func.isRequired,
+	activeTab: PropTypes.string.isRequired,
 	submitCommnet: PropTypes.func.isRequired,
 	classes: PropTypes.object.isRequired,
-	submitting: PropTypes.bool.isRequired
+	submitting: PropTypes.bool.isRequired,
+	converter: PropTypes.objectOf({
+		makeHtml: PropTypes.func.isRequired
+	}).isRequired
 };
 
 const recomposeEnhancer = compose(
-	withStateHandlers(({ comment = '', submitting = false }) => ({ comment, submitting }), {
-		onCommentChange: () => ({ target }) => ({
-			comment: target.value
+	withProps({
+		converter: new Showdown.Converter({
+			tables: true,
+			simplifiedAutoLink: true,
+			strikethrough: true,
+			tasklists: true
 		})
-	})
+	}),
+	withStateHandlers(
+		({ mdeState = {markdown: ''}, submitting = false, activeTab = 'comment' }) => ({
+			submitting,
+			activeTab,
+			mdeState
+		}),
+		{
+			onTabClick: () => (_, value) => ({
+				activeTab: value
+			}),
+			onMdeChange: () => mdeState => ({
+				mdeState
+			})
+		}
+	)
 );
 
 const withCreateCommentMutation = graphql(
@@ -158,8 +211,8 @@ const withCreateCommentMutation = graphql(
 			...ownProps,
 			submitCommnet: () => {
 				const authorId = localStorage.getItem('id');
-				const { clip: { id: clipId } = {}, comment } = ownProps;
-				mutate({ variables: { authorId, clipId, content: comment } });
+                const { clip: { id: clipId } = {}, mdeState: { markdown } } = ownProps;
+                mutate({ variables: { authorId, clipId, content: markdown } });
 			}
 		})
 	}
