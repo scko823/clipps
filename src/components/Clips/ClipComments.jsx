@@ -68,9 +68,10 @@ const ClipComments = ({
 	activeTab,
 	allComments = [],
 	totalCount,
-    pageSize,
-    page,
-    changePageAndFetch,
+	pageSize,
+	page,
+	changePageAndFetch,
+	changeRowsPerPageAndFetch,
 	commentLoading,
 	clip,
 	mdeState,
@@ -108,16 +109,18 @@ const ClipComments = ({
         </Grid>
 			))}
       {!commentLoading && (
-      <TablePagination
-        colSpan={3}
-        count={totalCount}
-        labelRowsPerPage="comments per page"
-        rowsPerPageOptions={[5, 10, 25, 100]}
-        onChangePage={changePageAndFetch}
-        rowsPerPage={pageSize}
-        page={page}
-        onChangeRowsPerPage={() => {}}
-      />
+      <Grid container direction="column" wrap="wrap" className={classes.comment}>
+        <TablePagination
+          colSpan={3}
+          count={totalCount}
+          labelRowsPerPage="comments per page"
+          rowsPerPageOptions={[5, 10, 25, 100]}
+          onChangePage={changePageAndFetch}
+          rowsPerPage={pageSize}
+          page={page}
+          onChangeRowsPerPage={changeRowsPerPageAndFetch}
+        />
+      </Grid>
 			)}
     </Grid>
 
@@ -184,9 +187,10 @@ ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
 	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
 	totalCount: PropTypes.number.isRequired,
-    changePageAndFetch: PropTypes.func.isRequired,
+	changeRowsPerPageAndFetch: PropTypes.func.isRequired,
+	changePageAndFetch: PropTypes.func.isRequired,
 	pageSize: PropTypes.number.isRequired,
-    page: PropTypes.number.isRequired,
+	page: PropTypes.number.isRequired,
 	commentLoading: PropTypes.bool.isRequired,
 	mdeState: ReactMdeTypes.MdeState.isRequired, // eslint-disable-line react/no-typos
 	onMdeChange: PropTypes.func.isRequired,
@@ -221,8 +225,8 @@ const recomposeEnhancer = compose(
 			submitting,
 			activeTab,
 			mdeState,
-            skip,
-            page,
+			skip,
+			page,
 			pageSize
 		}),
 		{
@@ -233,9 +237,13 @@ const recomposeEnhancer = compose(
 				mdeState
 			}),
 			onChangePage: () => (newSkip, newPageNumber) => ({
-                skip: newSkip,
-                page: newPageNumber
-            })
+				skip: newSkip,
+				page: newPageNumber
+			}),
+			onChangePageSize: () => pageSize => ({
+                pageSize,
+                skip: 0
+			})
 		}
 	),
 	withHandlers({
@@ -271,8 +279,8 @@ const withCommentsQuery = graphql(
 		${getCommentsByBoardAndClipNameQuery}
 	`,
 	{
-        options: ({ clipboardName, clipName, pageSize, skip }) => ({
-			variables: { clipboardName, clipName, pageSize, skip}
+		options: ({ clipboardName, clipName, pageSize, skip }) => ({
+			variables: { clipboardName, clipName, pageSize, skip }
 		}),
 		props: ({
 			ownProps,
@@ -287,7 +295,16 @@ const withCommentsQuery = graphql(
 			...ownProps,
 			commentLoading: loading,
 			allComments,
-			fetchMoreComments: fetchMore,
+			fetchMoreComments: (pageSize, skip) => {
+				const { clipboardName, clipName } = ownProps;
+				fetchMore({
+					variables: { clipboardName, clipName, pageSize, skip },
+					updateQuery: (prev, { fetchMoreResult }) => {
+						if (!fetchMoreResult) return prev;
+						return { allComments: [...fetchMoreResult.allComments] };
+					}
+				});
+			},
 			subscribeToMore,
 			totalCount
 		})
@@ -295,22 +312,19 @@ const withCommentsQuery = graphql(
 );
 
 const withPagination = compose(
-    withHandlers({
-        changePageAndFetch: ({ clipboardName, clipName, pageSize, onChangePage, fetchMoreComments }) => (_, pageNumber) => {
-            const newPageNumber = pageNumber;
-            const newSkip = pageSize * pageNumber;
-            onChangePage(newSkip, newPageNumber);
-            fetchMoreComments({
-                variables: { clipboardName, clipName, pageSize, skip: newSkip },
-                updateQuery: (prev, { fetchMoreResult }) => {
-                    if (!fetchMoreResult) return prev;
-                    return {allComments: [...fetchMoreResult.allComments]}
-                }
-            })
-
+	withHandlers({
+		changePageAndFetch: ({ pageSize, onChangePage, fetchMoreComments }) => (_, pageNumber) => {
+			const newPageNumber = pageNumber;
+			const newSkip = pageSize * pageNumber;
+			onChangePage(newSkip, newPageNumber);
+			fetchMoreComments(pageSize, newSkip);
+		},
+        changeRowsPerPageAndFetch: ({ fetchMoreComments, onChangePageSize }) => ({ target: { value } }) => {
+            onChangePageSize(value)
+            fetchMoreComments(value, 0)
         }
-    })
-)
+	})
+);
 
 const lifeCycleEnhancer = compose(
 	lifecycle({
@@ -324,7 +338,7 @@ const lifeCycleEnhancer = compose(
 					clipName: this.props.clipName
 				},
 				updateQuery: (
-					{ allComments },
+                    { allComments, _allCommentsMeta },
 					{
 						subscriptionData: {
 							data: {
@@ -335,7 +349,8 @@ const lifeCycleEnhancer = compose(
 				) => {
 					if (mutation === 'CREATED') {
 						return {
-							allComments: [...allComments, node]
+                            allComments: [node, ...allComments],
+                            _allCommentsMeta: { ..._allCommentsMeta, count: _allCommentsMeta.count + 1}
 						};
 					}
 					return allComments;
@@ -358,7 +373,7 @@ export default compose(
 	withStyles(styles),
 	recomposeEnhancer,
 	withCreateCommentMutation,
-    withCommentsQuery,
-    withPagination,
+	withCommentsQuery,
+	withPagination,
 	lifeCycleEnhancer
 )(ClipComments);

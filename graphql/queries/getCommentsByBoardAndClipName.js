@@ -1,7 +1,8 @@
 // get a clip's comments by its clipboardName and clipName
 export default `
 query getCommentsByClip($clipName: String!, $clipboardName: String!, $pageSize: Int!, $skip: Int!) {
-  allComments(first: $pageSize, skip:$skip, filter: {
+  allComments(first: $pageSize, skip: $skip, orderBy: createdAt_DESC filter: {
+
     clip: {
       name: $clipName,
       clipboard: {
