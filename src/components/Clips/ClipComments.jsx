@@ -20,7 +20,7 @@ import { withStyles } from 'material-ui/styles';
 
 // editor and markdown preview
 import ReactMarkdown from 'react-markdown';
-import ReactMde, { ReactMdeTypes } from 'react-mde';
+import ReactMde, { ReactMdeTypes, DraftUtil } from 'react-mde';
 import Showdown from 'showdown';
 import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 
@@ -201,7 +201,13 @@ const recomposeEnhancer = compose(
 				mdeState
 			})
 		}
-	)
+	),
+	withHandlers({
+        onClearMde: ({ converter, mdeState, onMdeChange }) => async () => {
+			const newState = await DraftUtil.buildNewMdeState(mdeState, converter.makeHtml, '');
+			onMdeChange(newState);
+		}
+	})
 );
 
 const withCreateCommentMutation = graphql(
@@ -245,7 +251,7 @@ const withCommentsQuery = graphql(
 const lifeCycleEnhancer = compose(
 	lifecycle({
 		componentDidMount() {
-			this.props.subscribeToMore({
+			this.commentSubscription = this.props.subscribeToMore({
 				document: gql`
 					${commentSubscription}
 				`,
@@ -271,7 +277,16 @@ const lifeCycleEnhancer = compose(
 					return allComments;
 				}
 			});
-		}
+        },
+        componentWillUnmount() {
+            if (this.commentSubscription) {
+                try {
+                    this.commentSubscription();
+                } catch (_) {
+                    // nothing
+                }
+            }
+        }
 	})
 );
 
