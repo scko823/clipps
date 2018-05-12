@@ -8,7 +8,6 @@ import { compose } from 'recompose';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import clipByBoardAndClipNameQuery from '../../../graphql/queries/clipByBoardAndClipName';
-import getCommentsByBoardAndClipNameQuery from '../../../graphql/queries/getCommentsByBoardAndClipName';
 
 import { withCopyEnhancer, Snippet, styles as snippetStyles } from './Snippet';
 import ClipComments from './ClipComments';
@@ -48,28 +47,6 @@ const withClipQuery = graphql(
 	}
 );
 
-const withCommentsQuery = graphql(
-	gql`
-		${getCommentsByBoardAndClipNameQuery}
-	`,
-	{
-		options: ({
-			match: {
-				params: { clipboardName, clipName }
-			}
-		}) => ({
-			variables: { clipboardName, clipName, pageSize: 10, skip: 0 }
-		}),
-		props: ({ ownProps, data: { loading, allComments, fetchMore } }) => ({
-			...ownProps,
-			commentLoading: loading,
-			allComments,
-			fetchMoreComments: fetchMore
-			// subscribeToMore
-		})
-	}
-);
-
 const snippetPropsSelector = ({ clip, classes, copyContent, clipboardName }) => ({
 	clip,
 	classes,
@@ -77,26 +54,36 @@ const snippetPropsSelector = ({ clip, classes, copyContent, clipboardName }) => 
 	clipboardName
 });
 
-const clipCommentsPropsSelector = ({ allComments, clip }) => ({ allComments, clip });
-
 const ClipView = props => {
 	const snippetProps = snippetPropsSelector(props);
-	const ClipCommentsProps = clipCommentsPropsSelector(props);
+	const {
+		clip,
+		match: {
+			params: { clipboardName, clipName }
+		}
+	} = props;
 	return (
   <div className={props.classes.root}>
     <Snippet key="snippet" {...snippetProps} />
-    <ClipComments key="clip-comments" {...ClipCommentsProps} />
+    <ClipComments
+      key="clip-comments"
+      clip={clip}
+      clipboardName={clipboardName}
+      clipName={clipName}
+    />
   </div>
 	);
 };
 
 ClipView.propTypes = {
-	classes: PropTypes.object.isRequired
+	classes: PropTypes.object.isRequired,
+	clip: PropTypes.object.isRequired,
+	match: PropTypes.shape({
+		params: PropTypes.shape({
+			clipboardName: PropTypes.string.isRequired,
+			clipName: PropTypes.string.isRequired
+		}).isRequired
+	}).isRequired
 };
 
-export default compose(
-	withStyles(clipViewStyles),
-	withCopyEnhancer,
-	withClipQuery,
-	withCommentsQuery
-)(ClipView);
+export default compose(withStyles(clipViewStyles), withCopyEnhancer, withClipQuery)(ClipView);

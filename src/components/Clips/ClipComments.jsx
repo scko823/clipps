@@ -28,6 +28,7 @@ import distanceInWordsToNow from 'date-fns/distance_in_words_to_now';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import createCommentMutation from '../../../graphql/mutations/createComment';
+import getCommentsByBoardAndClipNameQuery from '../../../graphql/queries/getCommentsByBoardAndClipName';
 
 import { styles as progressStyles } from '../Clipboards/AddClipDialog';
 
@@ -45,20 +46,20 @@ const styles = theme => ({
 		'&:first-child': {
 			marginTop: '1rem'
 		}
-    },
-    'comment-editor': {
-        textAlign: 'left',
-        margin: `${theme.spacing.unit * 2}px auto`
-    },
+	},
+	'comment-editor': {
+		textAlign: 'left',
+		margin: `${theme.spacing.unit * 2}px auto`
+	},
 	'comment-markdown-preview': {
-        minHeight: '200px',
-        margin: `${theme.spacing.unit * 1}px`,
+		minHeight: '200px',
+		margin: `${theme.spacing.unit * 1}px`
 	},
 	'comments-metadata': {
 		backgroundColor: grey[200],
 		margin: '0',
 		width: '100%'
-	},
+	}
 });
 
 const ClipComments = ({
@@ -145,7 +146,7 @@ const ClipComments = ({
                 onClick={submitCommnet}
                 color="primary"
               >
-                Submit Comment
+								Submit Comment
               </Button>
               {submitting && (
               <CircularProgress
@@ -163,8 +164,8 @@ const ClipComments = ({
 
 ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
-    allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
-    mdeState: ReactMdeTypes.MdeState.isRequired, // eslint-disable-line react/no-typos
+	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
+	mdeState: ReactMdeTypes.MdeState.isRequired, // eslint-disable-line react/no-typos
 	onMdeChange: PropTypes.func.isRequired,
 	onTabClick: PropTypes.func.isRequired,
 	activeTab: PropTypes.string.isRequired,
@@ -186,7 +187,7 @@ const recomposeEnhancer = compose(
 		})
 	}),
 	withStateHandlers(
-		({ mdeState = {markdown: ''}, submitting = false, activeTab = 'comment' }) => ({
+		({ mdeState = { markdown: '' }, submitting = false, activeTab = 'comment' }) => ({
 			submitting,
 			activeTab,
 			mdeState
@@ -211,12 +212,39 @@ const withCreateCommentMutation = graphql(
 			...ownProps,
 			submitCommnet: () => {
 				const authorId = localStorage.getItem('id');
-                const { clip: { id: clipId } = {}, mdeState: { markdown } } = ownProps;
-                mutate({ variables: { authorId, clipId, content: markdown } });
+				const {
+					clip: { id: clipId } = {},
+					mdeState: { markdown }
+				} = ownProps;
+				mutate({ variables: { authorId, clipId, content: markdown } });
 			}
 		})
 	}
 );
-export default compose(withStyles(styles), recomposeEnhancer, withCreateCommentMutation)(
-	ClipComments
+
+const withCommentsQuery = graphql(
+	gql`
+		${getCommentsByBoardAndClipNameQuery}
+	`,
+	{
+		options: ({
+            clipboardName, clipName
+		}) => ({
+			variables: { clipboardName, clipName, pageSize: 10, skip: 0 }
+		}),
+		props: ({ ownProps, data: { loading, allComments, fetchMore } }) => ({
+			...ownProps,
+			commentLoading: loading,
+			allComments,
+			fetchMoreComments: fetchMore
+			// subscribeToMore
+		})
+	}
 );
+
+export default compose(
+	withStyles(styles),
+	recomposeEnhancer,
+	withCreateCommentMutation,
+	withCommentsQuery
+)(ClipComments);
