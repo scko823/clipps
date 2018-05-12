@@ -22,7 +22,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import createClipMutation from '../../../graphql/mutations/createClip';
 
-const styles = {
+export const styles = () => ({
 	progressWrapper: {
 		position: 'relative'
 	},
@@ -33,7 +33,7 @@ const styles = {
 		marginTop: '-3px',
 		zIndex: 1
 	}
-};
+});
 
 const AddClipDialog = ({
 	submit,
@@ -88,7 +88,7 @@ const AddClipDialog = ({
             >
               {loading ? 'Loading' : 'Create'}
             </Button>
-            {loading && <CircularProgress className={classes.progress} />}
+            {true && <CircularProgress className={classes.progress} />}
           </div>
         </DialogActions>
       </form>

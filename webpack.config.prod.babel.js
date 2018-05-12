@@ -19,57 +19,57 @@ import common from './webpack.config.common.babel';
 const prodConfig = merge(common, {
 	entry: {
 		highlight: ['react-highlight'],
-		react: ['react', 'react-dom', 'recompose', 'react-router', 'react-router-dom', 'history'],
+		react: ['react', 'react-dom', 'recompose', 'react-router', 'react-router-dom', 'history']
 	},
 	plugins: [
 		new webpack.optimize.CommonsChunkPlugin({
-			name: ['highlight', 'react'],
+			name: ['highlight', 'react']
 		}),
 		new UglifyJsPlugin({
-			cache: true,
+			cache: true
 		}),
 		new CompressionPlugin({
 			asset: '[path].gz[query]',
 			algorithm: 'gzip',
 			test: /\.js$|\.css$|\.html$/,
 			threshold: 10240,
-			minRatio: 0.8,
+			minRatio: 0.8
 		}),
 		new BundleAnalyzerPlugin({
 			analyzerMode: 'static',
 			reportFilename: path.join(
 				'..',
 				'bundle-size',
-				`report-${new Date().toISOString()}.html`,
+				`report-${new Date().toISOString()}.html`
 			),
 			openAnalyzer: true,
 			generateStatsFile: true,
 			statsFilename: path.join('..', 'bundle-size', `stats-${new Date().toISOString()}.json`),
 			statsOptions: null,
-			logLevel: 'info',
+			logLevel: 'info'
 		}),
 		new ManifestPlugin({
 			seed: {
 				name: 'Clipps',
 				short_name: 'Clipps',
-				description: 'A site to share code snippets',
-			},
+				description: 'A site to share code snippets'
+			}
 		}),
 		new OfflinePlugin({
 			externals: [
 				'/',
 				'https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css',
-				'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&subset=latin',
+				'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&subset=latin'
 			],
 			excludes: ['**/*.map'],
 			ServiceWorker: {
 				events: true,
 				navigateFallbackURL: '/',
-				mode: 'no-cors',
-			},
-		}),
+				mode: 'no-cors'
+			}
+		})
 	],
 
-	devtool: 'source-map',
+	devtool: 'source-map'
 });
 export default prodConfig;
