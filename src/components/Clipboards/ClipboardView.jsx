@@ -141,7 +141,12 @@ const recomposeEnhancer = compose(
 					clipboardId: this.props.clipboardId
 				});
 			}
-		}
+        },
+        componentWillUnmount() {
+            if (typeof this.unsubscribe === 'function') {
+                this.unsubscribe();
+            }
+        }
 	}),
 	toClass
 );

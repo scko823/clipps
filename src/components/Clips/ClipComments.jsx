@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 
 // recompose
-import { withStateHandlers, withProps, compose } from 'recompose';
+import { withStateHandlers, withProps, lifecycle, compose, withHandlers } from 'recompose';
 
 // material-ui
 // import TextField from 'material-ui/TextField';
@@ -29,6 +29,7 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import createCommentMutation from '../../../graphql/mutations/createComment';
 import getCommentsByBoardAndClipNameQuery from '../../../graphql/queries/getCommentsByBoardAndClipName';
+import commentSubscription from '../../../graphql/subscriptions/comments';
 
 import { styles as progressStyles } from '../Clipboards/AddClipDialog';
 
@@ -214,9 +215,10 @@ const withCreateCommentMutation = graphql(
 				const authorId = localStorage.getItem('id');
 				const {
 					clip: { id: clipId } = {},
-					mdeState: { markdown }
+					mdeState: { markdown },
+					onClearMde
 				} = ownProps;
-				mutate({ variables: { authorId, clipId, content: markdown } });
+				mutate({ variables: { authorId, clipId, content: markdown } }).then(onClearMde);
 			}
 		})
 	}
@@ -227,24 +229,56 @@ const withCommentsQuery = graphql(
 		${getCommentsByBoardAndClipNameQuery}
 	`,
 	{
-		options: ({
-            clipboardName, clipName
-		}) => ({
-			variables: { clipboardName, clipName, pageSize: 10, skip: 0 }
+		options: ({ clipboardName, clipName }) => ({
+			variables: { clipboardName, clipName, pageSize: 100, skip: 0 }
 		}),
-		props: ({ ownProps, data: { loading, allComments, fetchMore } }) => ({
+		props: ({ ownProps, data: { loading, allComments, fetchMore, subscribeToMore } }) => ({
 			...ownProps,
 			commentLoading: loading,
 			allComments,
-			fetchMoreComments: fetchMore
-			// subscribeToMore
+			fetchMoreComments: fetchMore,
+			subscribeToMore
 		})
 	}
+);
+
+const lifeCycleEnhancer = compose(
+	lifecycle({
+		componentDidMount() {
+			this.props.subscribeToMore({
+				document: gql`
+					${commentSubscription}
+				`,
+				variables: {
+					clipboardName: this.props.clipboardName,
+					clipName: this.props.clipName
+				},
+				updateQuery: (
+					{ allComments },
+					{
+						subscriptionData: {
+							data: {
+								Comment: { mutation, node }
+							}
+						}
+					}
+				) => {
+					if (mutation === 'CREATED') {
+						return {
+							allComments: [...allComments, node]
+						};
+					}
+					return allComments;
+				}
+			});
+		}
+	})
 );
 
 export default compose(
 	withStyles(styles),
 	recomposeEnhancer,
 	withCreateCommentMutation,
-	withCommentsQuery
+	withCommentsQuery,
+	lifeCycleEnhancer
 )(ClipComments);

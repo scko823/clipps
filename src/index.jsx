@@ -9,6 +9,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo';
 import { split } from 'apollo-link';
 import { setContext } from 'apollo-link-context';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities/lib';
 
@@ -30,12 +31,17 @@ const httpLink = new HttpLink({
 	uri: process.env.QUERY_API
 });
 
-const wsLink = new WebSocketLink({
-	uri: process.env.SUBSCRIPTION_API,
-	options: {
-		reconnect: true
+const wsClient = new SubscriptionClient(process.env.SUBSCRIPTION_API, {
+	reconnect: true,
+	connectionParams: () => {
+		const token = localStorage.getItem('token');
+		return {
+			Authorization: `Bearer ${token || ''}`
+		};
 	}
 });
+
+const wsLink = new WebSocketLink(wsClient);
 
 const link = split(
 	// split based on operation type
