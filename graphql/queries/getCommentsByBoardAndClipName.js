@@ -22,5 +22,16 @@ query getCommentsByClip($clipName: String!, $clipboardName: String!, $pageSize: 
       lastName
     }
   }
+    _allCommentsMeta(filter: {
+        clip: {
+            name: $clipName,
+            clipboard: {
+                name: $clipboardName
+            }
+        }
+    }) {
+        count
+    }
+
 }
 `;

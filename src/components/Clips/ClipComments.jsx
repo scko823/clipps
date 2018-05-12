@@ -9,9 +9,9 @@ import cx from 'classnames';
 import { withStateHandlers, withProps, lifecycle, compose, withHandlers } from 'recompose';
 
 // material-ui
-// import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Grid from 'material-ui/Grid';
+import { TablePagination } from 'material-ui/Table';
 import { grey } from 'material-ui/colors';
 import Paper from 'material-ui/Paper';
 import Tabs, { Tab } from 'material-ui/Tabs';
@@ -67,6 +67,11 @@ const ClipComments = ({
 	onTabClick,
 	activeTab,
 	allComments = [],
+	totalCount,
+    pageSize,
+    page,
+	onChangePage,
+	commentLoading,
 	clip,
 	mdeState,
 	onMdeChange,
@@ -102,6 +107,18 @@ const ClipComments = ({
           </Grid>
         </Grid>
 			))}
+      {!commentLoading && (
+      <TablePagination
+        colSpan={3}
+        count={totalCount}
+        labelRowsPerPage="comments per page"
+        rowsPerPageOptions={[5, 10, 25, 100]}
+        onChangePage={onChangePage}
+        rowsPerPage={pageSize}
+        page={page}
+        onChangeRowsPerPage={() => {}}
+      />
+			)}
     </Grid>
 
     {!clip || !clip.id ? null : (
@@ -166,6 +183,11 @@ const ClipComments = ({
 ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
 	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
+	totalCount: PropTypes.number.isRequired,
+	onChangePage: PropTypes.func.isRequired,
+	pageSize: PropTypes.number.isRequired,
+    page: PropTypes.number.isRequired,
+	commentLoading: PropTypes.bool.isRequired,
 	mdeState: ReactMdeTypes.MdeState.isRequired, // eslint-disable-line react/no-typos
 	onMdeChange: PropTypes.func.isRequired,
 	onTabClick: PropTypes.func.isRequired,
@@ -188,10 +210,20 @@ const recomposeEnhancer = compose(
 		})
 	}),
 	withStateHandlers(
-		({ mdeState = { markdown: '' }, submitting = false, activeTab = 'comment' }) => ({
+		({
+			mdeState = { markdown: '' },
+			submitting = false,
+			activeTab = 'comment',
+			page = 0,
+			skip = 0,
+			pageSize = 10
+		}) => ({
 			submitting,
 			activeTab,
-			mdeState
+			mdeState,
+            skip,
+            page,
+			pageSize
 		}),
 		{
 			onTabClick: () => (_, value) => ({
@@ -199,11 +231,15 @@ const recomposeEnhancer = compose(
 			}),
 			onMdeChange: () => mdeState => ({
 				mdeState
-			})
+			}),
+			onChangePage: ({ pageSize }) => (_, pageNumber) => ({
+					skip: pageNumber * pageSize,
+					page: pageNumber
+				})
 		}
 	),
 	withHandlers({
-        onClearMde: ({ converter, mdeState, onMdeChange }) => async () => {
+		onClearMde: ({ converter, mdeState, onMdeChange }) => async () => {
 			const newState = await DraftUtil.buildNewMdeState(mdeState, converter.makeHtml, '');
 			onMdeChange(newState);
 		}
@@ -238,12 +274,22 @@ const withCommentsQuery = graphql(
 		options: ({ clipboardName, clipName }) => ({
 			variables: { clipboardName, clipName, pageSize: 100, skip: 0 }
 		}),
-		props: ({ ownProps, data: { loading, allComments, fetchMore, subscribeToMore } }) => ({
+		props: ({
+			ownProps,
+			data: {
+				loading,
+				allComments,
+				fetchMore,
+				subscribeToMore,
+				_allCommentsMeta: { count: totalCount = 0 } = {}
+			}
+		}) => ({
 			...ownProps,
 			commentLoading: loading,
 			allComments,
 			fetchMoreComments: fetchMore,
-			subscribeToMore
+			subscribeToMore,
+			totalCount
 		})
 	}
 );
@@ -277,16 +323,16 @@ const lifeCycleEnhancer = compose(
 					return allComments;
 				}
 			});
-        },
-        componentWillUnmount() {
-            if (this.commentSubscription) {
-                try {
-                    this.commentSubscription();
-                } catch (_) {
-                    // nothing
-                }
-            }
-        }
+		},
+		componentWillUnmount() {
+			if (this.commentSubscription) {
+				try {
+					this.commentSubscription();
+				} catch (_) {
+					// nothing
+				}
+			}
+		}
 	})
 );
 
