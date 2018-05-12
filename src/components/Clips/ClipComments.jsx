@@ -70,7 +70,7 @@ const ClipComments = ({
 	totalCount,
     pageSize,
     page,
-	onChangePage,
+    changePageAndFetch,
 	commentLoading,
 	clip,
 	mdeState,
@@ -113,7 +113,7 @@ const ClipComments = ({
         count={totalCount}
         labelRowsPerPage="comments per page"
         rowsPerPageOptions={[5, 10, 25, 100]}
-        onChangePage={onChangePage}
+        onChangePage={changePageAndFetch}
         rowsPerPage={pageSize}
         page={page}
         onChangeRowsPerPage={() => {}}
@@ -184,7 +184,7 @@ ClipComments.propTypes = {
 	clip: PropTypes.object.isRequired,
 	allComments: PropTypes.arrayOf(PropTypes.object).isRequired,
 	totalCount: PropTypes.number.isRequired,
-	onChangePage: PropTypes.func.isRequired,
+    changePageAndFetch: PropTypes.func.isRequired,
 	pageSize: PropTypes.number.isRequired,
     page: PropTypes.number.isRequired,
 	commentLoading: PropTypes.bool.isRequired,
@@ -232,10 +232,10 @@ const recomposeEnhancer = compose(
 			onMdeChange: () => mdeState => ({
 				mdeState
 			}),
-			onChangePage: ({ pageSize }) => (_, pageNumber) => ({
-					skip: pageNumber * pageSize,
-					page: pageNumber
-				})
+			onChangePage: () => (newSkip, newPageNumber) => ({
+                skip: newSkip,
+                page: newPageNumber
+            })
 		}
 	),
 	withHandlers({
@@ -271,8 +271,8 @@ const withCommentsQuery = graphql(
 		${getCommentsByBoardAndClipNameQuery}
 	`,
 	{
-		options: ({ clipboardName, clipName }) => ({
-			variables: { clipboardName, clipName, pageSize: 100, skip: 0 }
+        options: ({ clipboardName, clipName, pageSize, skip }) => ({
+			variables: { clipboardName, clipName, pageSize, skip}
 		}),
 		props: ({
 			ownProps,
@@ -293,6 +293,24 @@ const withCommentsQuery = graphql(
 		})
 	}
 );
+
+const withPagination = compose(
+    withHandlers({
+        changePageAndFetch: ({ clipboardName, clipName, pageSize, onChangePage, fetchMoreComments }) => (_, pageNumber) => {
+            const newPageNumber = pageNumber;
+            const newSkip = pageSize * pageNumber;
+            onChangePage(newSkip, newPageNumber);
+            fetchMoreComments({
+                variables: { clipboardName, clipName, pageSize, skip: newSkip },
+                updateQuery: (prev, { fetchMoreResult }) => {
+                    if (!fetchMoreResult) return prev;
+                    return {allComments: [...fetchMoreResult.allComments]}
+                }
+            })
+
+        }
+    })
+)
 
 const lifeCycleEnhancer = compose(
 	lifecycle({
@@ -340,6 +358,7 @@ export default compose(
 	withStyles(styles),
 	recomposeEnhancer,
 	withCreateCommentMutation,
-	withCommentsQuery,
+    withCommentsQuery,
+    withPagination,
 	lifeCycleEnhancer
 )(ClipComments);
