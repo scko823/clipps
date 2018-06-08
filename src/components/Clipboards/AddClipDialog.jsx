@@ -88,7 +88,7 @@ const AddClipDialog = ({
             >
               {loading ? 'Loading' : 'Create'}
             </Button>
-            {true && <CircularProgress className={classes.progress} />}
+            {loading && <CircularProgress className={classes.progress} />}
           </div>
         </DialogActions>
       </form>
