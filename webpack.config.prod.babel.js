@@ -6,12 +6,8 @@ import OfflinePlugin from 'offline-plugin';
 
 import ManifestPlugin from 'webpack-manifest-plugin';
 
-// import webpack from 'webpack'
-// import MinifyPlugin from 'babel-minify-webpack-plugin'
-
 import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
-// import ClosureCompilerPlugin from 'webpack-closure-compiler'
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 import common from './webpack.config.common.babel';
